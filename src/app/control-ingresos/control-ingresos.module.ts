@@ -9,6 +9,7 @@ import { CiRoutingModule } from './ci-routing.module';
 import { SharedModule } from '../shared/shared.module';
 import { IngresosComponent } from './pages/ingresos/ingresos.component';
 import { MaterialModule } from '../material/material.module';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 
@@ -25,7 +26,8 @@ import { MaterialModule } from '../material/material.module';
     FlexLayoutModule,
     CiRoutingModule,
     SharedModule,
-    MaterialModule
+    MaterialModule,
+    ReactiveFormsModule
   ]
 })
 export class ControlIngresosModule { }

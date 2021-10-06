@@ -1,10 +1,16 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 interface Selectors {
   value: string;
   viewValue: string;
 }
 
+interface CategoriaServicios {
+  value: string;
+  viewValue: string;
+  cost: number;
+}
 
 export interface Transaction {
   item: string;
@@ -17,23 +23,35 @@ export interface Transaction {
   styles: [
     `
     .summary-card {
-      width: 100%;
+      width: 90%;
     }
 
     table {
-      width: 100%;
+      width: 90%;
     }
-
 
     `
   ]
 })
-export class IngresosComponent  {
+export class IngresosComponent implements OnInit{
 
-  categorias: Selectors[] = [
-    {value: '01', viewValue: 'Consulta'},
-    {value: '02', viewValue: 'Limpieza facial'},
-    {value: '03', viewValue: 'Rinomodelación con Hilos'}
+
+  formularioIngresos: FormGroup = this.formBuilder.group({
+    nombres      : [, [Validators.required, Validators.minLength(3)] ],
+    apellidos      : [, [Validators.required, Validators.minLength(3)] ],
+    categoria      : [, [Validators.required] ],
+    precio      : [ , [Validators.min(0),Validators.required]],
+    tipoPago : [, [Validators.min(0),Validators.required]],
+    descuento: [, [Validators.min(0),Validators.required]],
+
+  })
+
+
+  
+  categorias: CategoriaServicios[] = [
+    {value: '01', viewValue: 'Consulta',cost: 35},
+    {value: '02', viewValue: 'Limpieza facial',cost: 50},
+    {value: '03', viewValue: 'Rinomodelación con Hilos',cost: 800}
   ];
 
   tiposPago: Selectors[]= [
@@ -43,14 +61,52 @@ export class IngresosComponent  {
   ]
   
 
-  displayedColumns = ['Producto o Servicio', 'Costo'];
-  transactions: Transaction[] = [
-    {item: 'Consulta', cost: 35},
-    {item: 'Limpieza facial', cost: 40},
-  ];
+  displayedColumns = ['Detalle', 'Costo'];
+  transactions: Transaction[] = [];
+
+  updateSummary(){
+    this.formularioIngresos.controls.categoria.valueChanges
+      .subscribe( value => {
+        this.transactions=[{ cost:value.cost, item: value.viewValue }];
+        this.formularioIngresos.patchValue({
+          precio: value.cost
+        })
+      });
+  }
+
+  aplicarDescuento(){
+        const porcentajeDescuento=this.formularioIngresos.controls.descuento.value;
+        const precio=this.formularioIngresos.controls.precio.value;
+        const descuento=(precio*(porcentajeDescuento/100))*-1;
+        const discount: Transaction={
+          cost:descuento, 
+          item: "Descuento" 
+        }
+        
+        //this.transactions.find(val => val.item  == discount.item).cost=descuento;
+        console.log("total descuento",descuento);
+        
+        this.transactions.push({ cost:descuento, item: "Descuento" });
+        this.transactions=this.transactions.slice();
+  }
 
   getTotalCost() {
-    return this.transactions.map(t => t.cost).reduce((acc, value) => acc + value, 0);
+   return this.transactions.map(t => t.cost).reduce((acc, value) => acc + value, 0);
+  }
+
+  guardar(){
+    if(this.formularioIngresos.invalid){
+      this.formularioIngresos.markAllAsTouched();
+      return;
+    }
+    console.log('Formulario de ingresos',this.formularioIngresos.value);
+  }
+
+  constructor(private formBuilder: FormBuilder) { }
+  
+  
+  ngOnInit(): void {
+    this.updateSummary();
   }
 
 }

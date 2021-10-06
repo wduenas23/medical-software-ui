@@ -6,7 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styles: [
     `
     .container {
-      margin: 10px;
+      margin: 25px;
+      padding: 10px 10px 10px 10px;
     }
 
     `

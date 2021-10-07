@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-interface Selectors {
+interface FormOfPayments {
   value: string;
   viewValue: string;
 }
 
-interface CategoriaServicios {
-  value: string;
-  viewValue: string;
+interface Servicios {
+  id: string;
+  description: string;
   cost: number;
 }
 
@@ -48,13 +48,13 @@ export class IngresosComponent implements OnInit{
 
 
   
-  categorias: CategoriaServicios[] = [
-    {value: '01', viewValue: 'Consulta',cost: 35},
-    {value: '02', viewValue: 'Limpieza facial',cost: 50},
-    {value: '03', viewValue: 'Rinomodelación con Hilos',cost: 800}
+  categorias: Servicios[] = [
+    {id: '01', description: 'Consulta',cost: 35},
+    {id: '02', description: 'Limpieza facial',cost: 50},
+    {id: '03', description: 'Rinomodelación con Hilos',cost: 800}
   ];
 
-  tiposPago: Selectors[]= [
+  tiposPago: FormOfPayments[]= [
     {value: '01', viewValue: 'Efectivo'},
     {value: '02', viewValue: 'Tarjeta'},
     {value: '03', viewValue: 'Transferencia'},
@@ -62,36 +62,80 @@ export class IngresosComponent implements OnInit{
   
 
   displayedColumns = ['Detalle', 'Costo'];
-  transactions: Transaction[] = [];
+  summaryList: Servicios[] = [];
 
-  updateSummary(){
+  listeningValues(){
     this.formularioIngresos.controls.categoria.valueChanges
       .subscribe( value => {
-        this.transactions=[{ cost:value.cost, item: value.viewValue }];
+        this.summaryList=[{ cost:value.cost, description: value.description,id:value.id }];
         this.formularioIngresos.patchValue({
           precio: value.cost
         })
       });
+
+      this.formularioIngresos.controls.tipoPago.valueChanges
+      .subscribe( value => {
+        const precio=this.formularioIngresos.controls.precio.value;
+        const comision=precio*0.7;
+
+        const comisionActual=this.summaryList.find(val => val.description  == "Comision");
+        
+        const tipoPago=value.viewValue;
+        const comisionTarjeta: Servicios={
+          cost:comision, 
+          description: "Comision",
+          id:"06" 
+        }
+          switch (tipoPago) {
+            case "Tarjeta":
+              if( this.formularioIngresos.controls.precio.value ){
+
+                console.log('Tipo de pago',value);
+                this.summaryList.splice(this.summaryList.indexOf(comisionTarjeta),1);
+                this.summaryList.push({ cost:2, description: "Comision",id:"06" });
+                this.summaryList=this.summaryList.slice();
+              }
+              break;
+          
+            default:
+              break;
+          }
+         
+        
+        
+        
+      });
   }
 
   aplicarDescuento(){
+
+
+        if(!this.formularioIngresos.controls.precio.value){
+          return;
+        }
         const porcentajeDescuento=this.formularioIngresos.controls.descuento.value;
         const precio=this.formularioIngresos.controls.precio.value;
         const descuento=(precio*(porcentajeDescuento/100))*-1;
-        const discount: Transaction={
-          cost:descuento, 
-          item: "Descuento" 
-        }
         
-        //this.transactions.find(val => val.item  == discount.item).cost=descuento;
-        console.log("total descuento",descuento);
+       const servicio=this.summaryList.find(val => val.description  == "Descuento");
+       if(servicio){
+        this.summaryList.splice(this.summaryList.indexOf(servicio),1);
+        servicio.cost=descuento;
+        this.summaryList.push(servicio);
+       }else{
+        this.summaryList.push({ cost:descuento, description: "Descuento",id:"05" });
         
-        this.transactions.push({ cost:descuento, item: "Descuento" });
-        this.transactions=this.transactions.slice();
+       }
+       this.summaryList=this.summaryList.slice();
+       console.log("este es el valor encontrado",servicio);
+       console.log("total descuento",descuento);
+        
+        
+        
   }
 
   getTotalCost() {
-   return this.transactions.map(t => t.cost).reduce((acc, value) => acc + value, 0);
+   return this.summaryList.map(t => t.cost).reduce((acc, value) => acc + value, 0);
   }
 
   guardar(){
@@ -106,7 +150,7 @@ export class IngresosComponent implements OnInit{
   
   
   ngOnInit(): void {
-    this.updateSummary();
+    this.listeningValues();
   }
 
 }

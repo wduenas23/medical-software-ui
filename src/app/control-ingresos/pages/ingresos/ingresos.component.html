@@ -26,10 +26,9 @@
                   <mat-label>Seleccione Categoría</mat-label>
                   <mat-select 
                       formControlName="categoria"  
-                      (onChange)="updateSummary()"
                       >
                       <mat-option *ngFor="let categoria of categorias" [value]="categoria" >
-                        {{categoria.viewValue}}
+                        {{categoria.description}}
                       </mat-option>
                   </mat-select>
               </mat-form-field>
@@ -48,7 +47,7 @@
               <mat-form-field appearance="fill">
                   <mat-label>Seleccione tipo de pago</mat-label>
                   <mat-select formControlName="tipoPago">
-                      <mat-option *ngFor="let tipoPago of tiposPago" [value]="tipoPago.value">
+                      <mat-option *ngFor="let tipoPago of tiposPago" [value]="tipoPago">
                         {{tipoPago.viewValue}}
                       </mat-option>
                   </mat-select>
@@ -57,15 +56,17 @@
               <mat-form-field appearance="fill" >
                 <mat-label>% Descuento</mat-label>
                 <input 
-                    type="text"
+                    type="number"
                     matInput 
                     #input 
                     formControlName="descuento"
                     maxlength="10" 
                     placeholder="Precio">
                 <button type="button" *ngIf="formularioIngresos.controls.descuento.value"
-                      matSuffix mat-icon-button color="warn"
-                      (click)="aplicarDescuento()">Aplicar</button>
+                      matSuffix aria-label="Aplicar" mat-raised-button  color="accent"
+                      (click)="aplicarDescuento()">
+                      Aplicar
+                </button>
             </mat-form-field>
 
       </div>
@@ -76,18 +77,18 @@
                 <mat-card-title>Resumen</mat-card-title>
               </mat-card-header>
               <mat-card-content>
-                  <table mat-table [dataSource]="transactions" >
+                  <table mat-table [dataSource]="summaryList" >
                       <!-- Item Column -->
                       <ng-container matColumnDef="Detalle">
                         <th mat-header-cell *matHeaderCellDef> Detalle</th>
-                        <td mat-cell *matCellDef="let transaction"> {{transaction.item}} </td>
+                        <td mat-cell *matCellDef="let servicio"> {{servicio.description }} </td>
                         <td mat-footer-cell *matFooterCellDef> Total </td>
                       </ng-container>
                   
                       <!-- Cost Column -->
                       <ng-container matColumnDef="Costo">
                         <th mat-header-cell *matHeaderCellDef> Costo </th>
-                        <td mat-cell *matCellDef="let transaction"> {{transaction.cost | currency}} </td>
+                        <td mat-cell *matCellDef="let servicio"> {{servicio.cost | currency}} </td>
                         <td mat-footer-cell *matFooterCellDef> {{getTotalCost() | currency}} </td>
                       </ng-container>
                   
@@ -102,7 +103,7 @@
               <mat-card-actions>
                 
                 <button type="submit" mat-raised-button color="accent">Guardar</button>
-                <button mat-raised-button color="primary">Reset</button>
+                <button mat-raised-button color="warn">Reset</button>
               </mat-card-actions>
             </mat-card>
       </div>  
@@ -125,7 +126,7 @@
 
       <span>Value</span>
       <pre>
-          {{ transactions  | json}}
+          {{ summaryList  | json}}
       </pre>
 
   </div>

@@ -4,22 +4,22 @@
   <div fxLayout="row" fxLayoutGap="20px" fxLayout.xs="column">
       <div fxFlex="50" fxLayout="column">
         
-              <mat-form-field appearance="fill">
-                  <mat-label>Ingrese Nombre</mat-label>
+              <mat-form-field appearance="fill" >
+                  <mat-label>Ingrese Nombres</mat-label>
                   <input 
                       matInput 
                       #input 
                       formControlName="nombres"
-                      placeholder="Nombre">
+                      placeholder="Nombres">
                   
               </mat-form-field>
               <mat-form-field appearance="fill">
-                  <mat-label>Ingrese Apellido</mat-label>
+                  <mat-label>Ingrese Apellidos</mat-label>
                   <input 
                       matInput 
                       #input 
                       formControlName="apellidos"
-                      placeholder="Apellido">
+                      placeholder="Apellidos">
               </mat-form-field>
 
               <mat-form-field appearance="fill">
@@ -64,7 +64,7 @@
                     maxlength="10" 
                     placeholder="Precio">
                 <button type="button" *ngIf="formularioIngresos.controls.descuento.value"
-                      matSuffix mat-icon-button color="primary"
+                      matSuffix mat-icon-button color="warn"
                       (click)="aplicarDescuento()">Aplicar</button>
             </mat-form-field>
 
@@ -76,7 +76,7 @@
                 <mat-card-title>Resumen</mat-card-title>
               </mat-card-header>
               <mat-card-content>
-                  <table mat-table [dataSource]="transactions">
+                  <table mat-table [dataSource]="transactions" >
                       <!-- Item Column -->
                       <ng-container matColumnDef="Detalle">
                         <th mat-header-cell *matHeaderCellDef> Detalle</th>
@@ -101,8 +101,8 @@
               </mat-card-content>
               <mat-card-actions>
                 
-                <button type="submit" mat-button color="principal">Guardar</button>
-                <button mat-button color="warn">Reset</button>
+                <button type="submit" mat-raised-button color="accent">Guardar</button>
+                <button mat-raised-button color="primary">Reset</button>
               </mat-card-actions>
             </mat-card>
       </div>  

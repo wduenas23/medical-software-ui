@@ -21,39 +21,33 @@
                       formControlName="apellidos"
                       placeholder="Apellidos">
               </mat-form-field>
+              <!-- Seccion de Servicio y Precio -->
+              <div fxLayout="row" fxLayoutGap="20px"  >
+                <mat-form-field appearance="fill" fxFlex="90">
+                    <mat-label>Seleccione Servicio</mat-label>
+                    <mat-select [formControl]="nuevoServicio" >
+                        <mat-option *ngFor="let servicio of servicios" [value]="servicio" >
+                          {{servicio.description}} - ${{servicio.cost}}
+                        </mat-option>
+                    </mat-select>
+                    
+                </mat-form-field>
+                
+                  <!-- <mat-label>Precio {{precio}}</mat-label> -->
+                  <button 
+                  color="accent" 
+                  type="button"
+                  mat-icon-button
+                  (click)="agregarServicio()">
+                  <mat-icon>add</mat-icon>
+                 </button>
+                
+                
+            </div>
+            <!-- Seccion Tipo de pago y Descuento -->
+            <div fxLayout="row" fxLayoutGap="20px"  >
 
-              <mat-form-field appearance="fill">
-                  <mat-label>Seleccione Categoría</mat-label>
-                  <mat-select 
-                      formControlName="categoria"  
-                      >
-                      <mat-option *ngFor="let categoria of categorias" [value]="categoria" >
-                        {{categoria.description}}
-                      </mat-option>
-                  </mat-select>
-              </mat-form-field>
-
-              <mat-form-field appearance="fill">
-                  <mat-label>Ingrese Precio</mat-label>
-                  <input 
-                      type="number"
-                      matInput 
-                      #input 
-                      formControlName="precio"
-                      maxlength="10" 
-                      placeholder="Precio">
-              </mat-form-field>
-      
-              <mat-form-field appearance="fill">
-                  <mat-label>Seleccione tipo de pago</mat-label>
-                  <mat-select formControlName="tipoPago">
-                      <mat-option *ngFor="let tipoPago of tiposPago" [value]="tipoPago">
-                        {{tipoPago.viewValue}}
-                      </mat-option>
-                  </mat-select>
-              </mat-form-field>
-
-              <mat-form-field appearance="fill" >
+              <mat-form-field appearance="fill" fxFlex="50">
                 <mat-label>% Descuento</mat-label>
                 <input 
                     type="number"
@@ -62,12 +56,24 @@
                     formControlName="descuento"
                     maxlength="10" 
                     placeholder="Precio">
-                <button type="button" *ngIf="formularioIngresos.controls.descuento.value"
+                <button type="button" *ngIf="formularioIngresos.controls.descuento.value>=0"
                       matSuffix aria-label="Aplicar" mat-raised-button  color="accent"
                       (click)="aplicarDescuento()">
                       Aplicar
                 </button>
-            </mat-form-field>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" fxFlex="50">
+                  <mat-label>Seleccione tipo de pago</mat-label>
+                  <mat-select formControlName="tipoPago">
+                      <mat-option *ngFor="let tipoPago of tiposPago" [value]="tipoPago">
+                        {{tipoPago.viewValue}}
+                      </mat-option>
+                  </mat-select>
+              </mat-form-field>
+
+              
+            </div> 
 
       </div>
 
@@ -82,7 +88,7 @@
                       <ng-container matColumnDef="Detalle">
                         <th mat-header-cell *matHeaderCellDef> Detalle</th>
                         <td mat-cell *matCellDef="let servicio"> {{servicio.description }} </td>
-                        <td mat-footer-cell *matFooterCellDef> Total </td>
+                        <td mat-footer-cell *matFooterCellDef> Sub Total Servicios</td>
                       </ng-container>
                   
                       <!-- Cost Column -->
@@ -91,16 +97,39 @@
                         <td mat-cell *matCellDef="let servicio"> {{servicio.cost | currency}} </td>
                         <td mat-footer-cell *matFooterCellDef> {{getTotalCost() | currency}} </td>
                       </ng-container>
+
+                      <ng-container matColumnDef="Action">
+                        <th mat-header-cell *matHeaderCellDef> Action</th>
+                        <td mat-cell *matCellDef="let servicio"> <button type="button" (click)="removeServicio(servicio)" mat-icon-button><mat-icon>delete</mat-icon></button> </td>
+                        <td mat-footer-cell *matFooterCellDef>  </td>
+                      </ng-container>
                   
                       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                       <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
+                     
+                    </table>
+                    <br>
+                    
+                    <table mat-table  [dataSource]="totales">
+                      <ng-container matColumnDef="title">
+                        <th mat-header-cell *matHeaderCellDef> Detalle </th>
+                        <td mat-cell *matCellDef="let element"> {{element.title}} </td>
+                      </ng-container>
+                    
+                      
+                      <ng-container matColumnDef="value">
+                        <th mat-header-cell *matHeaderCellDef> Total </th>
+                        <td mat-cell *matCellDef="let element"> {{element.value | currency}} </td>
+                      </ng-container>
+
+                     
+                      <tr mat-row *matRowDef="let row; columns: displayedColumnsTotals;"></tr>
                     </table>
 
-                    
-                    
               </mat-card-content>
-              <mat-card-actions>
+
+              <mat-card-actions align="end">
                 
                 <button type="submit" mat-raised-button color="accent">Guardar</button>
                 <button mat-raised-button color="warn">Reset</button>
@@ -113,7 +142,7 @@
 </form>
 
 <br>
-<div class="row">
+<!-- <div class="row">
   <div class="col">
       <span>Valid</span>
       <pre>
@@ -130,5 +159,5 @@
       </pre>
 
   </div>
-</div> 
+</div>  -->
 

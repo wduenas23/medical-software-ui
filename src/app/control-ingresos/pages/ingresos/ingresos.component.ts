@@ -1,9 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { of } from 'rxjs';
 
 interface FormOfPayments {
   value: string;
   viewValue: string;
+}
+
+interface Totales{
+  title: string;
+  value: number;
 }
 
 interface Servicios {
@@ -35,20 +41,21 @@ export interface Transaction {
 })
 export class IngresosComponent implements OnInit{
 
+  
+  comisiones: number=0;
+  descuentos: number=0;
 
   formularioIngresos: FormGroup = this.formBuilder.group({
     nombres      : [, [Validators.required, Validators.minLength(3)] ],
     apellidos      : [, [Validators.required, Validators.minLength(3)] ],
-    categoria      : [, [Validators.required] ],
-    precio      : [ , [Validators.min(0),Validators.required]],
+    servicio      : [{value: '01', viewValue: 'Efectivo'}, [Validators.required] ],
     tipoPago : [, [Validators.min(0),Validators.required]],
-    descuento: [, [Validators.min(0),Validators.required]],
-
+    descuento: [0, [Validators.min(0)]],
   })
 
+  nuevoServicio: FormControl = this.formBuilder.control('',Validators.required);
 
-  
-  categorias: Servicios[] = [
+  servicios: Servicios[] = [
     {id: '01', description: 'Consulta',cost: 35},
     {id: '02', description: 'Limpieza facial',cost: 50},
     {id: '03', description: 'Rinomodelación con Hilos',cost: 800}
@@ -61,77 +68,103 @@ export class IngresosComponent implements OnInit{
   ]
   
 
-  displayedColumns = ['Detalle', 'Costo'];
+  displayedColumns = ['Detalle', 'Costo','Action'];
   summaryList: Servicios[] = [];
 
-  listeningValues(){
-    this.formularioIngresos.controls.categoria.valueChanges
-      .subscribe( value => {
-        this.summaryList=[{ cost:value.cost, description: value.description,id:value.id }];
-        this.formularioIngresos.patchValue({
-          precio: value.cost
-        })
-      });
+  displayedColumnsTotals: string[] = ['title', 'value'];
+  totales: Totales[]=[
+    { title:'Descuentos', value:0},
+    { title:'Comisiones', value:0},
+    { title:'Total', value:0},
+  ]
 
+
+
+  agregarServicio(){
+    if(this.nuevoServicio.invalid){
+      return;
+    }
+    this.summaryList.push(this.nuevoServicio.value);
+    this.summaryList=this.summaryList.slice();
+    this.aplicarDescuento();
+    this.aplicarComision(this.formularioIngresos.controls.tipoPago.value)
+  }
+
+  removeServicio(servicio: Servicios){
+    console.log("Servicio a eliminar de la lista",servicio);
+    const index=this.summaryList.indexOf(servicio);
+    console.log('index',index);
+    this.summaryList.splice(index,1);
+    this.summaryList=this.summaryList.slice();
+    this.aplicarDescuento();
+    this.aplicarComision(this.formularioIngresos.controls.tipoPago.value)
+
+  }
+
+
+  onChangeTipoPago(){
       this.formularioIngresos.controls.tipoPago.valueChanges
-      .subscribe( value => {
-        const precio=this.formularioIngresos.controls.precio.value;
-        const comision=precio*0.7;
-
-        const comisionActual=this.summaryList.find(val => val.description  == "Comision");
-        
-        const tipoPago=value.viewValue;
-        const comisionTarjeta: Servicios={
-          cost:comision, 
-          description: "Comision",
-          id:"06" 
-        }
-          switch (tipoPago) {
-            case "Tarjeta":
-              if( this.formularioIngresos.controls.precio.value ){
-
-                console.log('Tipo de pago',value);
-                this.summaryList.splice(this.summaryList.indexOf(comisionTarjeta),1);
-                this.summaryList.push({ cost:2, description: "Comision",id:"06" });
-                this.summaryList=this.summaryList.slice();
-              }
-              break;
-          
-            default:
-              break;
-          }
-         
-        
-        
-        
+        .subscribe( value => {       
+          this.aplicarComision(value);
       });
   }
 
   aplicarDescuento(){
 
+    if(this.getTotalCost()<=0){
+      return;
+    }
+       
+    let descuentoTable=this.totales.find(val => val.title  == "Descuentos");
+    descuentoTable!.value=this.calcularDescuento();
+    this.totales=this.totales.slice(); 
+    this.aplicarComision(this.formularioIngresos.controls.tipoPago.value);
+    this.calcularTotalFinal();
+      
+  }
 
-        if(!this.formularioIngresos.controls.precio.value){
-          return;
-        }
-        const porcentajeDescuento=this.formularioIngresos.controls.descuento.value;
-        const precio=this.formularioIngresos.controls.precio.value;
-        const descuento=(precio*(porcentajeDescuento/100))*-1;
-        
-       const servicio=this.summaryList.find(val => val.description  == "Descuento");
-       if(servicio){
-        this.summaryList.splice(this.summaryList.indexOf(servicio),1);
-        servicio.cost=descuento;
-        this.summaryList.push(servicio);
-       }else{
-        this.summaryList.push({ cost:descuento, description: "Descuento",id:"05" });
-        
-       }
-       this.summaryList=this.summaryList.slice();
-       console.log("este es el valor encontrado",servicio);
-       console.log("total descuento",descuento);
-        
-        
-        
+
+  aplicarComision(value: FormOfPayments ){
+    const tipoPago=value?value.viewValue:'';
+    if(tipoPago==='Tarjeta'){
+      let comi=this.totales.find(val => val.title  == "Comisiones");
+      comi!.value=this.calculatComisionPorTarjeta();
+      this.totales=this.totales.slice(); 
+    }else{
+      let comi=this.totales.find(val => val.title  == "Comisiones");
+      comi!.value=0;
+      this.totales=this.totales.slice(); 
+    }        
+    this.calcularTotalFinal();
+  }
+
+
+  calculatComisionPorTarjeta(){
+
+    /*const totalServicios=this.getTotalCost();
+    const totalComision=this.calcularDescuento();
+    const comision=(totalServicios+totalComision)*0.07*-1;*/
+    const comision=(this.getTotalCost()+this.calcularDescuento()) *0.07*-1;
+    console.log(comision);
+    return Math.round((comision+Number.EPSILON)*100)/100;
+    
+
+  }
+
+  calcularDescuento(){
+    const porcentajeDescuento=this.formularioIngresos.controls.descuento.value;
+    return (this.getTotalCost()*(porcentajeDescuento/100))*-1;
+  }
+
+  calcularTotalFinal(){
+   /* const descuentos=this.calcularDescuento();
+    const comisiones=this.calculatComisionPorTarjeta();
+    const totalFinal=this.getTotalCost()+comisiones+descuentos;*/
+    let totalFinal=this.totales.find(val => val.title  == "Total");
+    const comisiones=this.totales.find(val => val.title  == "Comisiones");
+    const descuentos=this.totales.find(val => val.title  == "Descuentos");
+    totalFinal!.value=this.getTotalCost()+comisiones!.value+descuentos!.value;
+    this.totales=this.totales.slice(); 
   }
 
   getTotalCost() {
@@ -150,7 +183,7 @@ export class IngresosComponent implements OnInit{
   
   
   ngOnInit(): void {
-    this.listeningValues();
+    this.onChangeTipoPago();
   }
 
 }

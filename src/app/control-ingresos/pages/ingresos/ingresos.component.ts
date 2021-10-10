@@ -1,6 +1,6 @@
+import { DatePipe, formatDate } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { of } from 'rxjs';
 
 interface FormOfPayments {
   value: string;
@@ -41,16 +41,14 @@ export interface Transaction {
 })
 export class IngresosComponent implements OnInit{
 
-  
-  comisiones: number=0;
-  descuentos: number=0;
-
   formularioIngresos: FormGroup = this.formBuilder.group({
-    nombres      : [, [Validators.required, Validators.minLength(3)] ],
-    apellidos      : [, [Validators.required, Validators.minLength(3)] ],
-    servicio      : [{value: '01', viewValue: 'Efectivo'}, [Validators.required] ],
-    tipoPago : [, [Validators.min(0),Validators.required]],
-    descuento: [0, [Validators.min(0)]],
+    nombres  :      [, [Validators.required, Validators.minLength(3)] ],
+    apellidos:      [, [Validators.required, Validators.minLength(3)] ],
+    servicio :      [, [Validators.required] ],
+    tipoPago :      [{value: '01', viewValue: 'Efectivo'}, [Validators.required] ],
+    descuento:      [0, [Validators.min(0)]],
+    fechaServicio:  [ new Date(), [Validators.required] ],
+    
   })
 
   nuevoServicio: FormControl = this.formBuilder.control('',Validators.required);
@@ -68,12 +66,16 @@ export class IngresosComponent implements OnInit{
   ]
   
 
+  //Para la tabla de servicios
   displayedColumns = ['Detalle', 'Costo','Action'];
   summaryList: Servicios[] = [];
 
+  
+  //Para tabla de Totales
   displayedColumnsTotals: string[] = ['title', 'value'];
   totales: Totales[]=[
     { title:'Descuentos', value:0},
+    { title:'Sub Total Cliente', value:0},
     { title:'Comisiones', value:0},
     { title:'Total', value:0},
   ]
@@ -91,13 +93,13 @@ export class IngresosComponent implements OnInit{
   }
 
   removeServicio(servicio: Servicios){
-    console.log("Servicio a eliminar de la lista",servicio);
     const index=this.summaryList.indexOf(servicio);
-    console.log('index',index);
     this.summaryList.splice(index,1);
     this.summaryList=this.summaryList.slice();
     this.aplicarDescuento();
-    this.aplicarComision(this.formularioIngresos.controls.tipoPago.value)
+    this.aplicarComision(this.formularioIngresos.controls.tipoPago.value);
+    this.calcularTotalCliente();
+    this.calcularTotalFinal();
 
   }
 
@@ -110,17 +112,13 @@ export class IngresosComponent implements OnInit{
   }
 
   aplicarDescuento(){
-
-    if(this.getTotalCost()<=0){
-      return;
-    }
-       
+    
     let descuentoTable=this.totales.find(val => val.title  == "Descuentos");
     descuentoTable!.value=this.calcularDescuento();
     this.totales=this.totales.slice(); 
     this.aplicarComision(this.formularioIngresos.controls.tipoPago.value);
+    this.calcularTotalCliente();
     this.calcularTotalFinal();
-      
   }
 
 
@@ -140,34 +138,31 @@ export class IngresosComponent implements OnInit{
 
 
   calculatComisionPorTarjeta(){
-
-    /*const totalServicios=this.getTotalCost();
-    const totalComision=this.calcularDescuento();
-    const comision=(totalServicios+totalComision)*0.07*-1;*/
-    const comision=(this.getTotalCost()+this.calcularDescuento()) *0.07*-1;
-    console.log(comision);
+    const comision=(this.getTotalServicios()+this.calcularDescuento()) *0.07*-1;
     return Math.round((comision+Number.EPSILON)*100)/100;
-    
-
   }
 
   calcularDescuento(){
     const porcentajeDescuento=this.formularioIngresos.controls.descuento.value;
-    return (this.getTotalCost()*(porcentajeDescuento/100))*-1;
+    return (this.getTotalServicios()*(porcentajeDescuento/100))*-1;
   }
 
-  calcularTotalFinal(){
-   /* const descuentos=this.calcularDescuento();
-    const comisiones=this.calculatComisionPorTarjeta();
-    const totalFinal=this.getTotalCost()+comisiones+descuentos;*/
-    let totalFinal=this.totales.find(val => val.title  == "Total");
-    const comisiones=this.totales.find(val => val.title  == "Comisiones");
+  calcularTotalCliente(){
+    let subTotalCliente=this.totales.find(val => val.title  == "Sub Total Cliente");
     const descuentos=this.totales.find(val => val.title  == "Descuentos");
-    totalFinal!.value=this.getTotalCost()+comisiones!.value+descuentos!.value;
+    subTotalCliente!.value=this.getTotalServicios()+descuentos!.value;
     this.totales=this.totales.slice(); 
   }
 
-  getTotalCost() {
+  calcularTotalFinal(){
+    let totalFinal=this.totales.find(val => val.title  == "Total");
+    const comisiones=this.totales.find(val => val.title  == "Comisiones");
+    const descuentos=this.totales.find(val => val.title  == "Descuentos");
+    totalFinal!.value=this.getTotalServicios()+comisiones!.value+descuentos!.value;
+    this.totales=this.totales.slice(); 
+  }
+
+  getTotalServicios() {
    return this.summaryList.map(t => t.cost).reduce((acc, value) => acc + value, 0);
   }
 
@@ -179,7 +174,18 @@ export class IngresosComponent implements OnInit{
     console.log('Formulario de ingresos',this.formularioIngresos.value);
   }
 
-  constructor(private formBuilder: FormBuilder) { }
+  resetAll(){
+    console.log('Reset form');
+    this.formularioIngresos.reset();    
+    this.nuevoServicio.reset();
+    this.summaryList=[];
+    this.aplicarDescuento();
+    this.aplicarComision(this.formularioIngresos.controls.tipoPago.value);
+    this.calcularTotalCliente();
+    this.calcularTotalFinal();
+  }
+
+  constructor(private formBuilder: FormBuilder,private datepipe:DatePipe) { }
   
   
   ngOnInit(): void {

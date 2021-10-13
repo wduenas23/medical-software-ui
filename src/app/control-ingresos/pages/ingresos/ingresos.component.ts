@@ -1,22 +1,20 @@
 import { DatePipe, formatDate } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormOfPayment, MedicalServices } from '../../interfaces/catalogos.interface';
+import { CatalogoService } from '../../service/catalogo.service';
 
-interface FormOfPayments {
-  value: string;
-  viewValue: string;
-}
 
 interface Totales{
   title: string;
   value: number;
 }
 
-interface Servicios {
+/*interface Servicios {
   id: string;
   description: string;
   cost: number;
-}
+}*/
 
 export interface Transaction {
   item: string;
@@ -44,7 +42,6 @@ export class IngresosComponent implements OnInit{
   formularioIngresos: FormGroup = this.formBuilder.group({
     nombres  :      [, [Validators.required, Validators.minLength(3)] ],
     apellidos:      [, [Validators.required, Validators.minLength(3)] ],
-    servicio :      [, [Validators.required] ],
     tipoPago :      [{value: '01', viewValue: 'Efectivo'}, [Validators.required] ],
     descuento:      [0, [Validators.min(0)]],
     fechaServicio:  [ new Date(), [Validators.required] ],
@@ -53,22 +50,14 @@ export class IngresosComponent implements OnInit{
 
   nuevoServicio: FormControl = this.formBuilder.control('',Validators.required);
 
-  servicios: Servicios[] = [
-    {id: '01', description: 'Consulta',cost: 35},
-    {id: '02', description: 'Limpieza facial',cost: 50},
-    {id: '03', description: 'Rinomodelación con Hilos',cost: 800}
-  ];
+  servicios: MedicalServices[] = [];
 
-  tiposPago: FormOfPayments[]= [
-    {value: '01', viewValue: 'Efectivo'},
-    {value: '02', viewValue: 'Tarjeta'},
-    {value: '03', viewValue: 'Transferencia'},
-  ]
+  tiposPago: FormOfPayment[]= [] ;
   
 
   //Para la tabla de servicios
   displayedColumns = ['Detalle', 'Costo','Action'];
-  summaryList: Servicios[] = [];
+  summaryList: MedicalServices[] = [];
 
   
   //Para tabla de Totales
@@ -92,7 +81,7 @@ export class IngresosComponent implements OnInit{
     this.aplicarComision(this.formularioIngresos.controls.tipoPago.value)
   }
 
-  removeServicio(servicio: Servicios){
+  removeServicio(servicio: MedicalServices){
     const index=this.summaryList.indexOf(servicio);
     this.summaryList.splice(index,1);
     this.summaryList=this.summaryList.slice();
@@ -122,8 +111,8 @@ export class IngresosComponent implements OnInit{
   }
 
 
-  aplicarComision(value: FormOfPayments ){
-    const tipoPago=value?value.viewValue:'';
+  aplicarComision(value: FormOfPayment ){
+    const tipoPago=value?value.description:'';
     if(tipoPago==='Tarjeta'){
       let comi=this.totales.find(val => val.title  == "Comisiones");
       comi!.value=this.calculatComisionPorTarjeta();
@@ -185,11 +174,13 @@ export class IngresosComponent implements OnInit{
     this.calcularTotalFinal();
   }
 
-  constructor(private formBuilder: FormBuilder,private datepipe:DatePipe) { }
+  constructor(private formBuilder: FormBuilder,private datepipe:DatePipe,private catalogoService: CatalogoService) { }
   
   
   ngOnInit(): void {
     this.onChangeTipoPago();
+    this.catalogoService.obtenerFormasDePago().subscribe(resp =>this.tiposPago=resp);
+    this.catalogoService.obtenerServiciosMedicos().subscribe(resp => this.servicios=resp);
   }
 
 }

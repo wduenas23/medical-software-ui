@@ -8,6 +8,7 @@ import { SharedModule } from './shared/shared.module';
 
 import localEsSv from '@angular/common/locales/es-SV';
 import {DatePipe, registerLocaleData} from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 registerLocaleData(localEsSv);
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ registerLocaleData(localEsSv);
   imports: [
     BrowserModule,
     AppRoutingModule,
+    HttpClientModule,
     BrowserAnimationsModule
   ],
   providers: [

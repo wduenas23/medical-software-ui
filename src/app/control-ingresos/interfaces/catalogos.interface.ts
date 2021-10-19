@@ -7,4 +7,5 @@ export interface MedicalServices {
     id:          number;
     description: string;
     cost:        number;
+    category:    number;
 }

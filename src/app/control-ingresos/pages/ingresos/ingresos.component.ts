@@ -2,7 +2,7 @@ import { DatePipe, formatDate } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { FormOfPayment, MedicalServices } from '../../interfaces/catalogos.interface';
-import { CatalogoService } from '../../service/catalogo.service';
+import { MedsoftService } from '../../service/medsoft.service';
 
 
 interface Totales{
@@ -15,6 +15,14 @@ interface Totales{
   description: string;
   cost: number;
 }*/
+
+interface Income {
+  services:       MedicalServices[];
+  totals:         Totales[];
+  formOfPayment:  FormOfPayment;
+  txDate:         Date ;
+  discount:       number; 
+}
 
 export interface Transaction {
   item: string;
@@ -54,7 +62,7 @@ export class IngresosComponent implements OnInit{
 
   tiposPago: FormOfPayment[]= [] ;
   
-
+  income: Income | null=null;
   //Para la tabla de servicios
   displayedColumns = ['Detalle', 'Costo','Action'];
   summaryList: MedicalServices[] = [];
@@ -160,7 +168,19 @@ export class IngresosComponent implements OnInit{
       this.formularioIngresos.markAllAsTouched();
       return;
     }
-    console.log('Formulario de ingresos',this.formularioIngresos.value);
+    //console.log('Formulario de ingresos',this.formularioIngresos.value);
+    console.log("Summary List: ",this.summaryList);
+    console.log("Totales: ",this.totales);
+
+    this.income={
+      services: this.summaryList,
+      formOfPayment: this.formularioIngresos.controls.tipoPago.value,
+      totals: this.totales,
+      txDate: this.formularioIngresos.controls.fechaServicio.value,
+      discount: this.formularioIngresos.controls.descuento.value
+    }
+
+    console.log("Income: ",this.income);
   }
 
   resetAll(){
@@ -174,7 +194,7 @@ export class IngresosComponent implements OnInit{
     this.calcularTotalFinal();
   }
 
-  constructor(private formBuilder: FormBuilder,private datepipe:DatePipe,private catalogoService: CatalogoService) { }
+  constructor(private formBuilder: FormBuilder,private datepipe:DatePipe,private catalogoService: MedsoftService) { }
   
   
   ngOnInit(): void {

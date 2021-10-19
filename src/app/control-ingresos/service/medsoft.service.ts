@@ -7,7 +7,7 @@ import { FormOfPayment, MedicalServices } from '../interfaces/catalogos.interfac
 @Injectable({
   providedIn: 'root'
 })
-export class CatalogoService {
+export class MedsoftService {
 
   private baseUrl: string = environment.baseUrl;
 
@@ -19,6 +19,10 @@ export class CatalogoService {
   obtenerServiciosMedicos(): Observable<MedicalServices[]>{
     return this.http.get<MedicalServices[]>(`${this.baseUrl}/medical-services/all`);
   }
+
+  /*guardarIngreso(): Observable<MedicalServices[]>{
+    return this.http.post(`${this.baseUrl}/medical-services/all`);
+  }*/
 
   constructor(private http: HttpClient) { }
 }

@@ -1,4 +1,9 @@
 <h1>Registro de Ingresos</h1>
+<hr>
+<h2>Resumen Diario de ingresos</h2>
+
+<h3>Total Ingresos</h3>
+<br>
 
 <form (ngSubmit)="guardar()" autocomplete="off" [formGroup]="formularioIngresos">
   <div fxLayout="row" fxLayoutGap="20px" fxLayout.xs="column">
@@ -21,6 +26,15 @@
                       formControlName="apellidos"
                       placeholder="Apellidos">
               </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Ingrese Telefono sin guiones</mat-label>
+                <input 
+                    matInput 
+                    #input 
+                    maxlength="8"
+                    formControlName="telefono"
+                    placeholder="Telefono">
+            </mat-form-field>
 
               <mat-form-field class="example-full-width" appearance="fill">
                 <mat-label>Fecha de Servicio</mat-label>
@@ -35,12 +49,33 @@
               <div fxLayout="row" fxLayoutGap="20px"  >
                 <mat-form-field appearance="fill" fxFlex="90">
                     <mat-label>Seleccione Servicio</mat-label>
-                    <mat-select [formControl]="nuevoServicio" >
+                    <input type="text"
+                    placeholder="Seleccione Servicio"
+                    aria-label="Servicio"
+                    [formControl]="nuevoServicio"
+                    matInput
+                    [matAutocomplete]="auto"
+                    (click)="buscando()"
+                    (input)="buscando()"
+                    >
+
+                    <mat-autocomplete 
+                    autoActiveFirstOption 
+                    #auto="matAutocomplete"
+                    (optionSelected)="opcionSeleccionada($event)">
+                    
+                      <mat-option *ngFor="let option of filteredOptions" [value]="option">
+                        {{option.description}} -  ${{option.cost}}
+                      </mat-option>
+                 
+                  </mat-autocomplete>
+
+                    <!-- <mat-select [formControl]="nuevoServicio" >
                         <mat-option *ngFor="let servicio of servicios" [value]="servicio" >
                           {{servicio.description}} - ${{servicio.cost}}
                         </mat-option>
-                    </mat-select>
-                </mat-form-field>
+                    </mat-select>-->
+                </mat-form-field> 
                 
                   <!-- <mat-label>Precio {{precio}}</mat-label> -->
                   <button 
@@ -80,6 +115,29 @@
                       </mat-option>
                   </mat-select>
               </mat-form-field>
+
+
+
+              <!-- <mat-form-field>
+                <mat-label>Servicio</mat-label>
+                <input type="text"
+                       placeholder="Pick one"
+                       aria-label="Number"
+                       [formControl]="nuevoServicioMedico"
+                       matInput
+                       [matAutocomplete]="auto"
+                       >
+                <mat-autocomplete 
+                    autoActiveFirstOption 
+                    #auto="matAutocomplete"
+                    >
+                  <mat-option *ngFor="let option of filteredOptions | async" [value]="option.description">
+                    {{option.description}}
+                  </mat-option>
+                 
+                </mat-autocomplete>
+              </mat-form-field> -->
+
 
               
             </div> 
@@ -150,7 +208,7 @@
   </div>
 </form>
 
- <br>
+ <!-- <br>
  <div class="row">
   <div class="col">
       <span>Valid</span>
@@ -173,5 +231,5 @@
       </pre>
 
   </div>
-</div>   
+</div>    -->
 

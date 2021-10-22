@@ -1,14 +1,14 @@
 import { DatePipe, formatDate } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { FormOfPayment, MedicalServices } from '../../interfaces/catalogos.interface';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators'
+import { FormOfPayment, Income, MedicalServices, Totales } from '../../interfaces/medicalService.interface';
 import { MedsoftService } from '../../service/medsoft.service';
 
 
-interface Totales{
-  title: string;
-  value: number;
-}
+
 
 /*interface Servicios {
   id: string;
@@ -16,13 +16,7 @@ interface Totales{
   cost: number;
 }*/
 
-interface Income {
-  services:       MedicalServices[];
-  totals:         Totales[];
-  formOfPayment:  FormOfPayment;
-  txDate:         Date ;
-  discount:       number; 
-}
+
 
 export interface Transaction {
   item: string;
@@ -50,6 +44,7 @@ export class IngresosComponent implements OnInit{
   formularioIngresos: FormGroup = this.formBuilder.group({
     nombres  :      [, [Validators.required, Validators.minLength(3)] ],
     apellidos:      [, [Validators.required, Validators.minLength(3)] ],
+    telefono:      [, [Validators.required, Validators.minLength(3), Validators.maxLength(9)] ],
     tipoPago :      [{value: '01', viewValue: 'Efectivo'}, [Validators.required] ],
     descuento:      [0, [Validators.min(0)]],
     fechaServicio:  [ new Date(), [Validators.required] ],
@@ -57,15 +52,21 @@ export class IngresosComponent implements OnInit{
   })
 
   nuevoServicio: FormControl = this.formBuilder.control('',Validators.required);
+  nuevoServicioMedico: FormControl = this.formBuilder.control('',Validators.required);
 
   servicios: MedicalServices[] = [];
+  nuevoServicioSeleccionado!: MedicalServices;
 
   tiposPago: FormOfPayment[]= [] ;
+
+  filteredOptions!: MedicalServices[];
   
   income: Income | null=null;
   //Para la tabla de servicios
   displayedColumns = ['Detalle', 'Costo','Action'];
   summaryList: MedicalServices[] = [];
+
+
 
   
   //Para tabla de Totales
@@ -83,7 +84,8 @@ export class IngresosComponent implements OnInit{
     if(this.nuevoServicio.invalid){
       return;
     }
-    this.summaryList.push(this.nuevoServicio.value);
+    console.log('Nuevo Servicio: ',this.nuevoServicioSeleccionado)
+    this.summaryList.push(this.nuevoServicioSeleccionado);
     this.summaryList=this.summaryList.slice();
     this.aplicarDescuento();
     this.aplicarComision(this.formularioIngresos.controls.tipoPago.value)
@@ -173,6 +175,9 @@ export class IngresosComponent implements OnInit{
     console.log("Totales: ",this.totales);
 
     this.income={
+      nombres: this.formularioIngresos.controls.nombres.value,
+      apellidos:this.formularioIngresos.controls.apellidos.value,
+      telefono: this.formularioIngresos.controls.telefono.value,
       services: this.summaryList,
       formOfPayment: this.formularioIngresos.controls.tipoPago.value,
       totals: this.totales,
@@ -180,7 +185,15 @@ export class IngresosComponent implements OnInit{
       discount: this.formularioIngresos.controls.descuento.value
     }
 
-    console.log("Income: ",this.income);
+    console.log("Income: "+this.income);
+    this.medService.guardarIngreso(this.income).subscribe(resp => {
+      console.log("Respuesta Obtenida: ",resp);
+      if(resp.code === "200"){
+        this.resetAll();
+      }
+
+    });;
+    
   }
 
   resetAll(){
@@ -192,15 +205,37 @@ export class IngresosComponent implements OnInit{
     this.aplicarComision(this.formularioIngresos.controls.tipoPago.value);
     this.calcularTotalCliente();
     this.calcularTotalFinal();
+    this.income=null;
+    
   }
 
-  constructor(private formBuilder: FormBuilder,private datepipe:DatePipe,private catalogoService: MedsoftService) { }
+
+  buscando(){
+    console.log('Buscando: ',this.nuevoServicio.value);
+    this.filteredOptions = this._filter(this.nuevoServicio.value);
+      
+  }
+
+  constructor(private formBuilder: FormBuilder,private datepipe:DatePipe,private medService: MedsoftService) { }
   
   
   ngOnInit(): void {
     this.onChangeTipoPago();
-    this.catalogoService.obtenerFormasDePago().subscribe(resp =>this.tiposPago=resp);
-    this.catalogoService.obtenerServiciosMedicos().subscribe(resp => this.servicios=resp);
+    this.medService.obtenerFormasDePago().subscribe(resp =>this.tiposPago=resp);
+    this.medService.obtenerServiciosMedicos().subscribe(resp => this.servicios=resp);
+    
+  }
+
+  private _filter(value: string): MedicalServices[] {
+    const filterValue = value.toLowerCase();
+    return this.servicios.filter(option => option.description.toLowerCase().includes(filterValue));
+  }
+
+  opcionSeleccionada(event: MatAutocompleteSelectedEvent){
+      this.nuevoServicioSeleccionado=event.option.value;
+      this.nuevoServicio.setValue(this.nuevoServicioSeleccionado.description);
   }
 
 }
+
+

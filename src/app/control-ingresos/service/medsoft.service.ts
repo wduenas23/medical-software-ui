@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { FormOfPayment, MedicalServices } from '../interfaces/catalogos.interface';
+import { FormOfPayment, Income, IncomeResponse, MedicalServices } from '../interfaces/medicalService.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -20,9 +20,9 @@ export class MedsoftService {
     return this.http.get<MedicalServices[]>(`${this.baseUrl}/medical-services/all`);
   }
 
-  /*guardarIngreso(): Observable<MedicalServices[]>{
-    return this.http.post(`${this.baseUrl}/medical-services/all`);
-  }*/
+  guardarIngreso(ingreso: Income): Observable<IncomeResponse>{
+    return this.http.post<IncomeResponse>(`${this.baseUrl}/income/save`,ingreso);
+  }
 
   constructor(private http: HttpClient) { }
 }

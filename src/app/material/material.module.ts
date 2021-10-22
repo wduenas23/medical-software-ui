@@ -20,6 +20,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
     MatAutocompleteModule,
     MatDatepickerModule,
     MatButtonModule,
+    MatFormFieldModule,
     MatCardModule,
     MatIconModule,
     MatInputModule,
@@ -28,8 +29,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
     MatSelectModule,
     MatSidenavModule,
     MatTableModule,
-    MatToolbarModule,
-    MatFormFieldModule
+    MatToolbarModule    
     
   ]
 })

@@ -1,14 +1,43 @@
-<h1>Registro de Ingresos</h1>
-<hr>
-<h2>Resumen Diario de ingresos</h2>
 
-<h3>Total Ingresos</h3>
-<br>
 
-<form (ngSubmit)="guardar()" autocomplete="off" [formGroup]="formularioIngresos">
-  <div fxLayout="row" fxLayoutGap="20px" fxLayout.xs="column">
+
+<mat-card  class="summary-card-totals ">
+  <mat-card-header >
+    <mat-card-title>Resumen de Ingresos</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+
+    <div fxLayout="row" fxLayoutGap="20px" fxLayout.xs="column">
       <div fxFlex="50" fxLayout="column">
         
+        <span>Diario</span>
+       </div> 
+       <div fxFlex="50" fxLayout="column">
+       <b> <mat-icon>trending_up</mat-icon> {{(resumenDiario==null?0.0:resumenDiario) | currency}}</b>
+      </div>
+    </div> 
+    <div fxLayout="row" fxLayoutGap="20px" fxLayout.xs="column">
+      <div fxFlex="50" fxLayout="column">
+        
+        <span>Mensual</span>
+       </div> 
+       <div fxFlex="50" fxLayout="column">
+        <b><mat-icon>trending_up</mat-icon> {{(resumenMensual==null?0.0:resumenMensual) | currency}}</b>
+      </div>
+    </div>
+    
+  </mat-card-content>
+</mat-card>
+
+
+<br>
+
+<h1>Registro de Ingresos</h1>
+<hr>
+
+<form (ngSubmit)="guardar()" autocomplete="off" [formGroup]="formularioIngresos" >
+  <div fxLayout="row" fxLayoutGap="20px" fxLayout.xs="column">
+      <div fxFlex="50" fxLayout="column">
               <mat-form-field appearance="fill" >
                   <mat-label>Ingrese Nombres</mat-label>
                   <input 
@@ -69,16 +98,9 @@
                       </mat-option>
                  
                   </mat-autocomplete>
-
-                    <!-- <mat-select [formControl]="nuevoServicio" >
-                        <mat-option *ngFor="let servicio of servicios" [value]="servicio" >
-                          {{servicio.description}} - ${{servicio.cost}}
-                        </mat-option>
-                    </mat-select>-->
                 </mat-form-field> 
                 
-                  <!-- <mat-label>Precio {{precio}}</mat-label> -->
-                  <button 
+                <button 
                   color="accent" 
                   type="button"
                   mat-icon-button
@@ -110,36 +132,12 @@
               <mat-form-field appearance="fill" fxFlex="50">
                   <mat-label>Seleccione tipo de pago</mat-label>
                   <mat-select formControlName="tipoPago">
+                      <mat-option></mat-option>
                       <mat-option *ngFor="let tipoPago of tiposPago" [value]="tipoPago">
                         {{tipoPago.description}}
                       </mat-option>
                   </mat-select>
               </mat-form-field>
-
-
-
-              <!-- <mat-form-field>
-                <mat-label>Servicio</mat-label>
-                <input type="text"
-                       placeholder="Pick one"
-                       aria-label="Number"
-                       [formControl]="nuevoServicioMedico"
-                       matInput
-                       [matAutocomplete]="auto"
-                       >
-                <mat-autocomplete 
-                    autoActiveFirstOption 
-                    #auto="matAutocomplete"
-                    >
-                  <mat-option *ngFor="let option of filteredOptions | async" [value]="option.description">
-                    {{option.description}}
-                  </mat-option>
-                 
-                </mat-autocomplete>
-              </mat-form-field> -->
-
-
-              
             </div> 
 
       </div>
@@ -208,28 +206,19 @@
   </div>
 </form>
 
- <!-- <br>
+ <br>
  <div class="row">
   <div class="col">
       <span>Valid</span>
       <pre>
           {{formularioIngresos.valid}}
       </pre>
-      <span>Value</span>
+      
+      <span>Touched</span>
       <pre>
-          {{formularioIngresos.value | json}}
-      </pre>
-
-      <span>Summary List</span>
-      <pre>
-          {{ summaryList  | json}}
-      </pre>
-
-      <span>Income</span>
-      <pre>
-          {{ income  | json}}
+          {{formularioIngresos.touched}}
       </pre>
 
   </div>
-</div>    -->
+</div>   
 

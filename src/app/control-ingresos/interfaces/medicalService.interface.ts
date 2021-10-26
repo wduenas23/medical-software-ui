@@ -30,3 +30,13 @@ export interface IncomeResponse {
     code: string;
     message: string;
 }  
+
+export interface SummaryTransaction{
+  dailySummary: number;
+  monthlySummary: number;
+}
+
+export interface Transaction {
+  item: string;
+  cost: number;
+}

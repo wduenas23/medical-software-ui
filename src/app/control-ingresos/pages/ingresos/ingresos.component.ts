@@ -152,7 +152,8 @@ export class IngresosComponent implements OnInit{
 
   guardar(){
 
-    if(this.formularioIngresos.invalid){
+    console.log('Touched: ',this.formularioIngresos.touched);
+    if(this.formularioIngresos.invalid || !this.formularioIngresos.touched){
       this.formularioIngresos.markAllAsTouched();
       return;
     }
@@ -183,25 +184,26 @@ export class IngresosComponent implements OnInit{
   resetAll(){
     this.formularioIngresos.reset();    
     this.nuevoServicio.reset('');
-    this.nuevoServicio.clearValidators();
-    this.nuevoServicio.updateValueAndValidity();
+    this.formularioIngresos.get('fechaServicio')?.reset(new Date());
+    this.formularioIngresos.get('descuento')?.reset(0);
+    //this.nuevoServicio.clearValidators();
+    //this.nuevoServicio.updateValueAndValidity();
     this.summaryList=[];
     this.aplicarDescuento();
     this.calcularTotalCliente();
     this.aplicarComision(this.formularioIngresos.controls.tipoPago.value);
     this.calcularTotalFinal();
     this.income=null;
-    this.formularioIngresos.get('nombres')?.clearValidators();
-    this.formularioIngresos.get('nombres')?.updateValueAndValidity();
+    /*this.formularioIngresos.get('nombres')?.clearValidators();
+    this.formularioIngresos.get('nombres')?.updateValueAndValidity({onlySelf:true,emitEvent:true});
     this.formularioIngresos.get('apellidos')?.clearValidators();
     this.formularioIngresos.get('apellidos')?.updateValueAndValidity();
     this.formularioIngresos.get('telefono')?.clearValidators();
     this.formularioIngresos.get('telefono')?.updateValueAndValidity();
-    this.formularioIngresos.get('fechaServicio')?.reset(new Date());
+    
     this.formularioIngresos.get('tipoPago')?.clearValidators();
     this.formularioIngresos.get('tipoPago')?.updateValueAndValidity();
-    this.formularioIngresos.get('descuento')?.reset(0);
-    this.formularioIngresos.reset();   
+    */
   }
 
   buscando(){

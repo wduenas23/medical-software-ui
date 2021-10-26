@@ -10,19 +10,19 @@
     <div fxLayout="row" fxLayoutGap="20px" fxLayout.xs="column">
       <div fxFlex="50" fxLayout="column">
         
-        <span>Diario</span>
+        <span><b>Diario</b></span>
        </div> 
        <div fxFlex="50" fxLayout="column">
-       <b> <mat-icon>trending_up</mat-icon> {{(resumenDiario==null?0.0:resumenDiario) | currency}}</b>
+       <b> <mat-icon color="accent">trending_up</mat-icon> {{(resumenDiario==null?0.0:resumenDiario) | currency}}</b>
       </div>
     </div> 
     <div fxLayout="row" fxLayoutGap="20px" fxLayout.xs="column">
       <div fxFlex="50" fxLayout="column">
         
-        <span>Mensual</span>
+        <span><b>Mensual</b></span>
        </div> 
        <div fxFlex="50" fxLayout="column">
-        <b><mat-icon>trending_up</mat-icon> {{(resumenMensual==null?0.0:resumenMensual) | currency}}</b>
+        <b><mat-icon color="accent">trending_up</mat-icon> {{(resumenMensual==null?0.0:resumenMensual) | currency}}</b>
       </div>
     </div>
     

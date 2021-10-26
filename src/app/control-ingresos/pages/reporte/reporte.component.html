@@ -1,1 +1,129 @@
-<p>reporte works!</p>
+<h1>Reporte de Ingresos por Servicio</h1>
+<hr>
+
+<div fxLayout="row wrap"
+fxLayout.xs="column"
+fxLayoutAlign="center"
+fxLayoutGap="50px">
+
+<mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>Fecha Inicio</mat-label>
+    <input matInput [matDatepicker]="pickerIni" >
+    <mat-datepicker-toggle matSuffix [for]="pickerIni">
+      <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+    </mat-datepicker-toggle>
+    <mat-datepicker #pickerIni></mat-datepicker>
+  </mat-form-field>
+
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>FechaFin</mat-label>
+    <input matInput [matDatepicker]="pickerFIn" >
+    <mat-datepicker-toggle matSuffix [for]="pickerFIn">
+      <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+    </mat-datepicker-toggle>
+    <mat-datepicker #pickerFIn></mat-datepicker>
+    
+  </mat-form-field>
+
+  <div>
+  <button  mat-raised-button color="accent">Consultar</button>
+</div>
+  
+     
+  
+
+</div>
+
+<div fxLayout="row wrap"
+    fxLayout.xs="column"
+    fxLayoutAlign="center"
+    fxLayoutGap="20px"
+    >
+    <div fxFlex="100">
+        
+       
+
+        <mat-card>
+            <mat-card-header >
+            <mat-card-title></mat-card-title>
+            </mat-card-header>
+                <mat-card-content>
+                    <div style="display: block;">
+                        <canvas baseChart 
+                          [datasets]="barChartData"
+                          [labels]="barChartLabels"
+                          [options]="barChartOptions"
+                          [plugins]="barChartPlugins"
+                          [legend]="barChartLegend"
+                          [chartType]="barChartType">
+                        </canvas>
+                      </div>
+                </mat-card-content>
+        </mat-card>
+    </div>
+    <!-- <div fxFlex="40" 
+       >
+        
+        <mat-card>
+            <mat-card-header >
+            <mat-card-title>Rinomodelación</mat-card-title>
+            </mat-card-header>
+                <mat-card-content>
+                    <div style="display: block;">
+                        <canvas baseChart 
+                          [datasets]="barChartData"
+                          [labels]="barChartLabels"
+                          [options]="barChartOptions"
+                          [plugins]="barChartPlugins"
+                          [legend]="barChartLegend"
+                          [chartType]="barChartType">
+                        </canvas>
+                      </div>
+                </mat-card-content>
+        </mat-card>
+    </div>
+
+    <div fxFlex="40" 
+       >
+        
+        <mat-card>
+            <mat-card-header >
+            <mat-card-title>Limpieza facial profunda</mat-card-title>
+            </mat-card-header>
+                <mat-card-content>
+                    <div style="display: block;">
+                        <canvas baseChart 
+                          [datasets]="barChartData"
+                          [labels]="barChartLabels"
+                          [options]="barChartOptions"
+                          [plugins]="barChartPlugins"
+                          [legend]="barChartLegend"
+                          [chartType]="barChartType">
+                        </canvas>
+                      </div>
+                </mat-card-content>
+        </mat-card>
+    </div>
+    <div fxFlex="40" 
+       >
+        
+        <mat-card>
+            <mat-card-header >
+            <mat-card-title>Peeling Quimico</mat-card-title>
+            </mat-card-header>
+                <mat-card-content>
+                    <div style="display: block;">
+                        <canvas baseChart 
+                          [datasets]="barChartData"
+                          [labels]="barChartLabels"
+                          [options]="barChartOptions"
+                          [plugins]="barChartPlugins"
+                          [legend]="barChartLegend"
+                          [chartType]="barChartType">
+                        </canvas>
+                      </div>
+                </mat-card-content>
+        </mat-card>
+    </div> -->
+    
+</div>

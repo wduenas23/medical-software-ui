@@ -12,7 +12,7 @@
         
         <mat-nav-list>
             <a mat-list-item>
-                <mat-icon mat-list-icon>add</mat-icon>
+                <mat-icon mat-list-icon>attach_money</mat-icon>
                 <span>Control de Ingresos</span>
             </a>
             <mat-nav-list style="margin-left:30px;">
@@ -24,17 +24,43 @@
                 </a>
             </mat-nav-list>
         </mat-nav-list>
+
+        
+        <mat-nav-list>
+            <a mat-list-item>
+                <mat-icon mat-list-icon>settings</mat-icon>
+                <span>Administración</span>
+            </a>
+            <mat-nav-list style="margin-left:30px;">
+                <a  routerLink="./servicios-medicos" 
+                    (click)="sidenav.toggle()"
+                    mat-list-item>
+                    <mat-icon mat-list-icon>edit</mat-icon>
+                    <span>Editar Servicios</span>
+                </a>
+            </mat-nav-list>
+            <mat-nav-list style="margin-left:30px;">
+                <a  routerLink="./promociones" 
+                    (click)="sidenav.toggle()"
+                    mat-list-item>
+                    <mat-icon mat-list-icon>edit</mat-icon>
+                    <span>Editar Promociones</span>
+                </a>
+            </mat-nav-list>
+        </mat-nav-list>
+
+
         <mat-nav-list>
             <a routerLink="" mat-list-item
                 >
-                <mat-icon mat-list-icon>add</mat-icon>
+                <mat-icon mat-list-icon>assessment</mat-icon>
                 <span>Reportes</span>
             </a>
             <mat-nav-list style="margin-left:30px;">
                 <a  routerLink="./reporte" 
                     (click)="sidenav.toggle()"
                     mat-list-item>
-                    <mat-icon mat-list-icon>add</mat-icon>
+                    <mat-icon mat-list-icon>bar_chart</mat-icon>
                     <span>Reporte de Ingresos</span>
                 </a>
             </mat-nav-list>
@@ -42,7 +68,7 @@
                 <a  routerLink="./ingresos" 
                     (click)="sidenav.toggle()"
                     mat-list-item>
-                    <mat-icon mat-list-icon>add</mat-icon>
+                    <mat-icon mat-list-icon>list_alt</mat-icon>
                     <span>Reporte de ventas y comisiones</span>
                 </a>
             </mat-nav-list>

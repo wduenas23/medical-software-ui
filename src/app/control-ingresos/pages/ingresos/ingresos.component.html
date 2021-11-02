@@ -74,6 +74,40 @@
                 <mat-datepicker #picker></mat-datepicker>
               </mat-form-field>
 
+              <!-- Seccion de Servicios Promos-->
+              <div fxLayout="row" fxLayoutGap="20px" *ngIf="serviciosPromo.length > 0" >
+                <mat-form-field appearance="fill" fxFlex="90">
+                    <mat-label>Seleccione Promocion</mat-label>
+                    <input type="text"
+                    placeholder="Seleccione Promocion"
+                    aria-label="Promocion"
+                    [formControl]="nuevoServicioPromo"
+                    matInput
+                    [matAutocomplete]="autoPromo"
+                    (click)="buscandoPromo()"
+                    (input)="buscandoPromo()"
+                    >
+
+                    <mat-autocomplete 
+                    autoActiveFirstOption 
+                    #autoPromo="matAutocomplete"
+                    (optionSelected)="opcionSeleccionadaPromo($event)">
+                    
+                      <mat-option *ngFor="let option of filteredOptionsPromos" [value]="option">
+                        {{option.description}} -  ${{option.cost}}
+                      </mat-option>
+                 
+                  </mat-autocomplete>
+                </mat-form-field> 
+                <button 
+                  color="accent" 
+                  type="button"
+                  mat-icon-button
+                  (click)="agregarServicioPromo()">
+                  <mat-icon>add</mat-icon>
+                 </button>
+              </div>
+
               <!-- Seccion de Servicio y Precio -->
               <div fxLayout="row" fxLayoutGap="20px"  >
                 <mat-form-field appearance="fill" fxFlex="90">

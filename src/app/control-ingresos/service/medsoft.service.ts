@@ -20,12 +20,20 @@ export class MedsoftService {
     return this.http.get<MedicalServices[]>(`${this.baseUrl}/medical-services/all`);
   }
 
+  obtenerServiciosMedicosPromo(): Observable<MedicalServices[]>{
+    return this.http.get<MedicalServices[]>(`${this.baseUrl}/medical-services/promotions`);
+  } 
+
   guardarIngreso(ingreso: Income): Observable<IncomeResponse>{
     return this.http.post<IncomeResponse>(`${this.baseUrl}/income/save`,ingreso);
   }
 
   obtenerResumenDiarioYMensual(): Observable<SummaryTransaction>{
     return this.http.get<SummaryTransaction>(`${this.baseUrl}/summary/daily-monthly`);
+  }
+
+  editarServicioMedico(servicioMedico: MedicalServices): Observable<MedicalServices>{
+    return this.http.post<MedicalServices>(`${this.baseUrl}/medical-services/edit`,servicioMedico);
   }
 
   constructor(private http: HttpClient) { }

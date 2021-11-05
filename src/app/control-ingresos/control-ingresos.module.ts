@@ -9,7 +9,7 @@ import { CiRoutingModule } from './ci-routing.module';
 import { SharedModule } from '../shared/shared.module';
 import { IngresosComponent } from './pages/ingresos/ingresos.component';
 import { MaterialModule } from '../material/material.module';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ChartsModule } from 'ng2-charts';
 import { ListadoComponent } from './pages/servicios-medicos/listado/listado.component';
 import { ListadoPromocionesComponent } from './pages/servicios-medicos/listado-promociones/listado-promociones.component';
@@ -36,7 +36,8 @@ import { AgregarComponent } from './pages/servicios-medicos/agregar/agregar.comp
     SharedModule,
     MaterialModule,
     ReactiveFormsModule,
-    ChartsModule
+    ChartsModule,
+    FormsModule
   ]
 })
 export class ControlIngresosModule { }

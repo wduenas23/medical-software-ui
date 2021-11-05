@@ -31,7 +31,7 @@ export class ListadoComponent implements OnInit  {
   @ViewChild(MatSort)  sort!: MatSort;
 
 
-  displayedColumns: string[] = ['id', 'description', 'cost', 'category','Acciones'];
+  displayedColumns: string[] = ['id', 'category','description', 'cost', 'Acciones'];
   
 
   applyFilter(event: Event) {

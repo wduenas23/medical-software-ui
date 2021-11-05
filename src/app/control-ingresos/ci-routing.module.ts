@@ -34,6 +34,10 @@ const routes: Routes = [
         component: AgregarComponent
       },
       {
+        path: 'agregar',
+        component: AgregarComponent
+      },
+      {
         path: '**',
         redirectTo: 'principal'
       }

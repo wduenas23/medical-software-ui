@@ -8,6 +8,12 @@ export interface MedicalServices {
     description: string;
     cost:        number;
     category:    number;
+    categoryName:string;
+}
+
+export interface ServiceCategory {
+    id:   number;
+    name: string;
 }
 
 export interface Totales{

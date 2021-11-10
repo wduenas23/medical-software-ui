@@ -6,6 +6,8 @@ import { ReporteComponent } from './pages/reporte/reporte.component';
 import { AgregarComponent } from './pages/servicios-medicos/agregar/agregar.component';
 import { ListadoComponent } from './pages/servicios-medicos/listado/listado.component';
 import { ListadoPromocionesComponent } from './pages/servicios-medicos/listado-promociones/listado-promociones.component';
+import { VentasComponent } from './pages/ventas/ventas/ventas.component';
+import { ListadoProductoComponent } from './pages/producto/listado-producto/listado-producto.component';
 
 
 const routes: Routes = [
@@ -36,6 +38,15 @@ const routes: Routes = [
       {
         path: 'agregar',
         component: AgregarComponent
+      },
+      {
+        path: 'ventas',
+        component: VentasComponent
+      },
+      
+      {
+        path: 'productos',
+        component: ListadoProductoComponent
       },
       {
         path: '**',

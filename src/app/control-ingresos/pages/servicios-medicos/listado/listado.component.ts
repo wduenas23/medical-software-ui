@@ -18,7 +18,9 @@ import { MatSort } from '@angular/material/sort';
       font-size: 14px;
       width: 100%;
     }
-
+    .red {
+      color:red;
+    }
     `
   ]
 })
@@ -31,8 +33,8 @@ export class ListadoComponent implements OnInit  {
   @ViewChild(MatSort)  sort!: MatSort;
 
 
-  displayedColumns: string[] = ['id', 'category','description', 'cost', 'Acciones'];
-  
+  displayedColumns: string[] = ['id', 'category','description', 'cost','valid', 'Acciones'];
+  disabled= true;
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;

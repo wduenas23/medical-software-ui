@@ -35,6 +35,14 @@
         <td mat-cell *matCellDef="let row"> {{row.cost}} </td>
       </ng-container>
 
+             <!-- Name Column -->
+    <ng-container matColumnDef="valid">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Activo </th>
+      <td mat-cell *matCellDef="let row"  class="{{row.valid?'':'red'}}"> {{row.valid? 'Activo':'Inactivo'}}</td>
+      
+    </ng-container>
+
+
      
 
       <ng-container matColumnDef="Acciones">

@@ -1,6 +1,6 @@
 <h1>
     {{ (servicioMedico.id? 'Editar':'Nuevo') }}
-    servicio médico:
+    servicio:
     <b><small>{{servicioMedico.description}}</small></b>
 </h1>
 
@@ -75,6 +75,14 @@
             </mat-form-field>
         </div>
 
+        <div 
+        fxLayout="row" 
+        fxLayout.xs="column" 
+        fxLayoutGap="20px">
+                <mat-label> Activo</mat-label>
+                <mat-slide-toggle name="valido" required="true" [(ngModel)]="servicioMedico.valid"></mat-slide-toggle>
+        </div>
+        <br>
         <button type="button" mat-raised-button color="warn" (click)="edit();">
             {{ (servicioMedico.id? 'Editar':'Guardar') }}
         </button>
@@ -83,7 +91,7 @@
 </div>    
 
 
-<br>
+<!-- <br>
  <div class="row">
   <div class="col">
       <span>Servicio Médico</span>
@@ -93,4 +101,4 @@
       
 
   </div>
-</div> 
+</div>  -->

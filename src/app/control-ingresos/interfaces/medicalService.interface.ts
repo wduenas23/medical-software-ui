@@ -9,6 +9,7 @@ export interface MedicalServices {
     cost:        number;
     category:    number;
     categoryName:string;
+    valid: boolean;
 }
 
 export interface ServiceCategory {

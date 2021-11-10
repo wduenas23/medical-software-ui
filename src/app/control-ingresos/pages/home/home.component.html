@@ -13,7 +13,7 @@
         <mat-nav-list>
             <a mat-list-item>
                 <mat-icon mat-list-icon>attach_money</mat-icon>
-                <span>Control de Ingresos</span>
+                <span>Control de Ingresos y Ventas</span>
             </a>
             <mat-nav-list style="margin-left:30px;">
                 <a  routerLink="./ingresos" 
@@ -21,6 +21,14 @@
                     mat-list-item>
                     <mat-icon mat-list-icon>add</mat-icon>
                     <span>Ingresos</span>
+                </a>
+            </mat-nav-list>
+            <mat-nav-list style="margin-left:30px;">
+                <a  routerLink="./ventas" 
+                    (click)="sidenav.toggle()"
+                    mat-list-item>
+                    <mat-icon mat-list-icon>attach_money</mat-icon>
+                    <span>Ventas</span>
                 </a>
             </mat-nav-list>
         </mat-nav-list>
@@ -36,15 +44,15 @@
                     (click)="sidenav.toggle()"
                     mat-list-item>
                     <mat-icon mat-list-icon>edit</mat-icon>
-                    <span>Admin. Servicios Médicos</span>
+                    <span>Admin. Servicios Médicos y promociones</span>
                 </a>
             </mat-nav-list>
             <mat-nav-list style="margin-left:30px;">
-                <a  routerLink="./promociones" 
+                <a  routerLink="./productos" 
                     (click)="sidenav.toggle()"
                     mat-list-item>
                     <mat-icon mat-list-icon>edit</mat-icon>
-                    <span>Admin. Promociones</span>
+                    <span>Admin. Productos</span>
                 </a>
             </mat-nav-list>
         </mat-nav-list>

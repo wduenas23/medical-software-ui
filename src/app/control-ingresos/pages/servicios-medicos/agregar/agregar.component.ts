@@ -24,7 +24,8 @@ export class AgregarComponent implements OnInit {
     cost: 0,
     description: '',
     categoryName: '',
-    id:0
+    id:0,
+    valid: true
   }
 
   serviceCategory: ServiceCategory[]=[];

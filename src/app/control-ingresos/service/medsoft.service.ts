@@ -20,6 +20,10 @@ export class MedsoftService {
     return this.http.get<MedicalServices[]>(`${this.baseUrl}/medical-services/all`);
   }
 
+  obtenerServiciosMedicosActivos(): Observable<MedicalServices[]>{
+    return this.http.get<MedicalServices[]>(`${this.baseUrl}/medical-services/all-active`);
+  }
+
 
   obtenerCategoriasServiciosMedicos(): Observable<ServiceCategory[]>{
     return this.http.get<ServiceCategory[]>(`${this.baseUrl}/service-category/all`);

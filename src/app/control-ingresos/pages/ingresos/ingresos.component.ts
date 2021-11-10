@@ -2,6 +2,7 @@ import { DatePipe, formatDate } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormOfPayment, Income, MedicalServices, Totales } from '../../interfaces/medicalService.interface';
 import { MedsoftService } from '../../service/medsoft.service';
 
@@ -191,6 +192,7 @@ export class IngresosComponent implements OnInit {
       if (resp.code === "200") {
         this.resetAll();
         this.getDailySummary()
+        this.mostrarSnackBar('Ingreso guardado exitosamente')
       }
 
     });
@@ -242,21 +244,37 @@ export class IngresosComponent implements OnInit {
     this.nuevoServicioPromo.reset('');
     this.formularioIngresos.get('fechaServicio')?.reset(new Date());
     this.formularioIngresos.get('descuento')?.reset(0);
-
+    
     this.summaryList = [];
     this.aplicarDescuento();
     this.calcularTotalCliente();
     this.aplicarComision(this.formularioIngresos.controls.tipoPago.value);
     this.calcularTotalFinal();
     this.income = null;
+    this.reloadPage();
   }
-  constructor(private formBuilder: FormBuilder, private datepipe: DatePipe, private medService: MedsoftService) { }
+
+
+  mostrarSnackBar(mensaje: string){
+
+    this.snackBar.open(mensaje,'ok!', {
+      duration: 2500,
+      verticalPosition: 'top'
+    });
+  }
+
+  reloadPage() {
+    setTimeout(()=>{
+      window.location.reload();
+    }, 2500);
+  }
+  constructor(private formBuilder: FormBuilder, private datepipe: DatePipe, private medService: MedsoftService,private snackBar: MatSnackBar) { }
 
 
   ngOnInit(): void {
     this.onChangeTipoPago();
     this.medService.obtenerFormasDePago().subscribe(resp => this.tiposPago = resp);
-    this.medService.obtenerServiciosMedicos().subscribe(resp =>  this.servicios = resp);
+    this.medService.obtenerServiciosMedicosActivos().subscribe(resp =>  this.servicios = resp);
     this.medService.obtenerServiciosMedicosPromo().subscribe(resp => this.serviciosPromo = resp);
     this.getDailySummary();
   }

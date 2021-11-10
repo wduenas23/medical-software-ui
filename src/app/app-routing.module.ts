@@ -12,10 +12,6 @@ const routes: Routes = [
     loadChildren: () => import('./control-ingresos/control-ingresos.module').then(m=> m.ControlIngresosModule)
   },
   {
-    path: 'control-ventas',
-    loadChildren: () => import('./control-ventas/control-ventas.module').then(m=> m.ControlVentasModule)
-  },
-  {
     path: '',
     loadChildren: () => import('./auth/auth.module').then( m => m.AuthModule)
   },

@@ -14,6 +14,9 @@ import { ChartsModule } from 'ng2-charts';
 import { ListadoComponent } from './pages/servicios-medicos/listado/listado.component';
 import { ListadoPromocionesComponent } from './pages/servicios-medicos/listado-promociones/listado-promociones.component';
 import { AgregarComponent } from './pages/servicios-medicos/agregar/agregar.component';
+import { VentasComponent } from './pages/ventas/ventas/ventas.component';
+import { AgregarProductoComponent } from './pages/producto/agregar-producto/agregar-producto.component';
+import { ListadoProductoComponent } from './pages/producto/listado-producto/listado-producto.component';
 
 
 
@@ -27,7 +30,10 @@ import { AgregarComponent } from './pages/servicios-medicos/agregar/agregar.comp
     IngresosComponent,
     ListadoComponent,
     ListadoPromocionesComponent,
-    AgregarComponent
+    AgregarComponent,
+    VentasComponent,
+    AgregarProductoComponent,
+    ListadoProductoComponent
   ],
   imports: [
     CommonModule,

@@ -12,7 +12,6 @@ import { MaterialModule } from '../material/material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ChartsModule } from 'ng2-charts';
 import { ListadoComponent } from './pages/servicios-medicos/listado/listado.component';
-import { ListadoPromocionesComponent } from './pages/servicios-medicos/listado-promociones/listado-promociones.component';
 import { AgregarComponent } from './pages/servicios-medicos/agregar/agregar.component';
 import { VentasComponent } from './pages/ventas/ventas/ventas.component';
 import { AgregarProductoComponent } from './pages/producto/agregar-producto/agregar-producto.component';
@@ -29,7 +28,6 @@ import { ListadoProductoComponent } from './pages/producto/listado-producto/list
     ReporteComponent,
     IngresosComponent,
     ListadoComponent,
-    ListadoPromocionesComponent,
     AgregarComponent,
     VentasComponent,
     AgregarProductoComponent,

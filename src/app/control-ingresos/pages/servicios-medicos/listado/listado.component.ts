@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MedicalServices } from 'src/app/control-ingresos/interfaces/medicalService.interface';
 import { MedsoftService } from 'src/app/control-ingresos/service/medsoft.service';
 import {MatTableDataSource} from '@angular/material/table';

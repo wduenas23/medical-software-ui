@@ -5,9 +5,9 @@ import { IngresosComponent } from './pages/ingresos/ingresos.component';
 import { ReporteComponent } from './pages/reporte/reporte.component';
 import { AgregarComponent } from './pages/servicios-medicos/agregar/agregar.component';
 import { ListadoComponent } from './pages/servicios-medicos/listado/listado.component';
-import { ListadoPromocionesComponent } from './pages/servicios-medicos/listado-promociones/listado-promociones.component';
 import { VentasComponent } from './pages/ventas/ventas/ventas.component';
 import { ListadoProductoComponent } from './pages/producto/listado-producto/listado-producto.component';
+import { AgregarProductoComponent } from './pages/producto/agregar-producto/agregar-producto.component';
 
 
 const routes: Routes = [
@@ -28,10 +28,6 @@ const routes: Routes = [
         component: ListadoComponent
       },
       {
-        path: 'promociones',
-        component: ListadoPromocionesComponent
-      },
-      {
         path: 'editar/:id',
         component: AgregarComponent
       },
@@ -47,6 +43,15 @@ const routes: Routes = [
       {
         path: 'productos',
         component: ListadoProductoComponent
+      },
+      {
+        path: 'agregar-productos',
+        component: AgregarProductoComponent
+      },
+      
+      {
+        path: 'editar-productos/:id',
+        component: AgregarProductoComponent
       },
       {
         path: '**',

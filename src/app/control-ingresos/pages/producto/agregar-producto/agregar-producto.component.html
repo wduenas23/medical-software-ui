@@ -1,1 +1,151 @@
-<p>agregar-producto works!</p>
+<h1>
+    {{ (producto.id? 'Editar':'Nuevo') }}
+    Producto:
+    <b><small>{{producto.name}}</small></b>
+</h1>
+
+<div 
+    fxLayout="row" 
+    fxLayoutGap="40px"  
+    fxLayout.xs="column" >
+
+    <div 
+    fxFlex="60" 
+    fxLayout="column">
+        
+        <div 
+        fxLayout="row" 
+        fxLayout.xs="column" 
+        fxLayoutGap="20px">
+            <div fxLayout="row" fxFlex="100">
+                <mat-form-field appearance="fill" fxFlex="100">
+                    <mat-label>Seleccione Categoria del producto</mat-label>
+                    <input type="text"
+                    placeholder="Seleccione Categoria del producto"
+                    aria-label="Cat. Producto"
+                    [formControl]="categoriaProducto"
+                    matInput
+                    [matAutocomplete]="auto"
+                    (click)="buscando()"
+                    (input)="buscando()"
+                    >
+
+                    <mat-autocomplete 
+                    autoActiveFirstOption 
+                    #auto="matAutocomplete"
+                    (optionSelected)="opcionSeleccionada($event)">
+                    
+                    <mat-option *ngFor="let option of filteredOptions" [value]="option">
+                        {{option.name}}
+                    </mat-option>
+                
+                </mat-autocomplete>
+                </mat-form-field> 
+            </div>
+
+        </div>
+
+        <div 
+        fxLayout="row" 
+        fxLayout.xs="column" 
+        fxLayoutGap="20px">
+
+            <mat-form-field fxFlex="100">
+                <mat-label> Nombre</mat-label>
+                <input
+                    matInput
+                    [(ngModel)]="producto.name"
+                    type="text"
+                    required>
+            </mat-form-field>
+
+        </div>
+
+        <div 
+        fxLayout="row" 
+        fxLayout.xs="column" 
+        fxLayoutGap="20px">
+
+            <mat-form-field fxFlex="100">
+                <mat-label> Código Producto</mat-label>
+                <input
+                    matInput
+                    [(ngModel)]="producto.prdCode"
+                    type="text"
+                    required>
+            </mat-form-field>
+
+        </div>
+
+        <div 
+        fxLayout="row" 
+        fxLayout.xs="column" 
+        fxLayoutGap="20px">
+
+            <mat-form-field fxFlex="100">
+                <mat-label> Descripcion</mat-label>
+                <input
+                    matInput
+                    [(ngModel)]="producto.description"
+                    type="text"
+                    required>
+            </mat-form-field>
+
+        </div>
+
+        <div 
+        fxLayout="row" 
+        fxLayout.xs="column" 
+        fxLayoutGap="20px">
+            <mat-form-field fxFlex="100">
+                <mat-label> Costo</mat-label>
+                <input
+                    matInput
+                    [(ngModel)]="producto.cost"
+                    type="text"
+                    required>
+            </mat-form-field>
+        </div>
+
+        <div 
+        fxLayout="row" 
+        fxLayout.xs="column" 
+        fxLayoutGap="20px">
+            <mat-form-field fxFlex="100">
+                <mat-label> Inventario</mat-label>
+                <input
+                    matInput
+                    [(ngModel)]="producto.inventory"
+                    type="text"
+                    required>
+            </mat-form-field>
+        </div>
+
+        <div 
+        fxLayout="row" 
+        fxLayout.xs="column" 
+        fxLayoutGap="20px">
+            <mat-form-field fxFlex="100">
+                <mat-label> Precio de Venta</mat-label>
+                <input
+                    matInput
+                    [(ngModel)]="producto.sellingPrice"
+                    type="text"
+                    required>
+            </mat-form-field>
+        </div>
+
+        <div 
+        fxLayout="row" 
+        fxLayout.xs="column" 
+        fxLayoutGap="20px">
+                <mat-label> Activo</mat-label>
+                <mat-slide-toggle name="valido" required="true" [(ngModel)]="producto.valid"></mat-slide-toggle>
+        </div>
+        <br>
+        <button type="button" mat-raised-button color="warn" (click)="edit();">
+            {{ (producto.id? 'Editar':'Guardar') }}
+        </button>
+        
+
+</div>    

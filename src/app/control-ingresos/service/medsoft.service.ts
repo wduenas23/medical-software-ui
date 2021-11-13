@@ -2,7 +2,7 @@ import { HttpClient, HttpResponse, HttpResponseBase } from '@angular/common/http
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { FormOfPayment, Income, IncomeResponse, MedicalServices, ServiceCategory, SummaryTransaction } from '../interfaces/medicalService.interface';
+import { CatProductos, FormOfPayment, Income, IncomeResponse, MedicalServices, Producto, ServiceCategory, SummaryTransaction } from '../interfaces/medicalService.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +18,18 @@ export class MedsoftService {
 
   obtenerServiciosMedicos(): Observable<MedicalServices[]>{
     return this.http.get<MedicalServices[]>(`${this.baseUrl}/medical-services/all`);
+  }
+
+  obtenerProductos(): Observable<Producto[]>{
+    return this.http.get<Producto[]>(`${this.baseUrl}/products/all`);
+  }
+
+  obtenerProductoPorId(id: number): Observable<Producto>{
+    return this.http.get<Producto>(`${this.baseUrl}/products/byId?id=${id}`);
+  }
+
+  obtenerCategoriaProductos(): Observable<CatProductos[]>{
+    return this.http.get<CatProductos[]>(`${this.baseUrl}/products/category/all`);
   }
 
   obtenerServiciosMedicosActivos(): Observable<MedicalServices[]>{

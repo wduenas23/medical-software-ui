@@ -47,3 +47,21 @@ export interface Transaction {
   item: string;
   cost: number;
 }
+
+export interface Producto{
+  id:           number;
+	categoryId:   number;
+  prdCode:      string;
+	categoryName: string;
+	name:         string;
+	description:  string;
+	inventory:    number;
+	cost:         number;
+	sellingPrice: number;
+	valid:        boolean;
+}
+
+export interface CatProductos {
+  id:   number;
+  name: string;
+}

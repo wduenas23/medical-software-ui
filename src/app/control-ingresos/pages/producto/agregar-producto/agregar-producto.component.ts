@@ -20,16 +20,18 @@ export class AgregarProductoComponent implements OnInit {
 
   producto: Producto={
     categoryId: 0,
-    cost: 0,
+    cost: 1,
     categoryName: '',
     description: '',
     id: 0,
-    inventory: 0,
+    inventory: 1,
     name: '',
     prdCode: '',
-    sellingPrice: 0,
+    sellingPrice: 1,
     valid: true
   }
+  nombreRepetido: boolean= false;
+  codigoRepetido: boolean= false;
 
   catProductos: CatProductos[]=[];
   filteredOptions!: CatProductos[];
@@ -60,9 +62,61 @@ export class AgregarProductoComponent implements OnInit {
     });
   }
 
+  validarNombreProducto(){
+    this.medSoftService.validarNombreProducto(this.producto.name).subscribe(response => {
+      if(response){
+        this.nombreRepetido=true;
+        this.producto.name='';
+      }else{
+        this.nombreRepetido=false;
+      }
+      
+    })
+
+  }
+
+  validarCodigoProducto(){
+    this.medSoftService.validarCodigoProducto(this.producto.prdCode).subscribe(response => {
+      if(response){
+        this.codigoRepetido=true;
+        this.producto.prdCode='';
+      }else{
+        this.codigoRepetido=false;
+      }
+      
+    })
+
+  }
 
   edit(){
+    if(this.producto.inventory>0 && this.producto.cost>0 && this.producto.sellingPrice >0) {
+      this.medSoftService.editarProducto(this.producto).subscribe(response => {
+        if(response.ok){
+          console.log(response);
+          console.log(response.body);
+          if(this.producto.id === 0){
+            this.mostrarSnackBar('Registro Creado Satisfactoriamente');
+          }else{
+            this.mostrarSnackBar('Registro Actualizado Satisfactoriamente');
+          }
+          if(response.body!==null){
+            this.producto = response.body;
+          }     
+          this.router.navigate(['control-ingresos/productos'])   
+        }
+        
+      });
+    }else{
+      this.mostrarSnackBar('Favor ingresar correctamente valores de costo inventario y precio de venta')
+    }
+    
+  }
 
+  mostrarSnackBar(mensaje: string){
+
+    this.snackBar.open(mensaje,'ok!', {
+      duration: 3500
+    });
   }
 
   constructor(private activatedRoute: ActivatedRoute,

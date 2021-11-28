@@ -61,5 +61,17 @@ export class MedsoftService {
     return this.http.post<MedicalServices>(`${this.baseUrl}/medical-services/edit`,servicioMedico,{observe: 'response'});
   }
 
+  editarProducto(prd: Producto):  Observable<HttpResponse<Producto>>{ 
+    return this.http.post<Producto>(`${this.baseUrl}/products/edit`,prd,{observe: 'response'});
+  }
+
+  validarNombreProducto(prdName: string): Observable<boolean>{
+    return this.http.get<boolean>(`${this.baseUrl}/products/validateName?productName=${prdName}`);
+  }
+
+  validarCodigoProducto(prdCode: string): Observable<boolean>{
+    return this.http.get<boolean>(`${this.baseUrl}/products/validateCode?productCode=${prdCode}`);
+  }
+
   constructor(private http: HttpClient) { }
 }

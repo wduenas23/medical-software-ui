@@ -1,1 +1,80 @@
-<p>ventas works!</p>
+<h1>Ventas</h1>
+
+
+<form (ngSubmit)="guardar()" autocomplete="off" [formGroup]="formularioVentas" >
+
+    <div fxLayout="row" fxLayoutGap="20px" fxLayout.xs="column">
+        <div fxFlex="50" fxLayout="column">
+            
+
+            <div fxLayout="row" fxLayoutGap="20px"  >
+                <mat-form-field appearance="fill" fxFlex="90">
+                    <mat-label>Seleccione Producto</mat-label>
+                    <input type="text"
+                    placeholder="Seleccione Producto"
+                    aria-label="Prodycto"
+                    [formControl]="nuevoProducto"
+                    matInput
+                    [matAutocomplete]="auto"
+                    (click)="buscando()"
+                    (input)="buscando()"
+                    >
+
+                    <mat-autocomplete 
+                    autoActiveFirstOption 
+                    #auto="matAutocomplete"
+                    (optionSelected)="opcionSeleccionada($event)">
+                    
+                      <mat-option *ngFor="let option of filteredOptions" [value]="option">
+                        {{option.name}} -  ${{option.cost}}
+                      </mat-option>
+                 
+                  </mat-autocomplete>
+                </mat-form-field> 
+                
+                <button 
+                  color="accent" 
+                  type="button"
+                  mat-icon-button
+                  (click)="agregarProducto()">
+                  <mat-icon>add</mat-icon>
+                 </button>
+                
+                
+            </div>
+
+
+
+            <div fxLayout="row" fxLayoutGap="20px"  >
+
+                <mat-form-field appearance="fill" fxFlex="50">
+                  <mat-label>% Descuento</mat-label>
+                  <input 
+                      type="number"
+                      matInput 
+                      #input 
+                      formControlName="descuento"
+                      maxlength="10" 
+                      placeholder="Precio">
+                  <button type="button" *ngIf="formularioVentas.controls.descuento.value>=0"
+                        matSuffix aria-label="Aplicar" mat-raised-button  color="accent"
+                        (click)="aplicarDescuento()">
+                        Aplicar
+                  </button>
+                </mat-form-field>
+  
+                <mat-form-field appearance="fill" fxFlex="50">
+                    <mat-label>Seleccione tipo de pago</mat-label>
+                    <mat-select formControlName="tipoPago">
+                        <mat-option></mat-option>
+                        <mat-option *ngFor="let tipoPago of tiposPago" [value]="tipoPago">
+                          {{tipoPago.description}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+              </div> 
+
+        </div>
+    </div>
+
+</form>

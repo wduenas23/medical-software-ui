@@ -51,12 +51,16 @@
         fxLayoutGap="20px">
 
             <mat-form-field fxFlex="100">
-                <mat-label> Nombre</mat-label>
+                <mat-label>  {{ (nombreRepetido? 'Nombre ya existe, favor validar':'Nombre') }}</mat-label>
                 <input
                     matInput
                     [(ngModel)]="producto.name"
+                    (ngModelChange)="producto.name = $event.toUpperCase()"
                     type="text"
+                    maxlength="50"
+                    (blur)="validarNombreProducto()"
                     required>
+                    
             </mat-form-field>
 
         </div>
@@ -67,11 +71,13 @@
         fxLayoutGap="20px">
 
             <mat-form-field fxFlex="100">
-                <mat-label> Código Producto</mat-label>
+                <mat-label> {{ (codigoRepetido? 'Codigo ya existe, favor validar':'Código Producto') }}</mat-label>
                 <input
                     matInput
                     [(ngModel)]="producto.prdCode"
+                    maxlength="10"
                     type="text"
+                    (blur)="validarCodigoProducto()"
                     required>
             </mat-form-field>
 
@@ -88,6 +94,7 @@
                     matInput
                     [(ngModel)]="producto.description"
                     type="text"
+                    maxlength="50"
                     required>
             </mat-form-field>
 
@@ -102,7 +109,8 @@
                 <input
                     matInput
                     [(ngModel)]="producto.cost"
-                    type="text"
+                    type="number"
+                    min="1"
                     required>
             </mat-form-field>
         </div>
@@ -116,7 +124,8 @@
                 <input
                     matInput
                     [(ngModel)]="producto.inventory"
-                    type="text"
+                    type="number"
+                    min="1"
                     required>
             </mat-form-field>
         </div>
@@ -130,7 +139,8 @@
                 <input
                     matInput
                     [(ngModel)]="producto.sellingPrice"
-                    type="text"
+                    type="number"
+                    min="1" 
                     required>
             </mat-form-field>
         </div>

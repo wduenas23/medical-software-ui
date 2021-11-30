@@ -69,7 +69,8 @@ export class AgregarComponent implements OnInit {
         }
         if(response.body!==null){
           this.servicioMedico = response.body;
-        }        
+        }       
+        this.router.navigate(['control-ingresos/servicios-medicos'])    
       }
       
     });

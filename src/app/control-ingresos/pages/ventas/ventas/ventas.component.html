@@ -26,7 +26,7 @@
                     (optionSelected)="opcionSeleccionada($event)">
                     
                       <mat-option *ngFor="let option of filteredOptions" [value]="option">
-                        {{option.name}} -  ${{option.cost}}
+                        {{option.name}} -  ${{option.sellingPrice}}
                       </mat-option>
                  
                   </mat-autocomplete>

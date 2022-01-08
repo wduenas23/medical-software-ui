@@ -1,8 +1,9 @@
 import { HttpClient, HttpResponse, HttpResponseBase } from '@angular/common/http';
+import { StringMap } from '@angular/compiler/src/compiler_facade_interface';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { CatProductos, FormOfPayment, Income, IncomeResponse, MedicalServices, Producto, ServiceCategory, SummaryTransaction } from '../interfaces/medicalService.interface';
+import { CatProductos, FormOfPayment, Income, IncomeResponse, MedicalServices, Patient, Producto, ServiceCategory, SummaryTransaction } from '../interfaces/medicalService.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -53,6 +54,18 @@ export class MedsoftService {
     return this.http.post<IncomeResponse>(`${this.baseUrl}/income/save`,ingreso);
   }
 
+  obtenerIngresosDiarios(): Observable<IncomeResponse[]>{
+    return this.http.get<IncomeResponse[]>(`${this.baseUrl}/income/dailyIncomes`);
+  }
+
+  obtenerIngresosDiariosRange(start: string, end: string): Observable<IncomeResponse[]>{
+    return this.http.get<IncomeResponse[]>(`${this.baseUrl}/income/dailyIncomes`);
+  }
+
+  obtenerIngresoPorId(id:number): Observable<IncomeResponse>{
+    return this.http.get<IncomeResponse>(`${this.baseUrl}/income/byId?id=${id}`);
+  }
+
   obtenerResumenDiarioYMensual(): Observable<SummaryTransaction>{
     return this.http.get<SummaryTransaction>(`${this.baseUrl}/summary/daily-monthly`);
   }
@@ -71,6 +84,10 @@ export class MedsoftService {
 
   validarCodigoProducto(prdCode: string): Observable<boolean>{
     return this.http.get<boolean>(`${this.baseUrl}/products/validateCode?productCode=${prdCode}`);
+  }
+
+  buscarPaciente(id: number): Observable<HttpResponse<Patient>>{
+    return this.http.get<Patient>(`${this.baseUrl}/patient/byId?id=${id}`,{observe: 'response'});
   }
 
   constructor(private http: HttpClient) { }

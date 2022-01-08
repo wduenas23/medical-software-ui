@@ -1,4 +1,4 @@
-<h1>Reporte de Ingresos por Servicio</h1>
+<h1>Reporte de Ingresos</h1>
 <hr>
 
 <div fxLayout="row wrap"
@@ -26,7 +26,7 @@ fxLayoutGap="50px">
   </mat-form-field>
 
   <div>
-  <button  mat-raised-button color="accent">Consultar</button>
+  <button (click)="consultarIngresos()"  mat-raised-button color="accent">Consultar</button>
 </div>
   
      
@@ -48,16 +48,72 @@ fxLayoutGap="50px">
             <mat-card-title></mat-card-title>
             </mat-card-header>
                 <mat-card-content>
-                    <div style="display: block;">
-                        <canvas baseChart 
-                          [datasets]="barChartData"
-                          [labels]="barChartLabels"
-                          [options]="barChartOptions"
-                          [plugins]="barChartPlugins"
-                          [legend]="barChartLegend"
-                          [chartType]="barChartType">
-                        </canvas>
-                      </div>
+                  <mat-form-field appearance="fill">
+                    <mat-label>Filtro</mat-label>
+                    <input  matInput (keyup)="applyFilter($event)" placeholder="Ej. Consulta" #input>
+                  </mat-form-field>
+                  <table class="dailyIncomeTable" mat-table [dataSource]="dataSource" matSort>
+                  
+                  <ng-container matColumnDef="nombre">
+                    <th mat-header-cell *matHeaderCellDef>Nombre</th>
+                    <td mat-cell *matCellDef="let row">{{row.patient.name}}</td>
+                  </ng-container>
+                  
+                  <ng-container matColumnDef="apellido">
+                    <th mat-header-cell *matHeaderCellDef>Apellido</th>
+                    <td mat-cell *matCellDef="let row">{{row.patient.lastName}}</td>
+                  </ng-container>
+                  
+                  <ng-container matColumnDef="telefono">
+                    <th mat-header-cell *matHeaderCellDef>Telefono</th>
+                    <td mat-cell *matCellDef="let row">{{row.patient.phone}}</td>
+                  </ng-container>
+                  
+                  <ng-container matColumnDef="sub total cliente">
+                    <th mat-header-cell *matHeaderCellDef>Total cancelado por Cliente</th>
+                    <td mat-cell *matCellDef="let row">{{row.subTotalClient| currency}}</td>
+                  </ng-container>
+                  
+                  <ng-container matColumnDef="total ingreso">
+                    <th mat-header-cell *matHeaderCellDef>Total ingreso</th>
+                    <td mat-cell *matCellDef="let row">{{row.txTotal |currency}}</td>
+                  </ng-container>
+                  
+                  <ng-container matColumnDef="tipo de pago">
+                    <th mat-header-cell *matHeaderCellDef>Tipo de Pago</th>
+                    <td mat-cell *matCellDef="let row">{{row.paymentType}}</td>
+                  </ng-container>
+                  
+                  <ng-container matColumnDef="Acciones">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Acciones </th>
+                    <td mat-cell *matCellDef="let row"> 
+                      <button mat-raised-button 
+                      (click)='mostrarServicios(row.txId,services)'
+                      color="accent">
+                         Servicios Brindados
+                      </button>
+                    </td>
+                  </ng-container>
+                  
+                  <tr mat-header-row *matHeaderRowDef="displayedColumnsDaily"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumnsDaily;"></tr>
+                  
+                  </table>
+                  <mat-paginator color="primary" [pageSizeOptions]="[10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+                  
+                  
+                  <ng-template #services>
+                    <h2 mat-dialog-title>Servicios brindados</h2>
+                    <mat-dialog-content>
+                      <mat-list role="list">
+                        <mat-list-item role="listitem" *ngFor="let serv of serviciosOnEdit">
+                          <mat-icon mat-list-icon>radio_button_checked</mat-icon>
+                          {{serv.description}}
+                        </mat-list-item>
+                        
+                      </mat-list>
+                    </mat-dialog-content>
+                  </ng-template>
                 </mat-card-content>
         </mat-card>
     </div>

@@ -1,10 +1,15 @@
-import { DatePipe, formatDate } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { Component, Inject, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormOfPayment, Income, MedicalServices, Totales } from '../../interfaces/medicalService.interface';
+import { FormOfPayment, Income, IncomeResponse, MedicalServices, Patient, PaymentDetails, Totales } from '../../interfaces/medicalService.interface';
 import { MedsoftService } from '../../service/medsoft.service';
+import {MatTableDataSource} from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatDialog } from '@angular/material/dialog';
+
 
 @Component({
   selector: 'app-ingresos',
@@ -15,12 +20,22 @@ import { MedsoftService } from '../../service/medsoft.service';
       width: 90%;
     }
 
+    .summary-card .mat-card-content{
+      overflow-y: scroll;
+      height: 200px;
+    }
+
     .summary-card-totals {
       width: 20%;
     }
 
     table {
       width: 90%;
+    }
+
+
+    .dailyIncomeTable{
+      width: 100%;
     }
 
     `
@@ -31,23 +46,36 @@ export class IngresosComponent implements OnInit {
   formularioIngresos: FormGroup = this.formBuilder.group({
     nombres: [, [Validators.required, Validators.minLength(3)]],
     apellidos: [, [Validators.required, Validators.minLength(3)]],
+    identificacion: [, [Validators.required, Validators.minLength(3)]],
     telefono: [, [Validators.required, Validators.minLength(3), Validators.maxLength(9)]],
     tipoPago: [, [Validators.required]],
     descuento: [0, [Validators.min(0)]],
     fechaServicio: [new Date(), [Validators.required]],
+    efectivo: [,[Validators.min(0)]],
+    tarjeta: [, [Validators.min(0)]],
 
   })
 
 
-  nuevoServicio: FormControl = this.formBuilder.control('', Validators.required);
-  nuevoServicioPromo: FormControl = this.formBuilder.control('', Validators.required);
+  paciente!: Patient | null;
+
+  nuevoServicio: FormControl = this.formBuilder.control('', );
+  nuevoServicioPromo: FormControl = this.formBuilder.control('', );
 
   servicios: MedicalServices[] = [];
+  serviciosOnEdit: MedicalServices[] = [];
   serviciosPromo: MedicalServices[] = [];
   nuevoServicioSeleccionado!: MedicalServices;
   nuevoServicioSeleccionadoPromo!: MedicalServices;
+  
+  ingresosDiarios: IncomeResponse[] = [];
+  dataSource!: MatTableDataSource<IncomeResponse>;
+
+  @ViewChild(MatPaginator)  paginator!: MatPaginator;
+  @ViewChild(MatSort)  sort!: MatSort;
 
   tiposPago: FormOfPayment[] = [];
+  
 
   filteredOptions!: MedicalServices[];
   filteredOptionsPromos!: MedicalServices[];
@@ -55,6 +83,8 @@ export class IngresosComponent implements OnInit {
   resumenMensual: number = 0;
 
   income: Income | null = null;
+  incomeResponse: IncomeResponse | null=null;
+
   //Para la tabla de servicios
   displayedColumns = ['Detalle', 'Costo', 'Action'];
   summaryList: MedicalServices[] = [];
@@ -68,10 +98,23 @@ export class IngresosComponent implements OnInit {
     { title: 'Total', value: 0 },
   ]
 
+
+  displayedColumnsDaily: string[] = ['nombre', 'apellido', 'telefono', 'sub total cliente','total ingreso','tipo de pago', 'Acciones'];
+  editar: boolean=false;
+  pagoCombinado: boolean=false;
+
   agregarServicio() {
     if (this.nuevoServicio.invalid) {
       return;
     }
+    console.log('Nuevo Servicio: ', this.nuevoServicioSeleccionado)
+    this.summaryList.push(this.nuevoServicioSeleccionado);
+    this.summaryList = this.summaryList.slice();
+    this.aplicarDescuento();
+    this.aplicarComision(this.formularioIngresos.controls.tipoPago.value);
+  }
+
+  agregarServicioOnEdit(){
     console.log('Nuevo Servicio: ', this.nuevoServicioSeleccionado)
     this.summaryList.push(this.nuevoServicioSeleccionado);
     this.summaryList = this.summaryList.slice();
@@ -127,19 +170,42 @@ export class IngresosComponent implements OnInit {
     const tipoPago = value ? value.description : '';
     if (tipoPago === 'Tarjeta') {
       let comi = this.totales.find(val => val.title == "Comisiones");
-      comi!.value = this.calculatComisionPorTarjeta();
+      comi!.value = this.calculatComisionPorTarjeta(tipoPago);
       this.totales = this.totales.slice();
-    } else {
+      this.pagoCombinado=false;
+    } else if(tipoPago==='Combinado'){
+      this.pagoCombinado=true;
+      this.totales = this.totales.slice();
+      this.aplicarComisionCombinado();
+    }else {
       let comi = this.totales.find(val => val.title == "Comisiones");
       comi!.value = 0;
       this.totales = this.totales.slice();
+      this.pagoCombinado=false;
     }
     this.calcularTotalFinal();
   }
 
 
-  calculatComisionPorTarjeta() {
-    const comision = (this.getTotalServicios() + this.calcularDescuento()) * 0.07 * -1;
+  aplicarComisionCombinado(){
+    let comi = this.totales.find(val => val.title == "Comisiones");
+    comi!.value = this.calculatComisionPorTarjeta("Combinado");
+    this.totales = this.totales.slice();
+    this.calcularTotalFinal();
+  }
+
+  calculatComisionPorTarjeta(tipoPago: string) {
+    let comision=0;
+    if(tipoPago==='Combinado'){
+      comision = this.formularioIngresos.controls.tarjeta.value  * 0.07 * -1;
+      let subTotalCliente = this.totales.find(val => val.title == "Sub Total Cliente");
+      let totalEfectivo= subTotalCliente!.value - this.formularioIngresos.controls.tarjeta.value;
+      console.log('Calulando remanente',totalEfectivo);
+      this.formularioIngresos.controls.efectivo.setValue(totalEfectivo);
+    }else{
+      comision = (this.getTotalServicios() + this.calcularDescuento()) * 0.07 * -1;
+    }
+    
     return Math.round((comision + Number.EPSILON) * 100) / 100;
   }
 
@@ -167,6 +233,33 @@ export class IngresosComponent implements OnInit {
     return this.summaryList.map(t => t.cost).reduce((acc, value) => acc + value, 0);
   }
 
+  buscarPaciente(){
+    
+    let id:number=this.formularioIngresos.controls.identificacion.value;    
+    if(id.toString().length >= 10){
+      console.log('A buscar paciente');
+      this.medService.buscarPaciente(id).subscribe(resp => { 
+        if(resp.ok){
+          console.log('paciente encontrado:',resp.body);
+          this.paciente=resp.body;   
+          this.formularioIngresos.controls.nombres.setValue(this.paciente!.name);
+          this.formularioIngresos.controls.apellidos.setValue(this.paciente!.lastName);
+          this.formularioIngresos.controls.telefono.setValue(this.paciente!.phone);
+          this.formularioIngresos.controls.identificacion.setValue(this.paciente!.identification);   
+        }
+        
+      },
+      error => {
+        console.log('oops', error)
+        this.paciente=null;
+      }
+      );
+    }
+    
+
+
+  }
+
   guardar() {
 
     console.log('Touched: ', this.formularioIngresos.touched);
@@ -175,30 +268,138 @@ export class IngresosComponent implements OnInit {
       return;
     }
 
-
-    this.income = {
-      nombres: this.formularioIngresos.controls.nombres.value,
-      apellidos: this.formularioIngresos.controls.apellidos.value,
-      telefono: this.formularioIngresos.controls.telefono.value,
-      services: this.summaryList,
-      formOfPayment: this.formularioIngresos.controls.tipoPago.value,
-      totals: this.totales,
-      txDate: this.formularioIngresos.controls.fechaServicio.value,
-      discount: this.formularioIngresos.controls.descuento.value
+    if(!this.income){
+      this.income = {
+        services: this.summaryList,
+        formOfPayment: this.formularioIngresos.controls.tipoPago.value,
+        totals: this.totales,
+        txDate: this.formularioIngresos.controls.fechaServicio.value,
+        discount: this.formularioIngresos.controls.descuento.value,
+        id: this.editar?this.incomeResponse?.txId:undefined,
+        paymentDetails: this.buildPaymentDetail(),
+        patient: {
+          name: this.formularioIngresos.controls.nombres.value,
+          lastName: this.formularioIngresos.controls.apellidos.value,
+          phone: this.formularioIngresos.controls.telefono.value,
+          address: '',
+          birthday: '',
+          identification: this.formularioIngresos.controls.identificacion.value,
+          id: this.paciente?this.paciente.id:0
+        }
+        
+      }
     }
-
+    console.log("INGRESO A GUARDAR O EDITAR",this.income);
     this.medService.guardarIngreso(this.income).subscribe(resp => {
       console.log("Respuesta Obtenida: ", resp);
       if (resp.code === "200") {
-        this.resetAll();
         this.getDailySummary()
         this.mostrarSnackBar('Ingreso guardado exitosamente')
+        //this.reloadPage();
+      }else{
+        this.mostrarSnackBar('ERROR AL GUARDAR INGRESO')
       }
 
     });
 
   }
+  buildPaymentDetail() : PaymentDetails[] {
+    let tipoPago:FormOfPayment=this.formularioIngresos.controls.tipoPago.value;
+    console.log('TIPO PAGO',tipoPago);
+    let paymentDetails: PaymentDetails[]=[];
+    if(tipoPago.description==='Combinado'){
+      this.tiposPago.forEach(element => {
+        if(element.description==='Efectivo'){
+          paymentDetails.push({
+            amount: this.formularioIngresos.controls.efectivo.value,
+            ptId:element.id,
+            txId:0,
+            description: element.description,
+            pdId:0
+          });
+        }
+        if(element.description==='Tarjeta'){
+          paymentDetails.push({
+            amount: this.formularioIngresos.controls.tarjeta.value,
+            ptId:element.id,
+            txId:0,
+            description: element.description,
+            pdId:0
+          });
+        }
+      });
+    }else {
+      paymentDetails.push({
+        amount: this.totales.find(val => val.title == "Total")?.value,
+        pdId: 0,
+        ptId: tipoPago.id,
+        description: tipoPago.description,
+        txId:0
+      })
+    }
+    return paymentDetails;
+  }
 
+
+  editarIngeso(id: number){
+    console.log(id);
+    this.medService.obtenerIngresoPorId(id).subscribe( resp=> {
+      console.log(resp)
+      this.incomeResponse=resp;
+      this.paciente=resp.patient;
+      this.editar=true;
+      this.formularioIngresos.controls.nombres.setValue(this.paciente.name);
+      this.formularioIngresos.controls.apellidos.setValue(this.paciente.lastName);
+      this.formularioIngresos.controls.telefono.setValue(this.paciente.phone);
+      this.formularioIngresos.controls.identificacion.setValue(this.paciente.identification);
+      this.formularioIngresos.controls.descuento.setValue(resp.discount);
+      
+      let fp: FormOfPayment= {
+        description:resp.paymentType,
+        id: resp.paymentId
+      }
+      this.formularioIngresos.get('tipoPago')?.setValue(fp);
+      if(fp.description==='Combinado'){
+        resp.paymentDetails.forEach(element => {
+          if(element.description==='Efectivo'){
+            this.formularioIngresos.controls.efectivo.setValue(element.amount);
+          }
+          if(element.description==='Tarjeta'){
+            this.formularioIngresos.controls.tarjeta.setValue(element.amount);
+          }
+        });
+        
+      }
+      resp.services.forEach(element => {
+        console.log('Elements services',element);
+        this.nuevoServicioSeleccionado=element;
+        this.agregarServicioOnEdit();
+      });
+      this.formularioIngresos.markAsTouched();
+
+    })
+  }
+
+  mostrarServicios(id: number,templateRef: any){
+    this.medService.obtenerIngresoPorId(id).subscribe( resp=> {
+      this.serviciosOnEdit=resp.services;
+      const dialogRef = this.dialog.open(templateRef,
+        {
+          width: '450px'
+        });
+    });
+   
+
+
+  }
+
+
+  compareFunction(o1: any, o2: any) {
+    if(o1 && o2){
+      return (o1.name == o2.name && o1.id == o2.id);
+    }
+    return false;
+   }
 
   buscando() {
     this.filteredOptions = this._filter(this.nuevoServicio.value);
@@ -266,9 +467,28 @@ export class IngresosComponent implements OnInit {
   reloadPage() {
     setTimeout(()=>{
       window.location.reload();
-    }, 2500);
+    }, 1000);
   }
-  constructor(private formBuilder: FormBuilder, private datepipe: DatePipe, private medService: MedsoftService,private snackBar: MatSnackBar) { }
+
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+
+  constructor(
+        private formBuilder: FormBuilder, 
+        private datepipe: DatePipe, 
+        private medService: MedsoftService,
+        private snackBar: MatSnackBar,
+        private dialog: MatDialog) { 
+    
+  }
 
 
   ngOnInit(): void {
@@ -277,11 +497,18 @@ export class IngresosComponent implements OnInit {
     this.medService.obtenerServiciosMedicosActivos().subscribe(resp =>  this.servicios = resp);
     this.medService.obtenerServiciosMedicosPromo().subscribe(resp => this.serviciosPromo = resp);
     this.getDailySummary();
+    this.medService.obtenerIngresosDiarios().subscribe(resp => {
+      console.log('Respuesta',resp);
+      this.ingresosDiarios=resp;
+      this.dataSource = new MatTableDataSource(resp);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      console.log(resp);
+    });
   }
 
+ 
 
 
 
 }
-
-

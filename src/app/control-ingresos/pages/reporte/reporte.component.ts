@@ -1,29 +1,80 @@
-import { Component, OnInit } from '@angular/core';
-import { ChartDataSets, ChartOptions,ChartType } from 'chart.js';
-import {  Label } from 'ng2-charts';
+import { Component, OnInit,ViewChild } from '@angular/core';
+import {MatTableDataSource} from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MedsoftService } from '../../service/medsoft.service';
+import { IncomeResponse, MedicalServices } from '../../interfaces/medicalService.interface';
+import { MatDialog } from '@angular/material/dialog';
+
 
 @Component({
   selector: 'app-reporte',
   templateUrl: './reporte.component.html',
-  styles: [
+  styles: [`
+    .dailyIncomeTable{
+      width: 100%;
+    }
+
+    .mat-form-field {
+      width: 100%;
+    }
+    `
   ]
 })
 export class ReporteComponent implements OnInit {
 
-  public barChartOptions: ChartOptions = {
-    responsive: true,
-  };
-  public barChartLabels: Label[] = ['MESOTERAPIA REDUCTORA GRASA ABDOMINAL', 'CARBOXITERAPIA CORPORAL / 10 SESIONES', 'MESOTERAPIA REDUCTORA GRASA ABDOMINAL', 'RINOMODELACION PERMANENTE CON HILOS', 'CARBOXITERAPIA (OJERAS, ROSTRO, PAPADA Y CUELLO)', 'PLASMA RICO EN PLAQUETAS FACIAL CON DERMAPEN', 'PLASMA RICO EN PLAQUETAS (CAIDA CABELLO)', 'BOTOX 1 AREA', 'VIGOTE', 'ESPALDA', 'CONSULTA MEDICA', 'HIDRAFACIAL (LIMPIEZA FACIAL PREMIUM)'];
-  public barChartType: ChartType = 'horizontalBar';
-  public barChartLegend = false;
-  public barChartPlugins = [];
+  ingresosDiarios: IncomeResponse[] = [];
+  serviciosOnEdit: MedicalServices[] = [];
+  dataSource!: MatTableDataSource<IncomeResponse>;
+  @ViewChild(MatPaginator)  paginator!: MatPaginator;
+  @ViewChild(MatSort)  sort!: MatSort;
+  displayedColumnsDaily: string[] = ['nombre', 'apellido', 'telefono', 'sub total cliente','total ingreso','tipo de pago', 'Acciones'];
 
-  public barChartData: ChartDataSets[] = [
-    { data: [65, 59, 80, 81, 56, 55, 40,70,89,100,256,12], label: 'Consultas' }   
-  ];
-  constructor() { }
+
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  mostrarServicios(id: number,templateRef: any){
+    this.medService.obtenerIngresoPorId(id).subscribe( resp=> {
+      this.serviciosOnEdit=resp.services;
+      const dialogRef = this.dialog.open(templateRef,
+        {
+          width: '450px'
+        });
+    });
+  }
+
+  consultarIngresos(){
+    
+  }
+
+  constructor( private medService: MedsoftService,private dialog: MatDialog) { 
+    
+  }
 
   ngOnInit(): void {
+    this.medService.obtenerIngresosDiarios().subscribe(resp => {
+      console.log('Respuesta',resp);
+      this.ingresosDiarios=resp;
+      this.dataSource = new MatTableDataSource(this.ingresosDiarios);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      this.dataSource.filterPredicate = (data: IncomeResponse, filter: string) => {
+        return  data.patient.name.toLocaleLowerCase().includes(filter) || 
+                data.patient.lastName.toLocaleLowerCase().includes(filter) ||
+                data.patient.phone.toLocaleLowerCase().includes(filter) ||
+                data.subTotalClient.toString().includes(filter) || 
+                data.txTotal.toString().includes(filter) || 
+                data.paymentType.toLocaleLowerCase().includes(filter);
+      }
+      console.log(resp);
+    });
   }
 
 }

@@ -1,6 +1,3 @@
-
-
-
 <mat-card  class="summary-card-totals ">
   <mat-card-header >
     <mat-card-title>Resumen de Ingresos</mat-card-title>
@@ -30,6 +27,9 @@
 </mat-card>
 
 
+
+
+
 <br>
 
 <h1>Registro de Ingresos</h1>
@@ -38,6 +38,17 @@
 <form (ngSubmit)="guardar()" autocomplete="off" [formGroup]="formularioIngresos" >
   <div fxLayout="row" fxLayoutGap="20px" fxLayout.xs="column">
       <div fxFlex="50" fxLayout="column">
+
+              <mat-form-field appearance="fill" >
+                <mat-label>Ingrese DUI con guiones</mat-label>
+                <input 
+                    matInput
+                    (keyup)="buscarPaciente()" 
+                    #input 
+                    formControlName="identificacion"
+                    placeholder="DUI">
+                
+            </mat-form-field>
               <mat-form-field appearance="fill" >
                   <mat-label>Ingrese Nombres</mat-label>
                   <input 
@@ -163,16 +174,43 @@
                 </button>
               </mat-form-field>
 
-              <mat-form-field appearance="fill" fxFlex="50">
-                  <mat-label>Seleccione tipo de pago</mat-label>
-                  <mat-select formControlName="tipoPago">
-                      <mat-option></mat-option>
-                      <mat-option *ngFor="let tipoPago of tiposPago" [value]="tipoPago">
-                        {{tipoPago.description}}
-                      </mat-option>
-                  </mat-select>
-              </mat-form-field>
+              
             </div> 
+            <div fxLayout="row" fxLayout.xs="column">
+              <mat-form-field appearance="fill" fxFlex="100">
+                <mat-label>Seleccione tipo de pago</mat-label>
+                <mat-select [compareWith]="compareFunction" formControlName="tipoPago">
+                    <mat-option></mat-option>
+                    <mat-option *ngFor="let tipoPago of tiposPago" [value]="tipoPago">
+                      {{tipoPago.description}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            </div>
+            <div *ngIf="pagoCombinado" fxLayout="row" fxLayoutGap="20px" fxLayout.xs="column">
+                <div fxFlex="50" fxLayout="column">
+                  <mat-form-field appearance="fill" >
+                    <mat-label>Cantidad con Tarjeta</mat-label>
+                    <input 
+                        matInput 
+                        #input 
+                        (change)="aplicarComisionCombinado()"
+                        formControlName="tarjeta"
+                        placeholder="Cantidad con tarjeta">
+                    
+                  </mat-form-field>
+                  <mat-form-field appearance="fill" >
+                    <mat-label>Cantidad con efectivo</mat-label>
+                    <input 
+                        matInput 
+                        #input 
+                        readonly
+                        formControlName="efectivo"
+                        placeholder="Cantidad con efectivo">
+                    
+                  </mat-form-field>
+              </div>
+            </div>
 
       </div>
 
@@ -210,28 +248,34 @@
                     </table>
                     <br>
                     
-                    <table mat-table  [dataSource]="totales">
-                      <ng-container matColumnDef="title">
-                        <th mat-header-cell *matHeaderCellDef> Detalle </th>
-                        <td mat-cell *matCellDef="let element"> <b>{{element.title}} </b></td>
-                      </ng-container>
-                    
-                      
-                      <ng-container matColumnDef="value">
-                        <th mat-header-cell *matHeaderCellDef> Total </th>
-                        <td mat-cell *matCellDef="let element"> <b> {{element.value | currency}} </b></td>
-                      </ng-container>
-
-                     
-                      <tr mat-row *matRowDef="let row; columns: displayedColumnsTotals;"></tr>
-                    </table>
-
+                   
+                   
               </mat-card-content>
-
-              <mat-card-actions align="end">
+              
+              <table mat-table  [dataSource]="totales">
+                <ng-container matColumnDef="title">
+                  <th mat-header-cell *matHeaderCellDef> Detalle </th>
+                  <td mat-cell *matCellDef="let element"> <b>{{element.title}} </b></td>
+                </ng-container>
+              
                 
-                <button type="submit" mat-raised-button color="accent">Guardar</button>
+                <ng-container matColumnDef="value">
+                  <th mat-header-cell *matHeaderCellDef> Total </th>
+                  <td mat-cell *matCellDef="let element"> <b> {{element.value | currency}} </b></td>
+                </ng-container>
+
+               
+                <tr mat-row *matRowDef="let row; columns: displayedColumnsTotals;"></tr>
+              </table>
+              <mat-card-actions>
+                
+                <div fxLayout="row" fxLayoutGap="20px" fxLayout.xs="column">
+                  <br>
+                <button type="submit" mat-raised-button color="accent">{{editar?'Actualizar':'Guardar'}}</button>
                 <button type="button" mat-raised-button color="warn" (click)="resetAll();">Reset</button>
+                </div>
+                
+              
               </mat-card-actions>
             </mat-card>
       </div>  
@@ -239,20 +283,83 @@
 
   </div>
 </form>
+<br>
 
- <!-- <br>
- <div class="row">
-  <div class="col">
-      <span>Valid</span>
-      <pre>
-          {{formularioIngresos.valid}}
-      </pre>
+
+
+<br>
+<h1>Ingresos diarios</h1>
+
+
+<mat-form-field appearance="fill">
+  <mat-label>Filtro</mat-label>
+  <input matInput (keyup)="applyFilter($event)" placeholder="Ej. Consulta" #input>
+</mat-form-field>
+<table class="dailyIncomeTable" mat-table [dataSource]="dataSource" matSort>
+
+<ng-container matColumnDef="nombre">
+  <th mat-header-cell *matHeaderCellDef>Nombre</th>
+  <td mat-cell *matCellDef="let row">{{row.patient.name}}</td>
+</ng-container>
+
+<ng-container matColumnDef="apellido">
+  <th mat-header-cell *matHeaderCellDef>Apellido</th>
+  <td mat-cell *matCellDef="let row">{{row.patient.lastName}}</td>
+</ng-container>
+
+<ng-container matColumnDef="telefono">
+  <th mat-header-cell *matHeaderCellDef>Telefono</th>
+  <td mat-cell *matCellDef="let row">{{row.patient.phone}}</td>
+</ng-container>
+
+<ng-container matColumnDef="sub total cliente">
+  <th mat-header-cell *matHeaderCellDef>Total cancelado por Cliente</th>
+  <td mat-cell *matCellDef="let row">{{row.subTotalClient| currency}}</td>
+</ng-container>
+
+<ng-container matColumnDef="total ingreso">
+  <th mat-header-cell *matHeaderCellDef>Total ingreso</th>
+  <td mat-cell *matCellDef="let row">{{row.txTotal |currency}}</td>
+</ng-container>
+
+<ng-container matColumnDef="tipo de pago">
+  <th mat-header-cell *matHeaderCellDef>Tipo de Pago</th>
+  <td mat-cell *matCellDef="let row">{{row.paymentType}}</td>
+</ng-container>
+
+<ng-container matColumnDef="Acciones">
+  <th mat-header-cell *matHeaderCellDef mat-sort-header> Acciones </th>
+  <td mat-cell *matCellDef="let row"> 
+    <button mat-raised-button 
+    (click)='editarIngeso(row.txId)'
+    color="accent">
+      Editar
+    </button>
+    &nbsp;
+    <button mat-raised-button 
+    (click)='mostrarServicios(row.txId,services)'
+    color="accent">
+       Servicios Brindados
+    </button>
+  </td>
+</ng-container>
+
+<tr mat-header-row *matHeaderRowDef="displayedColumnsDaily"></tr>
+<tr mat-row *matRowDef="let row; columns: displayedColumnsDaily;"></tr>
+
+</table>
+<mat-paginator color="primary" [pageSizeOptions]="[10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+
+
+<ng-template #services>
+  <h2 mat-dialog-title>Servicios brindados</h2>
+  <mat-dialog-content>
+    <mat-list role="list">
+      <mat-list-item role="listitem" *ngFor="let serv of serviciosOnEdit">
+        <mat-icon mat-list-icon>radio_button_checked</mat-icon>
+        {{serv.description}}
+      </mat-list-item>
       
-      <span>Touched</span>
-      <pre>
-          {{formularioIngresos.touched}}
-      </pre>
-
-  </div>
-</div>    -->
-
+    </mat-list>
+  </mat-dialog-content>
+</ng-template>

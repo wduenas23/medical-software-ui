@@ -74,9 +74,34 @@
                 </mat-form-field>
               </div> 
 
-        </div>
-    
+              <div *ngIf="pagoCombinado" fxLayout="row" fxLayoutGap="20px" fxLayout.xs="column">
+                <div fxFlex="50" fxLayout="column">
+                  <mat-form-field appearance="fill" >
+                    <mat-label>Cantidad con Tarjeta</mat-label>
+                    <input 
+                        matInput 
+                        #input 
+                        (keyup)="aplicarComisionCombinado()"
+                        formControlName="tarjeta"
+                        placeholder="Cantidad con tarjeta">
+                    
+                  </mat-form-field>
+                  <mat-form-field appearance="fill" >
+                    <mat-label>Cantidad con efectivo</mat-label>
+                    <input 
+                        matInput 
+                        #input 
+                        readonly
+                        formControlName="efectivo"
+                        placeholder="Cantidad con efectivo">
+                    
+                  </mat-form-field>
+              </div>
+            </div>
+      
 
+        </div>
+        
     <div fxFlex="50" fxLayout="column">
       <mat-card class="summary-card">
           <mat-card-header>

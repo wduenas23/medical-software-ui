@@ -99,7 +99,7 @@ export class IngresosComponent implements OnInit {
   ]
 
 
-  displayedColumnsDaily: string[] = ['nombre', 'apellido', 'telefono', 'sub total cliente','total ingreso','tipo de pago', 'Acciones'];
+  displayedColumnsDaily: string[] = ['dui','nombre', 'apellido', 'telefono', 'sub total cliente','total ingreso','tipo de pago', 'Acciones'];
   editar: boolean=false;
   pagoCombinado: boolean=false;
 
@@ -235,12 +235,12 @@ export class IngresosComponent implements OnInit {
 
   buscarPaciente(){
     
-    let id:number=this.formularioIngresos.controls.identificacion.value;    
-    if(id.toString().length >= 10){
-      console.log('A buscar paciente');
-      this.medService.buscarPaciente(id).subscribe(resp => { 
+    let id=this.formularioIngresos.controls.identificacion.value;    
+    if(id.length >= 9){
+      let identification=  id.toString().replace(/^(\d{0,8})(\d{0,1})/, '$1-$2');
+      console.log('A buscar paciente con id: ',id);
+      this.medService.buscarPaciente(identification).subscribe(resp => { 
         if(resp.ok){
-          console.log('paciente encontrado:',resp.body);
           this.paciente=resp.body;   
           this.formularioIngresos.controls.nombres.setValue(this.paciente!.name);
           this.formularioIngresos.controls.apellidos.setValue(this.paciente!.lastName);
@@ -269,6 +269,8 @@ export class IngresosComponent implements OnInit {
     }
 
     if(!this.income){
+      let identification: string=this.formularioIngresos.controls.identificacion.value;
+      identification=identification.includes('-')?identification:identification.replace(/^(\d{0,8})(\d{0,1})/, '$1-$2');
       this.income = {
         services: this.summaryList,
         formOfPayment: this.formularioIngresos.controls.tipoPago.value,
@@ -283,23 +285,23 @@ export class IngresosComponent implements OnInit {
           phone: this.formularioIngresos.controls.telefono.value,
           address: '',
           birthday: '',
-          identification: this.formularioIngresos.controls.identificacion.value,
+          identification: identification,
           id: this.paciente?this.paciente.id:0
         }
         
       }
     }
-    console.log("INGRESO A GUARDAR O EDITAR",this.income);
+    
     this.medService.guardarIngreso(this.income).subscribe(resp => {
       console.log("Respuesta Obtenida: ", resp);
       if (resp.code === "200") {
         this.getDailySummary()
         this.mostrarSnackBar('Ingreso guardado exitosamente')
-        //this.reloadPage();
-      }else{
-        this.mostrarSnackBar('ERROR AL GUARDAR INGRESO')
+        this.reloadPage();
       }
-
+    },
+    error => {
+      this.mostrarSnackBar('ERROR AL GUARDAR INGRESO')
     });
 
   }
@@ -440,7 +442,7 @@ export class IngresosComponent implements OnInit {
 
 
   resetAll() {
-    this.formularioIngresos.reset();
+    /*this.formularioIngresos.reset();
     this.nuevoServicio.reset('');
     this.nuevoServicioPromo.reset('');
     this.formularioIngresos.get('fechaServicio')?.reset(new Date());
@@ -451,7 +453,7 @@ export class IngresosComponent implements OnInit {
     this.calcularTotalCliente();
     this.aplicarComision(this.formularioIngresos.controls.tipoPago.value);
     this.calcularTotalFinal();
-    this.income = null;
+    this.income = null;*/
     this.reloadPage();
   }
 
@@ -459,7 +461,7 @@ export class IngresosComponent implements OnInit {
   mostrarSnackBar(mensaje: string){
 
     this.snackBar.open(mensaje,'ok!', {
-      duration: 2500,
+      duration: 2000,
       verticalPosition: 'top'
     });
   }

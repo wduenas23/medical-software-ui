@@ -40,14 +40,16 @@
       <div fxFlex="50" fxLayout="column">
 
               <mat-form-field appearance="fill" >
-                <mat-label>Ingrese DUI con guiones</mat-label>
+                <mat-label>Ingrese DUI</mat-label>
                 <input 
                     matInput
-                    (keyup)="buscarPaciente()" 
                     #input 
+                    (keyup)="buscarPaciente()"
+                    duiMask
+                    type="text"
+                    maxlength="10"
                     formControlName="identificacion"
                     placeholder="DUI">
-                
             </mat-form-field>
               <mat-form-field appearance="fill" >
                   <mat-label>Ingrese Nombres</mat-label>
@@ -194,7 +196,7 @@
                     <input 
                         matInput 
                         #input 
-                        (change)="aplicarComisionCombinado()"
+                        (keyup)="aplicarComisionCombinado()"
                         formControlName="tarjeta"
                         placeholder="Cantidad con tarjeta">
                     
@@ -297,52 +299,57 @@
 </mat-form-field>
 <table class="dailyIncomeTable" mat-table [dataSource]="dataSource" matSort>
 
-<ng-container matColumnDef="nombre">
-  <th mat-header-cell *matHeaderCellDef>Nombre</th>
-  <td mat-cell *matCellDef="let row">{{row.patient.name}}</td>
-</ng-container>
+  <ng-container matColumnDef="dui">
+    <th mat-header-cell *matHeaderCellDef>DUI</th>
+    <td mat-cell *matCellDef="let row">{{row.patient.identification}}</td>
+  </ng-container>  
 
-<ng-container matColumnDef="apellido">
-  <th mat-header-cell *matHeaderCellDef>Apellido</th>
-  <td mat-cell *matCellDef="let row">{{row.patient.lastName}}</td>
-</ng-container>
+  <ng-container matColumnDef="nombre">
+    <th mat-header-cell *matHeaderCellDef>Nombre</th>
+    <td mat-cell *matCellDef="let row">{{row.patient.name}}</td>
+  </ng-container>
 
-<ng-container matColumnDef="telefono">
-  <th mat-header-cell *matHeaderCellDef>Telefono</th>
-  <td mat-cell *matCellDef="let row">{{row.patient.phone}}</td>
-</ng-container>
+  <ng-container matColumnDef="apellido">
+    <th mat-header-cell *matHeaderCellDef>Apellido</th>
+    <td mat-cell *matCellDef="let row">{{row.patient.lastName}}</td>
+  </ng-container>
 
-<ng-container matColumnDef="sub total cliente">
-  <th mat-header-cell *matHeaderCellDef>Total cancelado por Cliente</th>
-  <td mat-cell *matCellDef="let row">{{row.subTotalClient| currency}}</td>
-</ng-container>
+  <ng-container matColumnDef="telefono">
+    <th mat-header-cell *matHeaderCellDef>Telefono</th>
+    <td mat-cell *matCellDef="let row">{{row.patient.phone}}</td>
+  </ng-container>
 
-<ng-container matColumnDef="total ingreso">
-  <th mat-header-cell *matHeaderCellDef>Total ingreso</th>
-  <td mat-cell *matCellDef="let row">{{row.txTotal |currency}}</td>
-</ng-container>
+  <ng-container matColumnDef="sub total cliente">
+    <th mat-header-cell *matHeaderCellDef>Total cancelado por Cliente</th>
+    <td mat-cell *matCellDef="let row">{{row.subTotalClient| currency}}</td>
+  </ng-container>
 
-<ng-container matColumnDef="tipo de pago">
-  <th mat-header-cell *matHeaderCellDef>Tipo de Pago</th>
-  <td mat-cell *matCellDef="let row">{{row.paymentType}}</td>
-</ng-container>
+  <ng-container matColumnDef="total ingreso">
+    <th mat-header-cell *matHeaderCellDef>Total ingreso</th>
+    <td mat-cell *matCellDef="let row">{{row.txTotal |currency}}</td>
+  </ng-container>
 
-<ng-container matColumnDef="Acciones">
-  <th mat-header-cell *matHeaderCellDef mat-sort-header> Acciones </th>
-  <td mat-cell *matCellDef="let row"> 
-    <button mat-raised-button 
-    (click)='editarIngeso(row.txId)'
-    color="accent">
-      Editar
-    </button>
-    &nbsp;
-    <button mat-raised-button 
-    (click)='mostrarServicios(row.txId,services)'
-    color="accent">
-       Servicios Brindados
-    </button>
-  </td>
-</ng-container>
+  <ng-container matColumnDef="tipo de pago">
+    <th mat-header-cell *matHeaderCellDef>Tipo de Pago</th>
+    <td mat-cell *matCellDef="let row">{{row.paymentType}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="Acciones">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> Acciones </th>
+    <td mat-cell *matCellDef="let row"> 
+      <button mat-raised-button 
+      (click)='editarIngeso(row.txId)'
+      color="accent">
+        Editar
+      </button>
+      &nbsp;
+      <button mat-raised-button 
+      (click)='mostrarServicios(row.txId,services)'
+      color="accent">
+        Servicios Brindados
+      </button>
+    </td>
+  </ng-container>
 
 <tr mat-header-row *matHeaderRowDef="displayedColumnsDaily"></tr>
 <tr mat-row *matRowDef="let row; columns: displayedColumnsDaily;"></tr>

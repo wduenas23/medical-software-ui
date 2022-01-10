@@ -5,6 +5,7 @@ import { MatSort } from '@angular/material/sort';
 import { MedsoftService } from '../../service/medsoft.service';
 import { IncomeResponse, MedicalServices } from '../../interfaces/medicalService.interface';
 import { MatDialog } from '@angular/material/dialog';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 
 @Component({
@@ -15,9 +16,18 @@ import { MatDialog } from '@angular/material/dialog';
       width: 100%;
     }
 
-    .mat-form-field {
-      width: 100%;
+    .form-input {
+      width: 200px;
     }
+
+    .filter-form {
+      width: 100%
+    }
+
+    .summary-card-totals {
+      width: 20%;
+    }
+
     `
   ]
 })
@@ -25,11 +35,18 @@ export class ReporteComponent implements OnInit {
 
   ingresosDiarios: IncomeResponse[] = [];
   serviciosOnEdit: MedicalServices[] = [];
+  resumenPorRango: number=0;
   dataSource!: MatTableDataSource<IncomeResponse>;
   @ViewChild(MatPaginator)  paginator!: MatPaginator;
   @ViewChild(MatSort)  sort!: MatSort;
-  displayedColumnsDaily: string[] = ['nombre', 'apellido', 'telefono', 'sub total cliente','total ingreso','tipo de pago', 'Acciones'];
+  displayedColumnsDaily: string[] = ['fecha','nombre', 'apellido', 'telefono', 'sub total cliente','total ingreso','tipo de pago', 'Acciones'];
 
+
+  miFormulario: FormGroup = this.formBuilder.group({
+    start      : [, [Validators.required] ],
+    end      : [ , [Validators.required]]
+    
+  })
 
 
   applyFilter(event: Event) {
@@ -52,15 +69,11 @@ export class ReporteComponent implements OnInit {
 
   consultarIngresos(){
     
-  }
-
-  constructor( private medService: MedsoftService,private dialog: MatDialog) { 
+    if(!this.miFormulario.valid){
+      return;
+    }
     
-  }
-
-  ngOnInit(): void {
-    this.medService.obtenerIngresosDiarios().subscribe(resp => {
-      console.log('Respuesta',resp);
+    this.medService.obtenerIngresosDiariosRange(this.miFormulario.controls.start.value,this.miFormulario.controls.end.value).subscribe(resp => {
       this.ingresosDiarios=resp;
       this.dataSource = new MatTableDataSource(this.ingresosDiarios);
       this.dataSource.paginator = this.paginator;
@@ -71,10 +84,24 @@ export class ReporteComponent implements OnInit {
                 data.patient.phone.toLocaleLowerCase().includes(filter) ||
                 data.subTotalClient.toString().includes(filter) || 
                 data.txTotal.toString().includes(filter) || 
-                data.paymentType.toLocaleLowerCase().includes(filter);
+                data.paymentType.toLocaleLowerCase().includes(filter) ;
+                
       }
-      console.log(resp);
     });
+
+    this.medService.obtenerIngresosPorRango(this.miFormulario.controls.start.value,this.miFormulario.controls.end.value).subscribe(resp => {
+      this.resumenPorRango=resp.rangeSummary;
+    });
+  }
+
+  constructor( private medService: MedsoftService,
+              private dialog: MatDialog,
+              private formBuilder: FormBuilder
+              ) { 
+    
+  }
+
+  ngOnInit(): void {
   }
 
 }

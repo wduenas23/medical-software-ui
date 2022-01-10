@@ -16,6 +16,7 @@ import { AgregarComponent } from './pages/servicios-medicos/agregar/agregar.comp
 import { VentasComponent } from './pages/ventas/ventas/ventas.component';
 import { AgregarProductoComponent } from './pages/producto/agregar-producto/agregar-producto.component';
 import { ListadoProductoComponent } from './pages/producto/listado-producto/listado-producto.component';
+import { DocumentDirective } from './directives/document.directive';
 
 
 
@@ -31,7 +32,8 @@ import { ListadoProductoComponent } from './pages/producto/listado-producto/list
     AgregarComponent,
     VentasComponent,
     AgregarProductoComponent,
-    ListadoProductoComponent
+    ListadoProductoComponent,
+    DocumentDirective
   ],
   imports: [
     CommonModule,

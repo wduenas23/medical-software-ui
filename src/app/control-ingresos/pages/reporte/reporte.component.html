@@ -3,36 +3,38 @@
 
 <div fxLayout="row wrap"
 fxLayout.xs="column"
-fxLayoutAlign="center"
+fxLayoutAlign="left"
 fxLayoutGap="50px">
+<form (ngSubmit)="consultarIngresos()" autocomplete="off" [formGroup]="miFormulario">
 
-<mat-form-field class="example-full-width" appearance="fill">
-    <mat-label>Fecha Inicio</mat-label>
-    <input matInput [matDatepicker]="pickerIni" >
-    <mat-datepicker-toggle matSuffix [for]="pickerIni">
-      <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
-    </mat-datepicker-toggle>
-    <mat-datepicker #pickerIni></mat-datepicker>
-  </mat-form-field>
+    <mat-form-field class="form-input" appearance="fill">
+        <mat-label>Fecha Inicio</mat-label>
+        <input matInput [matDatepicker]="pickerIni" (click)="pickerIni" formControlName="start" >
+        <mat-datepicker-toggle matSuffix [for]="pickerIni">
+          <mat-icon matDatepickerToggleIcon>date_range</mat-icon>
+        </mat-datepicker-toggle>
+        <mat-datepicker #pickerIni></mat-datepicker>
+      </mat-form-field>
 
-  <mat-form-field class="example-full-width" appearance="fill">
-    <mat-label>FechaFin</mat-label>
-    <input matInput [matDatepicker]="pickerFIn" >
-    <mat-datepicker-toggle matSuffix [for]="pickerFIn">
-      <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
-    </mat-datepicker-toggle>
-    <mat-datepicker #pickerFIn></mat-datepicker>
-    
-  </mat-form-field>
+      <mat-form-field class="form-input" appearance="fill">
+        <mat-label>FechaFin</mat-label>
+        <input matInput [matDatepicker]="pickerFIn" formControlName="end"  >
+        <mat-datepicker-toggle matSuffix [for]="pickerFIn">
+          <mat-icon matDatepickerToggleIcon>date_range</mat-icon>
+        </mat-datepicker-toggle>
+        <mat-datepicker #pickerFIn></mat-datepicker>
+        
+      </mat-form-field>
 
-  <div>
-  <button (click)="consultarIngresos()"  mat-raised-button color="accent">Consultar</button>
-</div>
+      <div>
+      <button type="submit" mat-raised-button color="accent">Consultar</button>
+    </div>
   
      
-  
+  </form>
 
 </div>
+<br>
 
 <div fxLayout="row wrap"
     fxLayout.xs="column"
@@ -40,7 +42,22 @@ fxLayoutGap="50px">
     fxLayoutGap="20px"
     >
     <div fxFlex="100">
-        
+
+      <mat-card  class="summary-card-totals ">
+        <mat-card-header >
+          <mat-card-title>Resumen de Ingresos segun rango</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+      
+          <div fxLayout="row" fxLayoutGap="20px" fxLayout.xs="column">
+             <div fxFlex="50" fxLayout="column">
+             <b> <mat-icon color="accent">trending_up</mat-icon> {{(resumenPorRango==null?0.0:resumenPorRango) | currency}}</b>
+            </div>
+          </div> 
+         
+        </mat-card-content>
+      </mat-card>
+        <br>
        
 
         <mat-card>
@@ -48,12 +65,18 @@ fxLayoutGap="50px">
             <mat-card-title></mat-card-title>
             </mat-card-header>
                 <mat-card-content>
-                  <mat-form-field appearance="fill">
+                  <mat-form-field appearance="fill" class="filter-form">
                     <mat-label>Filtro</mat-label>
                     <input  matInput (keyup)="applyFilter($event)" placeholder="Ej. Consulta" #input>
                   </mat-form-field>
                   <table class="dailyIncomeTable" mat-table [dataSource]="dataSource" matSort>
                   
+                  <ng-container matColumnDef="fecha">
+                    <th mat-header-cell *matHeaderCellDef>Fecha Servicio</th>
+                    <td mat-cell *matCellDef="let row">{{row.date | date}}</td>
+                  </ng-container>
+
+
                   <ng-container matColumnDef="nombre">
                     <th mat-header-cell *matHeaderCellDef>Nombre</th>
                     <td mat-cell *matCellDef="let row">{{row.patient.name}}</td>

@@ -31,7 +31,8 @@ export class VentasComponent implements OnInit {
     cantidad: [0, [Validators.min(0)]],
     tipoPago: [, [Validators.required]],
     descuento: [0, [Validators.min(0)]],
-
+    efectivo: [,[Validators.min(0)]],
+    tarjeta: [, [Validators.min(0)]],
   })
 
 
@@ -54,6 +55,15 @@ export class VentasComponent implements OnInit {
   ]
 
   income: Income | null = null;
+
+  pagoCombinado: boolean=false;
+
+  aplicarComisionCombinado(){
+    let comi = this.totales.find(val => val.title == "Comisiones");
+    //comi!.value = this.calculatComisionPorTarjeta("Combinado");
+    this.totales = this.totales.slice();
+    this.calcularTotalFinal();
+  }
 
   getTotalServicios() {
     return this.summaryList.map(t => t.cost).reduce((acc, value) => acc + value, 0);
@@ -129,10 +139,17 @@ export class VentasComponent implements OnInit {
       let comi = this.totales.find(val => val.title == "Comisiones");
       comi!.value = this.calculatComisionPorTarjeta();
       this.totales = this.totales.slice();
-    } else {
+      this.pagoCombinado=false;
+    } else if(tipoPago === 'Combinado'){
+      this.pagoCombinado=true;
+      this.totales = this.totales.slice();
+      this.aplicarComisionCombinado();
+    }    
+    else {
       let comi = this.totales.find(val => val.title == "Comisiones");
       comi!.value = 0;
       this.totales = this.totales.slice();
+      this.pagoCombinado=false;
     }
     this.calcularTotalFinal();
   }

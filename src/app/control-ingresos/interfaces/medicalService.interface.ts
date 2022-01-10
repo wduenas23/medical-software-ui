@@ -56,9 +56,6 @@ export interface  PaymentDetails{
 export interface IncomeResponse {
     code: string;
     message: string;
-    name:           string;
-    lastName:       string;
-    phone:          string;
     subTotalClient: number;
     txTotal:        number;
     paymentType:    string;
@@ -68,12 +65,14 @@ export interface IncomeResponse {
     services:       MedicalServices[];
     paymentDetails: PaymentDetails[];
     patient: Patient;
+    date:           Date;
 }  
 
 
 export interface SummaryTransaction{
   dailySummary: number;
   monthlySummary: number;
+  rangeSummary: number;
 }
 
 export interface Transaction {

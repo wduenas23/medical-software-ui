@@ -62,6 +62,7 @@ export interface IncomeResponse {
     paymentId:      number;
     txId:           number;
     discount:       number;
+    comission:      number;
     services:       MedicalServices[];
     paymentDetails: PaymentDetails[];
     patient: Patient;
@@ -85,15 +86,25 @@ export interface Producto{
 	categoryId:   number;
   prdCode:      string;
 	categoryName: string;
+  drogueriaId:  number;
+  drogueriaName: string;
 	name:         string;
 	description:  string;
 	inventory:    number;
 	cost:         number;
 	sellingPrice: number;
 	valid:        boolean;
+  expiDate:     Date;
+  imageUrl:     string;
+  file:         File;
 }
 
 export interface CatProductos {
+  id:   number;
+  name: string;
+}
+
+export interface ProductFactoryPojo {
   id:   number;
   name: string;
 }

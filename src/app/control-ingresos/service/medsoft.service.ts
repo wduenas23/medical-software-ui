@@ -3,7 +3,7 @@ import { StringMap } from '@angular/compiler/src/compiler_facade_interface';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { CatProductos, FormOfPayment, Income, IncomeResponse, MedicalServices, Patient, Producto, ServiceCategory, SummaryTransaction } from '../interfaces/medicalService.interface';
+import { CatProductos, FormOfPayment, Income, IncomeResponse, MedicalServices, Patient, Producto, ServiceCategory, SummaryTransaction, ProductFactoryPojo } from '../interfaces/medicalService.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +31,10 @@ export class MedsoftService {
 
   obtenerCategoriaProductos(): Observable<CatProductos[]>{
     return this.http.get<CatProductos[]>(`${this.baseUrl}/products/category/all`);
+  }
+
+  obtenerDroguerias(): Observable<ProductFactoryPojo[]>{
+    return this.http.get<ProductFactoryPojo[]>(`${this.baseUrl}/products/factory/all`);
   }
 
   obtenerServiciosMedicosActivos(): Observable<MedicalServices[]>{

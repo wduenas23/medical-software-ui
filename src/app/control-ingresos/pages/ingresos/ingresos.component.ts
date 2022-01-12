@@ -99,7 +99,7 @@ export class IngresosComponent implements OnInit {
   ]
 
 
-  displayedColumnsDaily: string[] = ['dui','nombre', 'apellido', 'telefono', 'sub total cliente','total ingreso','tipo de pago', 'Acciones'];
+  displayedColumnsDaily: string[] = ['dui','nombre', 'apellido', 'telefono','tipo de pago', 'sub total cliente','comision','descuento','total ingreso', 'Acciones'];
   editar: boolean=false;
   pagoCombinado: boolean=false;
 
@@ -237,7 +237,7 @@ export class IngresosComponent implements OnInit {
     
     let id=this.formularioIngresos.controls.identificacion.value;    
     if(id.length >= 9){
-      let identification=  id.toString().replace(/^(\d{0,8})(\d{0,1})/, '$1-$2');
+      let identification=  id.includes('-')?id:id.replace(/^(\d{0,8})(\d{0,1})/, '$1-$2');
       console.log('A buscar paciente con id: ',id);
       this.medService.buscarPaciente(identification).subscribe(resp => { 
         if(resp.ok){
@@ -262,11 +262,13 @@ export class IngresosComponent implements OnInit {
 
   guardar() {
 
-    console.log('Touched: ', this.formularioIngresos.touched);
-    if (this.formularioIngresos.invalid || !this.formularioIngresos.touched) {
+    console.log('Ift: ',(this.formularioIngresos.invalid || !this.formularioIngresos.touched) );
+    if ( this.summaryList.length<=0 || this.formularioIngresos.invalid) {
       this.formularioIngresos.markAllAsTouched();
+      this.mostrarSnackBar('Favor Ingrese valores requeridos o Servicios a ofrecer');
       return;
     }
+
 
     if(!this.income){
       let identification: string=this.formularioIngresos.controls.identificacion.value;
@@ -460,7 +462,7 @@ export class IngresosComponent implements OnInit {
 
   mostrarSnackBar(mensaje: string){
 
-    this.snackBar.open(mensaje,'ok!', {
+    this.snackBar.open(mensaje,'Aceptar!', {
       duration: 2000,
       verticalPosition: 'top'
     });

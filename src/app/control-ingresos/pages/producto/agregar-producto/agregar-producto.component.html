@@ -26,16 +26,49 @@
                     [formControl]="categoriaProducto"
                     matInput
                     [matAutocomplete]="auto"
-                    (click)="buscando()"
-                    (input)="buscando()"
+                    (click)="buscandoCategoria()"
+                    (input)="buscandoCategoria()"
                     >
 
                     <mat-autocomplete 
                     autoActiveFirstOption 
                     #auto="matAutocomplete"
-                    (optionSelected)="opcionSeleccionada($event)">
+                    (optionSelected)="opcionSeleccionadaCategoria($event)">
                     
                     <mat-option *ngFor="let option of filteredOptions" [value]="option">
+                        {{option.name}}
+                    </mat-option>
+                
+                </mat-autocomplete>
+                </mat-form-field> 
+            </div>
+
+        </div>
+
+
+        <div 
+        fxLayout="row" 
+        fxLayout.xs="column" 
+        fxLayoutGap="20px">
+            <div fxLayout="row" fxFlex="100">
+                <mat-form-field appearance="fill" fxFlex="100">
+                    <mat-label>Seleccione Drogería</mat-label>
+                    <input type="text"
+                    placeholder="Seleccione Drogería"
+                    aria-label="Droguería"
+                    [formControl]="drogueria"
+                    matInput
+                    [matAutocomplete]="autoDrogue"
+                    (click)="buscandoDrogueria()"
+                    (input)="buscandoDrogueria()"
+                    >
+
+                    <mat-autocomplete 
+                    autoActiveFirstOption 
+                    #autoDrogue="matAutocomplete"
+                    (optionSelected)="opcionSeleccionadaDrogueria($event)">
+                    
+                    <mat-option *ngFor="let option of filteredOptionsDroguerias" [value]="option">
                         {{option.name}}
                     </mat-option>
                 
@@ -98,7 +131,54 @@
                     required>
             </mat-form-field>
 
+            
+
         </div>
+
+        <div 
+        fxLayout="row" 
+        fxLayout.xs="column" 
+        fxLayoutGap="20px">
+            <mat-form-field class="example-full-width" appearance="fill">
+                <mat-label>Fecha de Expiración</mat-label>
+                <input matInput 
+                    [matDatepicker]="picker" 
+                    [(ngModel)]="producto.expiDate">
+                <mat-datepicker-toggle matSuffix [for]="picker">
+                <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                </mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+
+          </div>
+
+
+        <div 
+          fxLayout="row" 
+          fxLayout.xs="column" 
+          fxLayoutGap="20px">
+              <mat-form-field fxFlex="100">
+                  <mat-label> Imagen</mat-label>
+                  <input matInput [(ngModel)]="fileAttr" readonly name="name" />
+                    <button mat-flat-button color="primary">
+                    Browse File
+                    </button>
+                <input type="file" (change)="processFile(fileInput)" #fileInput id="uploadFile" name="uploadFile" multiple="multiple" accept="image/*" />
+              </mat-form-field>
+              <div *ngIf="selectedFile" class="img-preview-container">
+
+                <div class="img-preview{{selectedFile.status === 'fail' ? '-error' : ''}}"
+                     [ngStyle]="{'background-image': 'url('+ selectedFile.src + ')'}">
+                </div>
+              
+                <div *ngIf="selectedFile.pending" class="img-loading-overlay">
+                  <div class="img-spinning-circle"></div>
+                </div>
+              
+                <div *ngIf="selectedFile.status === 'ok'" class="alert alert-success"> Image Uploaded Succesfuly!</div>
+                <div *ngIf="selectedFile.status === 'fail'" class="alert alert-danger"> Image Upload Failed!</div>
+              </div>
+          </div>  
 
         <div 
         fxLayout="row" 

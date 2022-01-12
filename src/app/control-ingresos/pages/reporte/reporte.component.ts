@@ -25,7 +25,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
     }
 
     .summary-card-totals {
-      width: 20%;
+      width: 30%;
     }
 
     `
@@ -39,7 +39,7 @@ export class ReporteComponent implements OnInit {
   dataSource!: MatTableDataSource<IncomeResponse>;
   @ViewChild(MatPaginator)  paginator!: MatPaginator;
   @ViewChild(MatSort)  sort!: MatSort;
-  displayedColumnsDaily: string[] = ['fecha','nombre', 'apellido', 'telefono', 'sub total cliente','total ingreso','tipo de pago', 'Acciones'];
+  displayedColumnsDaily: string[] = ['fecha','nombre', 'apellido', 'telefono', 'tipo de pago', 'sub total cliente','descuento','comision','total ingreso', 'Acciones'];
 
 
   miFormulario: FormGroup = this.formBuilder.group({

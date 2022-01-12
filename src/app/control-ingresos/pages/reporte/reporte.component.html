@@ -97,15 +97,27 @@ fxLayoutGap="50px">
                     <td mat-cell *matCellDef="let row">{{row.subTotalClient| currency}}</td>
                   </ng-container>
                   
-                  <ng-container matColumnDef="total ingreso">
-                    <th mat-header-cell *matHeaderCellDef>Total ingreso</th>
-                    <td mat-cell *matCellDef="let row">{{row.txTotal |currency}}</td>
-                  </ng-container>
-                  
                   <ng-container matColumnDef="tipo de pago">
                     <th mat-header-cell *matHeaderCellDef>Tipo de Pago</th>
                     <td mat-cell *matCellDef="let row">{{row.paymentType}}</td>
                   </ng-container>
+
+                  <ng-container matColumnDef="descuento">
+                    <th mat-header-cell *matHeaderCellDef>Descuento</th>
+                    <td mat-cell *matCellDef="let row">{{row.discount | currency}}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="comision">
+                    <th mat-header-cell *matHeaderCellDef>Comisión</th>
+                    <td mat-cell *matCellDef="let row">{{row.comission| currency}}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="total ingreso">
+                    <th mat-header-cell *matHeaderCellDef>Total ingreso</th>
+                    <td mat-cell *matCellDef="let row"><b>{{row.txTotal |currency}}</b></td>
+                  </ng-container>
+                  
+                  
                   
                   <ng-container matColumnDef="Acciones">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Acciones </th>

@@ -1,12 +1,13 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CatProductos, ProductFactoryPojo, Producto } from 'src/app/control-ingresos/interfaces/medicalService.interface';
+import { ProductFactoryPojo, Producto } from 'src/app/control-ingresos/interfaces/medicalService.interface';
 import { switchMap } from "rxjs/operators";
 import { MedsoftService } from 'src/app/control-ingresos/service/medsoft.service';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { DatePipe } from '@angular/common';
+
+
 
 @Component({
   selector: 'app-agregar-producto',
@@ -40,35 +41,42 @@ import { DatePipe } from '@angular/common';
 export class AgregarProductoComponent implements OnInit {
 
 
+  formularioProducto: FormGroup = this.formBuilder.group({
+    drogueria: ['',[Validators.required]],
+    codigoProducto: [,[Validators.required]],
+    nombre: [,[Validators.required]],
+    descripcion: [,[Validators.required]],
+    inventario: [[Validators.required]],
+    fechaExpiracion: [new Date(), [Validators.required]],
+    costo: [ [Validators.min(0)]],
+    precioVenta: [,[Validators.min(0)]],
+    precioPromocion: [],
+    valid: [true,[Validators.required]]
+  })
+
   categoriaProducto: FormControl = this.formBuilder.control('', Validators.required);
-  drogueria: FormControl = this.formBuilder.control('', Validators.required);
   fechaExpiracion: FormControl = this.formBuilder.control('', Validators.required);
 
   producto: Producto={
     categoryId: 0,
-    cost: 1,
+    cost: 0,
     categoryName: '',
     description: '',
     id: 0,
-    inventory: 1,
+    inventory: 0,
     name: '',
     prdCode: '',
-    sellingPrice: 1,
+    sellingPrice: 0,
+    promotionPrice: 0,
     valid: true,
     drogueriaId: 0,
     drogueriaName:'',
-    expiDate: new Date(),
-    imageUrl: '',
-    file: {} as File
+    expiDate: new Date()    
   }
   nombreRepetido: boolean= false;
   codigoRepetido: boolean= false;
 
-  catProductos: CatProductos[]=[];
-  filteredOptions!: CatProductos[];
-  categoriaProductoNuevo!: CatProductos;
-  categoriaProductoNuevoSeleccionado!: CatProductos;
-
+  
   droguerias: ProductFactoryPojo[]=[];
   filteredOptionsDroguerias!: ProductFactoryPojo[];
   drogueriaNuevo!: ProductFactoryPojo;
@@ -77,64 +85,40 @@ export class AgregarProductoComponent implements OnInit {
   fileAttr = 'Seleccione Imagen del producto';
   @ViewChild('fileInput') fileInput!: ElementRef;
 
-  selectedFile!: ImageSnippet;
-
   
-  buscandoCategoria() {
-    this.filteredOptions = this._filterCategoria(this.categoriaProducto.value);
-  }
-
   buscandoDrogueria() {
-    this.filteredOptionsDroguerias = this._filterDrogueria(this.drogueria.value);
+    this.filteredOptionsDroguerias = this._filterDrogueria(this.formularioProducto.controls.drogueria.value);
   }
 
 
-
-  private _filterCategoria(value: string): CatProductos[] {
-    const filterValue = value.toLowerCase();
-    return this.catProductos.filter(option => option.name.toLowerCase().includes(filterValue));
-  }
 
   private _filterDrogueria(value: string): ProductFactoryPojo[] {
     const filterValue = value.toLowerCase();
     return this.droguerias.filter(option => option.name.toLowerCase().includes(filterValue));
   }
 
-  
-  opcionSeleccionadaCategoria(event: MatAutocompleteSelectedEvent) {
-    this.categoriaProductoNuevoSeleccionado = event.option.value;
-    this.categoriaProducto.setValue(this.categoriaProductoNuevoSeleccionado.name);
-    this.producto.categoryId=this.categoriaProductoNuevoSeleccionado.id;
-  }
 
   opcionSeleccionadaDrogueria(event: MatAutocompleteSelectedEvent) {
     this.drogueriaNuevoSeleccionado = event.option.value;
-    this.drogueria.setValue(this.drogueriaNuevoSeleccionado.name);
+    this.formularioProducto.controls.drogueria.setValue(this.drogueriaNuevoSeleccionado.name);
     this.producto.drogueriaId=this.drogueriaNuevoSeleccionado.id;
   }
 
-  cargarCategoriaProducto(catProducto: CatProductos[],idProductCategory: number){
-    catProducto.forEach(element => {
-      if(element.id === idProductCategory){
-        this.categoriaProducto.setValue(element.name);
-      }
-    });
-  }
 
   cargarDrogueria(droguerias: ProductFactoryPojo[],idDrogueria: number){
     droguerias.forEach(element => {
       if(element.id === idDrogueria){
-        this.drogueria.setValue(element.name);
+        this.formularioProducto.controls.drogueria.setValue(element.name);
       }
     });
   }
 
 
   validarNombreProducto(){
-    this.medSoftService.validarNombreProducto(this.producto.name).subscribe(response => {
+    this.medSoftService.validarNombreProducto(this.formularioProducto.controls.nombre.value,this.producto.id).subscribe(response => {
       if(response){
         this.nombreRepetido=true;
-        this.producto.name='';
+        this.formularioProducto.controls.nombre.setValue('');
       }else{
         this.nombreRepetido=false;
       }
@@ -144,10 +128,11 @@ export class AgregarProductoComponent implements OnInit {
   }
 
   validarCodigoProducto(){
-    this.medSoftService.validarCodigoProducto(this.producto.prdCode).subscribe(response => {
+    let codigoProducto=this.formularioProducto.controls.codigoProducto.value;
+    this.medSoftService.validarCodigoProducto(codigoProducto,this.producto.id).subscribe(response => {
       if(response){
         this.codigoRepetido=true;
-        this.producto.prdCode='';
+        this.formularioProducto.controls.codigoProducto.setValue('');
       }else{
         this.codigoRepetido=false;
       }
@@ -157,7 +142,10 @@ export class AgregarProductoComponent implements OnInit {
   }
 
   edit(){
-    if(this.producto.inventory>0 && this.producto.cost>0 && this.producto.sellingPrice >0) {
+   
+    if(this.formularioProducto.valid) {
+      this.producto.expiDate= this.formularioProducto.controls.fechaExpiracion.value;
+      console.log('Producto a aguardar o editar: ',this.producto);
      this.medSoftService.editarProducto(this.producto).subscribe(response => {
         if(response.ok){
           console.log(response);
@@ -174,7 +162,6 @@ export class AgregarProductoComponent implements OnInit {
         }
         
       });
-      console.log('Producto a guardar o editar: ',this.producto);
     }else{
       this.mostrarSnackBar('Favor ingresar correctamente valores de costo inventario y precio de venta')
     }
@@ -188,57 +175,24 @@ export class AgregarProductoComponent implements OnInit {
     });
   }
 
-  processFile(imageInput: any) {
-    const file: File = imageInput.files[0];
-    const reader = new FileReader();
+  
 
-    reader.addEventListener('load', (event: any) => {
-
-      this.selectedFile = new ImageSnippet(event.target.result, file);
-      this.producto.file=this.selectedFile.file;
-      this.producto.imageUrl=event.target.result;
-      console.log('Estructura del archivo',this.selectedFile)
-      /*this.imageService.uploadImage(this.selectedFile.file).subscribe(
-        (res: any) => {
-          console.log(res);
-          this.onSuccess();
-        },
-        (err: any) => {
-          console.log(err);
-          this.onError();
-        })*/
-    });
-
-    reader.readAsDataURL(file);
-  }
-
-  private onSuccess() {
-    this.selectedFile.pending = false;
-    this.selectedFile.status = 'ok';
-  }
-
-  private onError() {
-    this.selectedFile.pending = false;
-    this.selectedFile.status = 'fail';
-    this.selectedFile.src = '';
-  }
 
   constructor(private activatedRoute: ActivatedRoute,
     private router: Router, 
     private medSoftService: MedsoftService,
     private formBuilder: FormBuilder,
-    private snackBar: MatSnackBar,
-    private datepipe: DatePipe,) { }
+    private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
 
-    this.medSoftService.obtenerCategoriaProductos().subscribe(catProductos => this.catProductos=catProductos);
     this.medSoftService.obtenerDroguerias().subscribe(droguerias => {
       console.log(droguerias);
       this.droguerias=droguerias;
     } );
-    
+
     if(!this.router.url.includes('editar')){
+      this.listener();
       return;
     }
 
@@ -247,17 +201,47 @@ export class AgregarProductoComponent implements OnInit {
       switchMap( ({id}) => this.medSoftService.obtenerProductoPorId(id) )
     )
     .subscribe (producto => {
-      this.producto=producto
-      this.cargarCategoriaProducto(this.catProductos,producto.categoryId);
-    });
+      
+      this.producto=producto;
+        var date = new Date(JSON.stringify(producto.expiDate));
+      console.log('formateado: ',date);
+      this.producto.expiDate=date;
 
+      this.formularioProducto.controls.nombre.setValue(this.producto.name);
+      this.formularioProducto.controls.codigoProducto.setValue(this.producto.prdCode);
+      this.formularioProducto.controls.descripcion.setValue(this.producto.description);
+      this.formularioProducto.controls.fechaExpiracion.setValue(date);
+      this.formularioProducto.controls.inventario.setValue(this.producto.inventory);
+      this.formularioProducto.controls.precioVenta.setValue(this.producto.sellingPrice);
+      this.formularioProducto.controls.precioPromocion.setValue(this.producto.promotionPrice);
+      this.formularioProducto.controls.costo.setValue(this.producto.cost);
+      this.formularioProducto.controls.valid.setValue(this.producto.valid);
+      let drogueria: ProductFactoryPojo = {
+        id: this.producto.drogueriaId,
+        name: this.producto.drogueriaName,
+        description: ''
+      }
+      this.formularioProducto.get('drogueria')?.setValue(drogueria);
+      this.drogueriaNuevoSeleccionado = drogueria;
+      this.formularioProducto.controls.drogueria.setValue(this.drogueriaNuevoSeleccionado.name);
+    });
 
   }
 
+listener(){
+  this.formularioProducto.valueChanges.subscribe( form => {
+    console.log('Form',form);
+    this.producto.name=form.nombre;
+    this.producto.cost= form.costo,
+    this.producto.description=form.descripcion;
+    this.producto.inventory=form.inventario;
+    this.producto.prdCode=form.codigoProducto;
+    this.producto.sellingPrice=form.precioVenta;
+    this.producto.promotionPrice=form.precioPromocion;
+    this.producto.valid= form.valid;
+    this.producto.drogueriaName=form.drogueria;
+    this.producto.expiDate= form.fechaExpiracion;
+  });
 }
 
-class ImageSnippet {
-  pending: boolean = false;
-  status: string = 'init';
-  constructor(public src: string, public file: File) {}
 }

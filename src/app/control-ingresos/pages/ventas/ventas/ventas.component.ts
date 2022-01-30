@@ -21,6 +21,9 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
       width: 90%;
     }
 
+    .mat-option-text {
+      font-size: 10px !important;
+    }
     `
   ]
 })

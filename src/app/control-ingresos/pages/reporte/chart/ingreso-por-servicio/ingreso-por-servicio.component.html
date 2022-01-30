@@ -1,0 +1,24 @@
+
+<mat-accordion *ngIf="data.length > 0">
+<mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false" expanded="true" >
+   <mat-expansion-panel-header>
+      <mat-panel-title>
+         Conteo de servicios según rango seleccionado
+       </mat-panel-title>
+   </mat-expansion-panel-header>
+   <mat-panel-description>
+
+   <div fxLayout="row" fxFlex="100">
+      <google-chart #chart
+            [options]="options"
+            [type]="type"
+            [data]="data"
+            [width]="width"
+            [height]="height">
+      </google-chart>
+   </div>
+
+   
+   </mat-panel-description>
+</mat-expansion-panel>
+</mat-accordion>

@@ -3,7 +3,7 @@ import { StringMap } from '@angular/compiler/src/compiler_facade_interface';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { CatProductos, FormOfPayment, Income, IncomeResponse, MedicalServices, Patient, Producto, ServiceCategory, SummaryTransaction, ProductFactoryPojo } from '../interfaces/medicalService.interface';
+import { CatProductos, FormOfPayment, Income, IncomeResponse, MedicalServices, Patient, Producto, ServiceCategory, SummaryTransaction, ProductFactoryPojo, MedicalServiceCount } from '../interfaces/medicalService.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -35,6 +35,14 @@ export class MedsoftService {
 
   obtenerDroguerias(): Observable<ProductFactoryPojo[]>{
     return this.http.get<ProductFactoryPojo[]>(`${this.baseUrl}/products/factory/all`);
+  }
+
+  obtenerDrogueriaPorId(id: number): Observable<ProductFactoryPojo>{
+    return this.http.get<ProductFactoryPojo>(`${this.baseUrl}/products/factory/byId?id=${id}`);
+  }
+
+  editarDrogueria(prdFactory: ProductFactoryPojo):  Observable<HttpResponse<ProductFactoryPojo>>{ 
+    return this.http.post<ProductFactoryPojo>(`${this.baseUrl}/products/factory/edit`,prdFactory,{observe: 'response'});
   }
 
   obtenerServiciosMedicosActivos(): Observable<MedicalServices[]>{
@@ -71,6 +79,10 @@ export class MedsoftService {
     return this.http.get<SummaryTransaction>(`${this.baseUrl}/summary/range?start=${start}&end=${end}`);
   }
 
+  obtenerConteoServicios(start: Date, end: Date): Observable<MedicalServiceCount[]>{
+    return this.http.get<MedicalServiceCount[]>(`${this.baseUrl}/summary/services/count/range?start=${start}&end=${end}`);
+  }
+
   obtenerIngresoPorId(id:number): Observable<IncomeResponse>{
     return this.http.get<IncomeResponse>(`${this.baseUrl}/income/byId?id=${id}`);
   }
@@ -87,12 +99,12 @@ export class MedsoftService {
     return this.http.post<Producto>(`${this.baseUrl}/products/edit`,prd,{observe: 'response'});
   }
 
-  validarNombreProducto(prdName: string): Observable<boolean>{
-    return this.http.get<boolean>(`${this.baseUrl}/products/validateName?productName=${prdName}`);
+  validarNombreProducto(prdName: string, idProducto: number): Observable<boolean>{
+    return this.http.get<boolean>(`${this.baseUrl}/products/validateName?productName=${prdName}&productId=${idProducto}`);
   }
 
-  validarCodigoProducto(prdCode: string): Observable<boolean>{
-    return this.http.get<boolean>(`${this.baseUrl}/products/validateCode?productCode=${prdCode}`);
+  validarCodigoProducto(prdCode: string, idProducto: number): Observable<boolean>{
+    return this.http.get<boolean>(`${this.baseUrl}/products/validateCode?productCode=${prdCode}&productId=${idProducto}`);
   }
 
   buscarPaciente(id: number): Observable<HttpResponse<Patient>>{

@@ -46,10 +46,10 @@ export class IngresosComponent implements OnInit {
   formularioIngresos: FormGroup = this.formBuilder.group({
     nombres: [, [Validators.required, Validators.minLength(3)]],
     apellidos: [, [Validators.required, Validators.minLength(3)]],
-    identificacion: [, [Validators.required, Validators.minLength(3)]],
+    identificacion: [],
     telefono: [, [Validators.required, Validators.minLength(3), Validators.maxLength(9)]],
     tipoPago: [, [Validators.required]],
-    descuento: [0, [Validators.min(0)]],
+    descuento: [ [Validators.min(0)]],
     fechaServicio: [new Date(), [Validators.required]],
     efectivo: [,[Validators.min(0)]],
     tarjeta: [, [Validators.min(0)]],
@@ -210,7 +210,7 @@ export class IngresosComponent implements OnInit {
   }
 
   calcularDescuento() {
-    const porcentajeDescuento = this.formularioIngresos.controls.descuento.value;
+    const porcentajeDescuento = typeof this.formularioIngresos.controls.descuento.value==='number'?this.formularioIngresos.controls.descuento.value:0;
     return (this.getTotalServicios() * (porcentajeDescuento / 100)) * -1;
   }
 
@@ -262,7 +262,7 @@ export class IngresosComponent implements OnInit {
 
   guardar() {
 
-    console.log('Ift: ',(this.formularioIngresos.invalid || !this.formularioIngresos.touched) );
+    console.log('Ift: ',(this.formularioIngresos.invalid) );
     if ( this.summaryList.length<=0 || this.formularioIngresos.invalid) {
       this.formularioIngresos.markAllAsTouched();
       this.mostrarSnackBar('Favor Ingrese valores requeridos o Servicios a ofrecer');
@@ -271,14 +271,18 @@ export class IngresosComponent implements OnInit {
 
 
     if(!this.income){
-      let identification: string=this.formularioIngresos.controls.identificacion.value;
+      
+      let identification: string=this.formularioIngresos.controls.identificacion.value==null?'':this.formularioIngresos.controls.identificacion.value;
+      console.log('identificacion',identification);
+      identification=identification;
       identification=identification.includes('-')?identification:identification.replace(/^(\d{0,8})(\d{0,1})/, '$1-$2');
+      console.log('identificacion despues del replace',identification);
       this.income = {
         services: this.summaryList,
         formOfPayment: this.formularioIngresos.controls.tipoPago.value,
         totals: this.totales,
         txDate: this.formularioIngresos.controls.fechaServicio.value,
-        discount: this.formularioIngresos.controls.descuento.value,
+        discount: typeof this.formularioIngresos.controls.descuento.value ==='number'?this.formularioIngresos.controls.descuento.value:0,
         id: this.editar?this.incomeResponse?.txId:undefined,
         paymentDetails: this.buildPaymentDetail(),
         patient: {
@@ -294,6 +298,7 @@ export class IngresosComponent implements OnInit {
       }
     }
     
+    console.log('Income a guardar',this.income);
     this.medService.guardarIngreso(this.income).subscribe(resp => {
       console.log("Respuesta Obtenida: ", resp);
       if (resp.code === "200") {

@@ -8,6 +8,8 @@ import { ListadoComponent } from './pages/servicios-medicos/listado/listado.comp
 import { VentasComponent } from './pages/ventas/ventas/ventas.component';
 import { ListadoProductoComponent } from './pages/producto/listado-producto/listado-producto.component';
 import { AgregarProductoComponent } from './pages/producto/agregar-producto/agregar-producto.component';
+import { AgregarDrogueriaComponent } from './pages/drogueria/agregar-drogueria/agregar-drogueria.component';
+import { ListadoDrogueriaComponent } from './pages/drogueria/listado-drogueria/listado-drogueria.component';
 
 
 const routes: Routes = [
@@ -20,7 +22,7 @@ const routes: Routes = [
         component: IngresosComponent
       },
       {
-        path: 'reporte',
+        path: 'reporte-ingresos',
         component: ReporteComponent
       },
       {
@@ -52,6 +54,19 @@ const routes: Routes = [
       {
         path: 'editar-productos/:id',
         component: AgregarProductoComponent
+      },
+      {
+        path: 'droguerias',
+        component: ListadoDrogueriaComponent
+      },
+      {
+        path: 'agregar-drogueria',
+        component: AgregarDrogueriaComponent
+      },
+      
+      {
+        path: 'editar-drogueria/:id',
+        component: AgregarDrogueriaComponent
       },
       {
         path: '**',

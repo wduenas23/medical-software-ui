@@ -10,79 +10,21 @@
             </button>
         </mat-toolbar>    
         
-        <mat-nav-list>
+        <mat-nav-list *ngFor="let menuPadre of autorizaciones">
             <a mat-list-item>
-                <mat-icon mat-list-icon>attach_money</mat-icon>
-                <span>Control de Ingresos y Ventas</span>
+                <mat-icon mat-list-icon>{{menuPadre.icon}}</mat-icon>
+                <span>{{menuPadre.displayName}}</span>
             </a>
-            <mat-nav-list style="margin-left:30px;">
-                <a  routerLink="./ingresos" 
+             <mat-nav-list style="margin-left:30px;" *ngFor="let child of menuPadre.childs">
+                <a  routerLink="{{child.link}}" 
                     (click)="sidenav.toggle()"
                     mat-list-item>
-                    <mat-icon mat-list-icon>add</mat-icon>
-                    <span>Ingresos</span>
+                    <mat-icon mat-list-icon>{{child.icon}}</mat-icon>
+                    <span>{{child.displayName}}</span>
                 </a>
             </mat-nav-list>
-            <mat-nav-list style="margin-left:30px;">
-                <a  routerLink="./ventas" 
-                    (click)="sidenav.toggle()"
-                    mat-list-item>
-                    <mat-icon mat-list-icon>attach_money</mat-icon>
-                    <span>Ventas</span>
-                </a>
-            </mat-nav-list>
+         
         </mat-nav-list>
-
-        
-        <mat-nav-list>
-            <a mat-list-item>
-                <mat-icon mat-list-icon>settings</mat-icon>
-                <span>Administración</span>
-            </a>
-            <mat-nav-list style="margin-left:30px;">
-                <a  routerLink="./servicios-medicos" 
-                    (click)="sidenav.toggle()"
-                    mat-list-item>
-                    <mat-icon mat-list-icon>edit</mat-icon>
-                    <span>Admin. Servicios Médicos y promociones</span>
-                </a>
-            </mat-nav-list>
-            <mat-nav-list style="margin-left:30px;">
-                <a  routerLink="./productos" 
-                    (click)="sidenav.toggle()"
-                    mat-list-item>
-                    <mat-icon mat-list-icon>edit</mat-icon>
-                    <span>Admin. Productos</span>
-                </a>
-            </mat-nav-list>
-        </mat-nav-list>
-
-
-        <mat-nav-list>
-            <a routerLink="" mat-list-item
-                >
-                <mat-icon mat-list-icon>assessment</mat-icon>
-                <span>Reportes</span>
-            </a>
-            <mat-nav-list style="margin-left:30px;">
-                <a  routerLink="./reporte" 
-                    (click)="sidenav.toggle()"
-                    mat-list-item>
-                    <mat-icon mat-list-icon>bar_chart</mat-icon>
-                    <span>Reporte de Ingresos</span>
-                </a>
-            </mat-nav-list>
-            <mat-nav-list style="margin-left:30px;">
-                <a  routerLink="./ingresos" 
-                    (click)="sidenav.toggle()"
-                    mat-list-item>
-                    <mat-icon mat-list-icon>list_alt</mat-icon>
-                    <span>Reporte de ventas y comisiones</span>
-                </a>
-            </mat-nav-list>
-            
-        </mat-nav-list>
-
     </mat-sidenav>
     <mat-toolbar color="primary">
         <button mat-button
@@ -92,7 +34,7 @@
         
         <span class="spacer"></span>
         
-        <button mat-button>
+        <button (click)="logout()" mat-button>
                 Logout
             </button>
     </mat-toolbar>

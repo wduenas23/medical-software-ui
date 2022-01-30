@@ -95,8 +95,7 @@ export interface Producto{
 	sellingPrice: number;
 	valid:        boolean;
   expiDate:     Date;
-  imageUrl:     string;
-  file:         File;
+  promotionPrice: number;
 }
 
 export interface CatProductos {
@@ -106,5 +105,16 @@ export interface CatProductos {
 
 export interface ProductFactoryPojo {
   id:   number;
+  description: string;
   name: string;
+}
+
+export interface ReportRanges {
+  startDate: Date;
+  endDate:   Date;
+}
+
+export interface MedicalServiceCount {
+  serviceName:  string;
+  count:        number;
 }

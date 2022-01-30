@@ -43,6 +43,7 @@
                 <mat-label>Ingrese DUI</mat-label>
                 <input 
                     matInput
+                    autocomplete="false"
                     #input 
                     (keyup)="buscarPaciente()"      
                     (change)="buscarPaciente()"              
@@ -55,6 +56,7 @@
               <mat-form-field appearance="fill" >
                   <mat-label>Ingrese Nombres</mat-label>
                   <input 
+                      type="text"
                       matInput 
                       #input 
                       formControlName="nombres"
@@ -63,7 +65,7 @@
               </mat-form-field>
               <mat-form-field appearance="fill">
                   <mat-label>Ingrese Apellidos</mat-label>
-                  <input 
+                  <input type="text"
                       matInput 
                       #input 
                       formControlName="apellidos"

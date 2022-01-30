@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -17,6 +17,11 @@ import { VentasComponent } from './pages/ventas/ventas/ventas.component';
 import { AgregarProductoComponent } from './pages/producto/agregar-producto/agregar-producto.component';
 import { ListadoProductoComponent } from './pages/producto/listado-producto/listado-producto.component';
 import { DocumentDirective } from './directives/document.directive';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
+import { IngresoPorServicioComponent } from './pages/reporte/chart/ingreso-por-servicio/ingreso-por-servicio.component';
+import { GoogleChartsModule } from 'angular-google-charts';
+import { ListadoDrogueriaComponent } from './pages/drogueria/listado-drogueria/listado-drogueria.component';
+import { AgregarDrogueriaComponent } from './pages/drogueria/agregar-drogueria/agregar-drogueria.component';
 
 
 
@@ -33,7 +38,10 @@ import { DocumentDirective } from './directives/document.directive';
     VentasComponent,
     AgregarProductoComponent,
     ListadoProductoComponent,
-    DocumentDirective
+    DocumentDirective,
+    IngresoPorServicioComponent,
+    ListadoDrogueriaComponent,
+    AgregarDrogueriaComponent
   ],
   imports: [
     CommonModule,
@@ -43,7 +51,10 @@ import { DocumentDirective } from './directives/document.directive';
     MaterialModule,
     ReactiveFormsModule,
     ChartsModule,
-    FormsModule
-  ]
+    FormsModule,
+    GoogleChartsModule
+  ],providers: [
+    {provide:LOCALE_ID,useValue: 'es-SV' },
+    {provide:MAT_DATE_LOCALE,useValue: 'es-SV' }]
 })
 export class ControlIngresosModule { }

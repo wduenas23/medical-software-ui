@@ -1,1 +1,23 @@
-<p>login works!</p>
+<mat-card>
+    <mat-card-content>
+      <form #loginForm="ngForm" (ngSubmit)="onSubmit()">
+        <img width="200" src="./assets/logo.jpg"/>
+        <mat-error *ngIf="!loginValid">
+          Usuario o contraseña Incorrectos
+        </mat-error>
+        <mat-form-field>
+          <input matInput placeholder="Usuario" [(ngModel)]="username" name="username" required>
+          <mat-error>
+            Por favor ingrese usuario valido
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput type="password" placeholder="Contraseña" [(ngModel)]="password" name="password" required>
+          <mat-error>
+           Ingrese contraseña correcta
+          </mat-error>
+        </mat-form-field>
+        <button mat-raised-button color="primary" [disabled]="!loginForm.form.valid">Login</button>
+      </form>
+    </mat-card-content>
+  </mat-card>

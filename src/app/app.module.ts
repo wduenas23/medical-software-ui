@@ -9,6 +9,9 @@ import { SharedModule } from './shared/shared.module';
 import localEsSv from '@angular/common/locales/es-SV';
 import {DatePipe, registerLocaleData} from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatMomentDateModule, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
+
 registerLocaleData(localEsSv);
 @NgModule({
   declarations: [
@@ -22,6 +25,8 @@ registerLocaleData(localEsSv);
   ],
   providers: [
     {provide:LOCALE_ID,useValue: 'es-SV' },
+    {provide:MAT_DATE_LOCALE,useValue: 'es-SV' },
+    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
     DatePipe
   ],
   bootstrap: [AppComponent]

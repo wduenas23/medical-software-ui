@@ -3,10 +3,10 @@ import {MatTableDataSource} from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MedsoftService } from '../../service/medsoft.service';
-import { IncomeResponse, MedicalServices } from '../../interfaces/medicalService.interface';
+import { IncomeResponse, MedicalServices, ReportRanges } from '../../interfaces/medicalService.interface';
 import { MatDialog } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
+import { IngresoPorServicioComponent } from './chart/ingreso-por-servicio/ingreso-por-servicio.component';
 
 @Component({
   selector: 'app-reporte',
@@ -25,7 +25,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
     }
 
     .summary-card-totals {
-      width: 30%;
+      width: 100%;
     }
 
     `
@@ -48,6 +48,9 @@ export class ReporteComponent implements OnInit {
     
   })
 
+  reportDetail!: ReportRanges;
+
+  @ViewChild(IngresoPorServicioComponent,{static: true}) child!: IngresoPorServicioComponent;
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -72,7 +75,10 @@ export class ReporteComponent implements OnInit {
     if(!this.miFormulario.valid){
       return;
     }
-    
+    this.reportDetail={
+      endDate:this.miFormulario.controls.end.value,
+      startDate: this.miFormulario.controls.start.value
+    }
     this.medService.obtenerIngresosDiariosRange(this.miFormulario.controls.start.value,this.miFormulario.controls.end.value).subscribe(resp => {
       this.ingresosDiarios=resp;
       this.dataSource = new MatTableDataSource(this.ingresosDiarios);
@@ -92,6 +98,8 @@ export class ReporteComponent implements OnInit {
     this.medService.obtenerIngresosPorRango(this.miFormulario.controls.start.value,this.miFormulario.controls.end.value).subscribe(resp => {
       this.resumenPorRango=resp.rangeSummary;
     });
+
+    this.child.showPieDiagram(this.miFormulario.controls.start.value,this.miFormulario.controls.end.value);
   }
 
   constructor( private medService: MedsoftService,

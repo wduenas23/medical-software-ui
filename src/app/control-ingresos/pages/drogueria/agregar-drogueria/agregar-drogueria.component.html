@@ -1,0 +1,43 @@
+<h1>
+    {{ (drogueria.id? 'Editar':'Nuevo') }}
+    Droguería:
+    <b><small>{{drogueria.name}}</small></b>
+</h1>
+
+<form (ngSubmit)="edit()" autocomplete="off" [formGroup]="formularioDrogueria" >
+    <div 
+    fxFlex="60" 
+    fxLayout="column">
+        <div fxLayout="row" fxFlex="100" fxLayoutGap="30px">
+            <mat-form-field fxFlex="100">
+                <mat-label> Nombre</mat-label>
+                <input
+                    matInput
+                    formControlName="nombre"
+                    type="text"
+                    maxlength="200"
+                    required>
+            </mat-form-field>
+        </div>
+
+        <div fxLayout="row" fxFlex="100" fxLayoutGap="30px">
+            <mat-form-field fxFlex="100">
+                <mat-label> Descripción</mat-label>
+                <textarea 
+                        matInput 
+                        formControlName="descripcion" 
+                        maxlength="200" rows="4"></textarea>
+            </mat-form-field>
+        </div>
+
+        <button type="submit" mat-raised-button color="warn" >
+            {{ (drogueria.id > 0? 'Editar':'Guardar') }}
+        </button>
+    </div>
+</form>
+
+<br>    
+
+<pre>
+    {{drogueria | json}}
+</pre>

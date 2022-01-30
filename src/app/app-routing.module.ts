@@ -13,8 +13,8 @@ const routes: Routes = [
   },
   {
     path: '',
-    //loadChildren: () => import('./auth/auth.module').then( m => m.AuthModule)
-    loadChildren: () => import('./control-ingresos/control-ingresos.module').then(m=> m.ControlIngresosModule)
+    loadChildren: () => import('./auth/auth.module').then( m => m.AuthModule)
+   // loadChildren: () => import('./control-ingresos/control-ingresos.module').then(m=> m.ControlIngresosModule)
   },
   {
     path: '404',
@@ -27,7 +27,9 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes,{
+    useHash: true
+  })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

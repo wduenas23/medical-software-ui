@@ -4,47 +4,12 @@
     <b><small>{{producto.name}}</small></b>
 </h1>
 
-<div 
-    fxLayout="row" 
-    fxLayoutGap="40px"  
-    fxLayout.xs="column" >
+<form (ngSubmit)="edit()" autocomplete="off" [formGroup]="formularioProducto" >
 
     <div 
     fxFlex="60" 
     fxLayout="column">
         
-        <div 
-        fxLayout="row" 
-        fxLayout.xs="column" 
-        fxLayoutGap="20px">
-            <div fxLayout="row" fxFlex="100">
-                <mat-form-field appearance="fill" fxFlex="100">
-                    <mat-label>Seleccione Categoria del producto</mat-label>
-                    <input type="text"
-                    placeholder="Seleccione Categoria del producto"
-                    aria-label="Cat. Producto"
-                    [formControl]="categoriaProducto"
-                    matInput
-                    [matAutocomplete]="auto"
-                    (click)="buscandoCategoria()"
-                    (input)="buscandoCategoria()"
-                    >
-
-                    <mat-autocomplete 
-                    autoActiveFirstOption 
-                    #auto="matAutocomplete"
-                    (optionSelected)="opcionSeleccionadaCategoria($event)">
-                    
-                    <mat-option *ngFor="let option of filteredOptions" [value]="option">
-                        {{option.name}}
-                    </mat-option>
-                
-                </mat-autocomplete>
-                </mat-form-field> 
-            </div>
-
-        </div>
-
 
         <div 
         fxLayout="row" 
@@ -54,203 +19,193 @@
                 <mat-form-field appearance="fill" fxFlex="100">
                     <mat-label>Seleccione Drogería</mat-label>
                     <input type="text"
-                    placeholder="Seleccione Drogería"
-                    aria-label="Droguería"
-                    [formControl]="drogueria"
-                    matInput
-                    [matAutocomplete]="autoDrogue"
-                    (click)="buscandoDrogueria()"
-                    (input)="buscandoDrogueria()"
+                        placeholder="Seleccione Drogería"
+                        aria-label="Droguería"
+                        formControlName="drogueria"
+                        matInput
+                        [matAutocomplete]="autoDrogue"
+                        (click)="buscandoDrogueria()"
+                        (input)="buscandoDrogueria()"
                     >
 
                     <mat-autocomplete 
-                    autoActiveFirstOption 
-                    #autoDrogue="matAutocomplete"
-                    (optionSelected)="opcionSeleccionadaDrogueria($event)">
+                        autoActiveFirstOption 
+                        #autoDrogue="matAutocomplete"
+                        (optionSelected)="opcionSeleccionadaDrogueria($event)">
+                        
+                        <mat-option *ngFor="let option of filteredOptionsDroguerias" [value]="option">
+                            {{option.name}}
+                        </mat-option>
                     
-                    <mat-option *ngFor="let option of filteredOptionsDroguerias" [value]="option">
-                        {{option.name}}
-                    </mat-option>
-                
-                </mat-autocomplete>
+                    </mat-autocomplete>
                 </mat-form-field> 
             </div>
 
         </div>
 
         <div 
+            fxLayout="row" 
+            fxLayout.xs="column" 
+            fxLayoutGap="30px">
+            <div fxLayout="row" fxFlex="100" fxLayoutGap="30px">
+                <mat-form-field fxFlex="100">
+                    <mat-label> {{ (codigoRepetido? 'Codigo ya existe, favor validar':'Código Producto') }}</mat-label>
+                    <input
+                        matInput
+                        formControlName="codigoProducto"
+                        maxlength="50"
+                        type="text"
+                        (blur)="validarCodigoProducto()"
+                        required>
+                </mat-form-field>
+                <mat-form-field fxFlex="100">
+                    <mat-label>  {{ (nombreRepetido? 'Nombre ya existe, favor validar':'Nombre') }}</mat-label>
+                    <input
+                        matInput
+                        formControlName="nombre"
+                        (ngModelChange)="producto.name = $event.toUpperCase()"
+                        type="text"
+                        maxlength="200"
+                        (blur)="validarNombreProducto()"
+                        required>
+                        
+                </mat-form-field>
+             </div>
+        </div>
+
+       
+
+        
+
+        <div 
         fxLayout="row" 
         fxLayout.xs="column" 
         fxLayoutGap="20px">
-
-            <mat-form-field fxFlex="100">
-                <mat-label>  {{ (nombreRepetido? 'Nombre ya existe, favor validar':'Nombre') }}</mat-label>
-                <input
-                    matInput
-                    [(ngModel)]="producto.name"
-                    (ngModelChange)="producto.name = $event.toUpperCase()"
-                    type="text"
-                    maxlength="50"
-                    (blur)="validarNombreProducto()"
-                    required>
+            <div fxLayout="row" fxFlex="100">
+                <mat-form-field fxFlex="100">
+                    <mat-label> Descripcion</mat-label>
+                    <textarea 
+                        matInput 
+                        formControlName="descripcion" 
+                        maxlength="200" rows="4"></textarea>
                     
-            </mat-form-field>
+                </mat-form-field>
 
+            </div>
         </div>
 
         <div 
-        fxLayout="row" 
-        fxLayout.xs="column" 
-        fxLayoutGap="20px">
-
-            <mat-form-field fxFlex="100">
-                <mat-label> {{ (codigoRepetido? 'Codigo ya existe, favor validar':'Código Producto') }}</mat-label>
-                <input
-                    matInput
-                    [(ngModel)]="producto.prdCode"
-                    maxlength="10"
-                    type="text"
-                    (blur)="validarCodigoProducto()"
-                    required>
-            </mat-form-field>
-
-        </div>
-
-        <div 
-        fxLayout="row" 
-        fxLayout.xs="column" 
-        fxLayoutGap="20px">
-
-            <mat-form-field fxFlex="100">
-                <mat-label> Descripcion</mat-label>
-                <input
-                    matInput
-                    [(ngModel)]="producto.description"
-                    type="text"
-                    maxlength="50"
-                    required>
-            </mat-form-field>
-
-            
-
-        </div>
-
-        <div 
-        fxLayout="row" 
-        fxLayout.xs="column" 
-        fxLayoutGap="20px">
-            <mat-form-field class="example-full-width" appearance="fill">
-                <mat-label>Fecha de Expiración</mat-label>
-                <input matInput 
-                    [matDatepicker]="picker" 
-                    [(ngModel)]="producto.expiDate">
-                <mat-datepicker-toggle matSuffix [for]="picker">
-                <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
-                </mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
-            </mat-form-field>
-
-          </div>
-
-
-        <div 
-          fxLayout="row" 
-          fxLayout.xs="column" 
-          fxLayoutGap="20px">
-              <mat-form-field fxFlex="100">
-                  <mat-label> Imagen</mat-label>
-                  <input matInput [(ngModel)]="fileAttr" readonly name="name" />
-                    <button mat-flat-button color="primary">
-                    Browse File
-                    </button>
-                <input type="file" (change)="processFile(fileInput)" #fileInput id="uploadFile" name="uploadFile" multiple="multiple" accept="image/*" />
-              </mat-form-field>
-              <div *ngIf="selectedFile" class="img-preview-container">
-
-                <div class="img-preview{{selectedFile.status === 'fail' ? '-error' : ''}}"
-                     [ngStyle]="{'background-image': 'url('+ selectedFile.src + ')'}">
+            fxLayout="row" 
+            fxLayout.xs="column" 
+            fxLayoutGap="20px">
+                <div fxLayout="row" fxFlex="50">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>Fecha de Expiración</mat-label>
+                        <input matInput 
+                            [matDatepicker]="picker" 
+                            formControlName="fechaExpiracion"
+                            type="text"
+                            >
+                        <mat-datepicker-toggle matSuffix [for]="picker">
+                        <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                        </mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
                 </div>
-              
-                <div *ngIf="selectedFile.pending" class="img-loading-overlay">
-                  <div class="img-spinning-circle"></div>
+        </div>
+
+        <div 
+            fxLayout="row" 
+            fxLayout.xs="column" 
+            fxLayoutGap="10px" fxFlex="100">
+                <div fxLayout="row">
+                    <mat-form-field >
+                        <mat-label> Inventario</mat-label>
+                        <input
+                            matInput
+                            type="number"
+                            formControlName="inventario"
+                            min="1"
+                            required>
+                    </mat-form-field>
                 </div>
-              
-                <div *ngIf="selectedFile.status === 'ok'" class="alert alert-success"> Image Uploaded Succesfuly!</div>
-                <div *ngIf="selectedFile.status === 'fail'" class="alert alert-danger"> Image Upload Failed!</div>
-              </div>
-          </div>  
+                <div 
+                    fxLayout="row" 
+                    fxLayout.xs="column" 
+                    >
+                        <div fxLayout="row" >
+                            <mat-form-field >
+                                <mat-label> Costo</mat-label>
+                                <input
+                                    matInput
+                                    type="number"
+                                    formControlName="costo"
+                                    min="1"
+                                    required>
+                            </mat-form-field>
+                        </div>
+                </div>
+        </div>
+        
+
+       
+
+
+                 
+        
+
+        
 
         <div 
         fxLayout="row" 
         fxLayout.xs="column" 
-        fxLayoutGap="20px">
-            <mat-form-field fxFlex="100">
-                <mat-label> Costo</mat-label>
-                <input
-                    matInput
-                    [(ngModel)]="producto.cost"
-                    type="number"
-                    min="1"
-                    required>
-            </mat-form-field>
+        fxLayoutGap="10px" fxFlex="100">
+            <div fxLayout="row" >
+                <mat-form-field >
+                    <mat-label> Precio de Venta</mat-label>
+                    <input
+                        matInput
+                        formControlName="precioVenta"
+                        
+                        type="number"
+                        min="1" 
+                        required>
+                </mat-form-field>
+            </div>
+            <div fxLayout="row" >
+                <mat-form-field >
+                    <mat-label> Precio de Venta promocion</mat-label>
+                    <input
+                        matInput
+                        formControlName="precioPromocion"
+                        type="number"
+                    >
+                </mat-form-field>
+            </div>
         </div>
 
+       
         <div 
         fxLayout="row" 
         fxLayout.xs="column" 
         fxLayoutGap="20px">
-            <mat-form-field fxFlex="100">
-                <mat-label> Inventario</mat-label>
-                <input
-                    matInput
-                    [(ngModel)]="producto.inventory"
-                    type="number"
-                    min="1"
-                    required>
-            </mat-form-field>
-        </div>
 
-        <div 
-        fxLayout="row" 
-        fxLayout.xs="column" 
-        fxLayoutGap="20px">
-            <mat-form-field fxFlex="100">
-                <mat-label> Precio de Venta</mat-label>
-                <input
-                    matInput
-                    [(ngModel)]="producto.sellingPrice"
-                    type="number"
-                    min="1" 
-                    required>
-            </mat-form-field>
-        </div>
-
-        <div 
-        fxLayout="row" 
-        fxLayout.xs="column" 
-        fxLayoutGap="20px">
-            <mat-form-field fxFlex="100">
-                <mat-label> Precio de Venta promocion</mat-label>
-                <input
-                    matInput
-                    [(ngModel)]="producto.sellingPrice"
-                    type="number"
-                    min="1" 
-                    required>
-            </mat-form-field>
-        </div>
-
-        <div 
-        fxLayout="row" 
-        fxLayout.xs="column" 
-        fxLayoutGap="20px">
                 <mat-label> Activo</mat-label>
-                <mat-slide-toggle name="valido" required="true" [(ngModel)]="producto.valid"></mat-slide-toggle>
+                <mat-slide-toggle name="valido" required="true" formControlName="valid"></mat-slide-toggle>
         </div>
         <br>
         <button type="button" mat-raised-button color="warn" (click)="edit();">
             {{ (producto.id? 'Editar':'Guardar') }}
         </button>
-        
+    </div>     
+</form>
 
-</div>    
+<br>
+
+<pre>
+    {{this.formularioProducto.value| json}}
+    <br>
+    {{this.formularioProducto.valid}}
+    <br>
+    {{this.producto| json}}
+</pre>

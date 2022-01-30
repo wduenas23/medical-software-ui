@@ -5,6 +5,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatCardModule} from '@angular/material/card';
+import {MatExpansionModule} from '@angular/material/expansion';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
@@ -25,6 +26,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
     MatDatepickerModule,
     MatDialogModule,
     MatButtonModule,
+    MatExpansionModule,
     MatFormFieldModule,
     MatCardModule,
     MatIconModule,

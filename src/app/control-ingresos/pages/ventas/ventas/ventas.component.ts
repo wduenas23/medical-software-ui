@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { FormOfPayment, Income, Producto, Totales } from 'src/app/control-ingresos/interfaces/medicalService.interface';
+import { FormOfPayment, Income, Patient, Producto, Totales } from 'src/app/control-ingresos/interfaces/medicalService.interface';
 import { MedsoftService } from 'src/app/control-ingresos/service/medsoft.service';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
@@ -36,6 +36,8 @@ export class VentasComponent implements OnInit {
     descuento: [0, [Validators.min(0)]],
     efectivo: [,[Validators.min(0)]],
     tarjeta: [, [Validators.min(0)]],
+    identificacion: ['',],
+    nombres: [, [Validators.required, Validators.minLength(3)]]
   })
 
 
@@ -60,6 +62,8 @@ export class VentasComponent implements OnInit {
   income: Income | null = null;
 
   pagoCombinado: boolean=false;
+
+  paciente!: Patient | null;
 
   aplicarComisionCombinado(){
     let comi = this.totales.find(val => val.title == "Comisiones");
@@ -94,6 +98,28 @@ export class VentasComponent implements OnInit {
     this.nuevoProducto.setValue(this.nuevoProductoSeleccionado.name);
   }
 
+  buscarPaciente(){
+    
+    let id=this.formularioVentas.controls.identificacion.value;    
+    if(id.length >= 9){
+      let identification=  id.includes('-')?id:id.replace(/^(\d{0,8})(\d{0,1})/, '$1-$2');
+      console.log('A buscar paciente con id: ',id);
+      this.medService.buscarPaciente(identification).subscribe(resp => { 
+        if(resp.ok){
+          this.paciente=resp.body;   
+          this.formularioVentas.controls.nombres.setValue(this.paciente!.name + ' '+this.paciente!.lastName);
+          this.formularioVentas.controls.identificacion.setValue(this.paciente!.identification);   
+        }
+        
+      },
+      error => {
+        console.log('oops', error)
+        this.paciente=null;
+        this.formularioVentas.controls.nombres.setValue('');
+      }
+      );
+    }
+  }
   guardar(){
     console.log('Touched: ', this.formularioVentas.touched);
     if (this.formularioVentas.invalid || !this.formularioVentas.touched) {

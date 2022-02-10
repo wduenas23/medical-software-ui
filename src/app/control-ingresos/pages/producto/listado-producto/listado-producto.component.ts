@@ -34,7 +34,7 @@ export class ListadoProductoComponent implements OnInit {
   @ViewChild(MatPaginator)  paginator!: MatPaginator;
   @ViewChild(MatSort)  sort!: MatSort;
 
-  displayedColumns: string[] = ['prdCode', 'factory','name', 'description','expiryDate','inventory','cost','sellingPrice','promotionPrice','valid', 'Acciones'];
+  displayedColumns: string[] = ['prdCode', 'factory','name', 'description','expiryDate','lot','inventory','cost','sellingPrice','promotionPrice','valid', 'Acciones'];
   disabled= true;
 
   applyFilter(event: Event) {

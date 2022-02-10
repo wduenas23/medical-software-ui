@@ -96,6 +96,7 @@ export interface Producto{
 	valid:        boolean;
   expiDate:     Date;
   promotionPrice: number;
+  prdLot:       string;
 }
 
 export interface CatProductos {

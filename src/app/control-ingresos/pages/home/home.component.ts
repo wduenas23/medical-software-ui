@@ -33,7 +33,6 @@ export class HomeComponent implements OnInit {
     if(localStorage.getItem('menuOptions')){
       console.log('Se metio al guardado de local storage');
       this.autorizaciones=JSON.parse(localStorage.getItem('menuOptions') || '[]') ;
-    //  this.router.navigate(['control-ingresos/ingresos']);
     }else{
       console.log('no esta en el guardado local');
       if(!this.router.url.includes('roleId')){
@@ -47,7 +46,6 @@ export class HomeComponent implements OnInit {
           console.log(resp);
           this.autorizaciones=resp;
           localStorage.setItem('menuOptions', JSON.stringify(this.autorizaciones));
-          //this.router.navigate(['control-ingresos/ingresos']);
         });
       }
       

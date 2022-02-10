@@ -48,7 +48,7 @@
             fxLayout.xs="column" 
             fxLayoutGap="30px">
             <div fxLayout="row" fxFlex="100" fxLayoutGap="30px">
-                <mat-form-field fxFlex="100">
+                <mat-form-field fxFlex="100" appearance="fill">
                     <mat-label> {{ (codigoRepetido? 'Codigo ya existe, favor validar':'Código Producto') }}</mat-label>
                     <input
                         matInput
@@ -58,7 +58,7 @@
                         (blur)="validarCodigoProducto()"
                         required>
                 </mat-form-field>
-                <mat-form-field fxFlex="100">
+                <mat-form-field fxFlex="100" appearance="fill">
                     <mat-label>  {{ (nombreRepetido? 'Nombre ya existe, favor validar':'Nombre') }}</mat-label>
                     <input
                         matInput
@@ -82,7 +82,7 @@
         fxLayout.xs="column" 
         fxLayoutGap="20px">
             <div fxLayout="row" fxFlex="100">
-                <mat-form-field fxFlex="100">
+                <mat-form-field fxFlex="100" appearance="fill">
                     <mat-label> Descripcion</mat-label>
                     <textarea 
                         matInput 
@@ -98,7 +98,7 @@
             fxLayout="row" 
             fxLayout.xs="column" 
             fxLayoutGap="20px">
-                <div fxLayout="row" fxFlex="50">
+                <div fxLayout="row" fxFlex="100" fxLayoutGap="20px">
                     <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>Fecha de Expiración</mat-label>
                         <input matInput 
@@ -111,6 +111,16 @@
                         </mat-datepicker-toggle>
                         <mat-datepicker #picker></mat-datepicker>
                     </mat-form-field>
+                    <mat-form-field fxFlex="50" appearance="fill">
+                        <mat-label>  Lote</mat-label>
+                        <input
+                            matInput
+                            formControlName="lote"
+                            type="text"
+                            maxlength="50"
+                        >
+                            
+                    </mat-form-field>
                 </div>
         </div>
 
@@ -119,7 +129,7 @@
             fxLayout.xs="column" 
             fxLayoutGap="10px" fxFlex="100">
                 <div fxLayout="row">
-                    <mat-form-field >
+                    <mat-form-field appearance="fill">
                         <mat-label> Inventario</mat-label>
                         <input
                             matInput
@@ -134,7 +144,7 @@
                     fxLayout.xs="column" 
                     >
                         <div fxLayout="row" >
-                            <mat-form-field >
+                            <mat-form-field appearance="fill">
                                 <mat-label> Costo</mat-label>
                                 <input
                                     matInput
@@ -161,7 +171,7 @@
         fxLayout.xs="column" 
         fxLayoutGap="10px" fxFlex="100">
             <div fxLayout="row" >
-                <mat-form-field >
+                <mat-form-field appearance="fill">
                     <mat-label> Precio de Venta</mat-label>
                     <input
                         matInput
@@ -173,7 +183,7 @@
                 </mat-form-field>
             </div>
             <div fxLayout="row" >
-                <mat-form-field >
+                <mat-form-field appearance="fill">
                     <mat-label> Precio de Venta promocion</mat-label>
                     <input
                         matInput
@@ -191,7 +201,7 @@
         fxLayoutGap="20px">
 
                 <mat-label> Activo</mat-label>
-                <mat-slide-toggle name="valido" required="true" formControlName="valid"></mat-slide-toggle>
+                <mat-slide-toggle name="valido" formControlName="valid"></mat-slide-toggle>
         </div>
         <br>
         <button type="button" mat-raised-button color="warn" (click)="edit();">
@@ -199,13 +209,3 @@
         </button>
     </div>     
 </form>
-
-<br>
-
-<pre>
-    {{this.formularioProducto.value| json}}
-    <br>
-    {{this.formularioProducto.valid}}
-    <br>
-    {{this.producto| json}}
-</pre>

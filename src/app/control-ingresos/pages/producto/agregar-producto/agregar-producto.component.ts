@@ -51,7 +51,8 @@ export class AgregarProductoComponent implements OnInit {
     costo: [ [Validators.min(0)]],
     precioVenta: [,[Validators.min(0)]],
     precioPromocion: [],
-    valid: [true,[Validators.required]]
+    valid: [true,[Validators.required]],
+    lote: [''],
   })
 
   categoriaProducto: FormControl = this.formBuilder.control('', Validators.required);
@@ -71,7 +72,8 @@ export class AgregarProductoComponent implements OnInit {
     valid: true,
     drogueriaId: 0,
     drogueriaName:'',
-    expiDate: new Date()    
+    expiDate: new Date(),
+    prdLot: ''
   }
   nombreRepetido: boolean= false;
   codigoRepetido: boolean= false;
@@ -145,11 +147,21 @@ export class AgregarProductoComponent implements OnInit {
    
     if(this.formularioProducto.valid) {
       this.producto.expiDate= this.formularioProducto.controls.fechaExpiracion.value;
-      console.log('Producto a aguardar o editar: ',this.producto);
+      this.producto.name=this.formularioProducto.controls.nombre.value;
+      this.producto.cost= this.formularioProducto.controls.costo.value;
+      this.producto.description=this.formularioProducto.controls.descripcion.value;
+      this.producto.inventory=this.formularioProducto.controls.inventario.value;
+      this.producto.prdCode=this.formularioProducto.controls.codigoProducto.value;
+      this.producto.sellingPrice=this.formularioProducto.controls.precioVenta.value;
+      this.producto.promotionPrice=this.formularioProducto.controls.precioPromocion.value;
+      this.producto.valid= this.formularioProducto.controls.valid.value;
+      this.producto.drogueriaName=this.formularioProducto.controls.drogueria.value;
+      this.producto.prdLot=this.formularioProducto.controls.lote.value;
+      //console.log('Producto a aguardar o editar: ',this.producto);
      this.medSoftService.editarProducto(this.producto).subscribe(response => {
         if(response.ok){
-          console.log(response);
-          console.log(response.body);
+          // console.log(response);
+          // console.log(response.body);
           if(this.producto.id === 0){
             this.mostrarSnackBar('Registro Creado Satisfactoriamente');
           }else{
@@ -187,7 +199,7 @@ export class AgregarProductoComponent implements OnInit {
   ngOnInit(): void {
 
     this.medSoftService.obtenerDroguerias().subscribe(droguerias => {
-      console.log(droguerias);
+      //console.log(droguerias);
       this.droguerias=droguerias;
     } );
 
@@ -202,9 +214,8 @@ export class AgregarProductoComponent implements OnInit {
     )
     .subscribe (producto => {
       
-      this.producto=producto;
-        var date = new Date(JSON.stringify(producto.expiDate));
-      console.log('formateado: ',date);
+    this.producto=producto;
+      var date = new Date(JSON.stringify(producto.expiDate));
       this.producto.expiDate=date;
 
       this.formularioProducto.controls.nombre.setValue(this.producto.name);
@@ -216,6 +227,7 @@ export class AgregarProductoComponent implements OnInit {
       this.formularioProducto.controls.precioPromocion.setValue(this.producto.promotionPrice);
       this.formularioProducto.controls.costo.setValue(this.producto.cost);
       this.formularioProducto.controls.valid.setValue(this.producto.valid);
+      this.formularioProducto.controls.lote.setValue(this.producto.prdLot);
       let drogueria: ProductFactoryPojo = {
         id: this.producto.drogueriaId,
         name: this.producto.drogueriaName,
@@ -230,7 +242,6 @@ export class AgregarProductoComponent implements OnInit {
 
 listener(){
   this.formularioProducto.valueChanges.subscribe( form => {
-    console.log('Form',form);
     this.producto.name=form.nombre;
     this.producto.cost= form.costo,
     this.producto.description=form.descripcion;
@@ -241,6 +252,7 @@ listener(){
     this.producto.valid= form.valid;
     this.producto.drogueriaName=form.drogueria;
     this.producto.expiDate= form.fechaExpiracion;
+    this.producto.prdLot = form.lote;
   });
 }
 

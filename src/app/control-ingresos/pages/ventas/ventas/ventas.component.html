@@ -8,6 +8,33 @@
             
 
             <div fxLayout="row" fxLayoutGap="20px"  >
+
+              <mat-form-field appearance="fill" >
+                <mat-label>Ingrese DUI</mat-label>
+                <input 
+                    matInput
+                    autocomplete="false"
+                    #input 
+                    (keyup)="buscarPaciente()"      
+                    (change)="buscarPaciente()"              
+                    duiMask
+                    type="text"
+                    maxlength="10"
+                    formControlName="identificacion"
+                    placeholder="DUI">
+            </mat-form-field>
+            <mat-form-field appearance="fill" fxFlex="100">
+              <mat-label>Nombre Paciente</mat-label>
+              <input 
+                  type="text"
+                  matInput 
+                  #input 
+                  formControlName="nombres"
+                  placeholder="Nombres">
+              
+          </mat-form-field>
+          </div>
+          <div fxLayout="row" fxLayoutGap="20px"  >
                 <mat-form-field appearance="fill" fxFlex="90">
                     <mat-label>Seleccione Producto</mat-label>
                     <input type="text"

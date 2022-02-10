@@ -252,6 +252,9 @@ export class IngresosComponent implements OnInit {
       error => {
         console.log('oops', error)
         this.paciente=null;
+        this.formularioIngresos.controls.nombres.setValue('');
+          this.formularioIngresos.controls.apellidos.setValue('');
+          this.formularioIngresos.controls.telefono.setValue('');
       }
       );
     }

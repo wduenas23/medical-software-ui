@@ -111,5 +111,9 @@ export class MedsoftService {
     return this.http.get<Patient>(`${this.baseUrl}/patient/byId?id=${id}`,{observe: 'response'});
   }
 
+  buscarPacientePorTelefono(phoneNumber: string): Observable<HttpResponse<Patient>>{
+    return this.http.get<Patient>(`${this.baseUrl}/patient/byPhoneNumber?phoneNumber=${phoneNumber}`,{observe: 'response'});
+  }
+
   constructor(private http: HttpClient) { }
 }

@@ -38,7 +38,7 @@
 <form (ngSubmit)="guardar()" autocomplete="off" [formGroup]="formularioIngresos" >
   <div fxLayout="row" fxLayoutGap="20px" fxLayout.xs="column">
       <div fxFlex="50" fxLayout="column">
-
+          <div fxLayout="row" fxLayoutGap="20px"  >
               <mat-form-field appearance="fill" >
                 <mat-label>Ingrese DUI</mat-label>
                 <input 
@@ -53,6 +53,17 @@
                     formControlName="identificacion"
                     placeholder="DUI">
             </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Ingrese Telefono sin guiones</mat-label>
+              <input 
+                  matInput 
+                  (keyup)="buscarPacientePorTelefono()"      
+                  #input 
+                  maxlength="8"
+                  formControlName="telefono"
+                  placeholder="Telefono">
+            </mat-form-field>
+            </div>
               <mat-form-field appearance="fill" >
                   <mat-label>Ingrese Nombres</mat-label>
                   <input 
@@ -71,15 +82,7 @@
                       formControlName="apellidos"
                       placeholder="Apellidos">
               </mat-form-field>
-              <mat-form-field appearance="fill">
-                <mat-label>Ingrese Telefono sin guiones</mat-label>
-                <input 
-                    matInput 
-                    #input 
-                    maxlength="8"
-                    formControlName="telefono"
-                    placeholder="Telefono">
-            </mat-form-field>
+              
 
               <mat-form-field class="example-full-width" appearance="fill">
                 <mat-label>Fecha de Servicio</mat-label>
@@ -103,7 +106,9 @@
                     (click)="buscandoPromo()"
                     (input)="buscandoPromo()"
                     >
-
+                    <button *ngIf="nuevoServicioPromo.value" matSuffix mat-icon-button aria-label="Clear" (click)="nuevoServicioPromo.setValue('')">
+                      <mat-icon>close</mat-icon>
+                    </button>
                     <mat-autocomplete 
                     autoActiveFirstOption 
                     #autoPromo="matAutocomplete"
@@ -137,7 +142,9 @@
                     (click)="buscando()"
                     (input)="buscando()"
                     >
-
+                    <button *ngIf="nuevoServicio.value" matSuffix mat-icon-button aria-label="Clear" (click)="nuevoServicio.setValue('')">
+                      <mat-icon>close</mat-icon>
+                    </button>
                     <mat-autocomplete 
                     autoActiveFirstOption 
                     #auto="matAutocomplete"
@@ -171,8 +178,24 @@
                     #input 
                     formControlName="descuento"
                     maxlength="10" 
-                    placeholder="Precio">
+                    placeholder="% Descuento">
                 <button type="button" *ngIf="formularioIngresos.controls.descuento.value>=0"
+                      matSuffix aria-label="Aplicar" mat-raised-button  color="accent"
+                      (click)="aplicarDescuento()">
+                      Aplicar
+                </button>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" fxFlex="50">
+                <mat-label>Cantidad Descuento</mat-label>
+                <input 
+                    type="number"
+                    matInput 
+                    #input 
+                    formControlName="descuentoNumerico"
+                    maxlength="10" 
+                    placeholder="Cantidad Descuento">
+                <button type="button" *ngIf="formularioIngresos.controls.descuentoNumerico.value>=0"
                       matSuffix aria-label="Aplicar" mat-raised-button  color="accent"
                       (click)="aplicarDescuento()">
                       Aplicar
@@ -340,6 +363,11 @@
   <ng-container matColumnDef="comision">
     <th mat-header-cell *matHeaderCellDef>Comisión</th>
     <td mat-cell *matCellDef="let row">{{row.comission| currency}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="Total Transaccion">
+    <th mat-header-cell *matHeaderCellDef>Sub Total</th>
+    <td mat-cell *matCellDef="let row">{{row.txSubTotal | currency}}</td>
   </ng-container>
 
 

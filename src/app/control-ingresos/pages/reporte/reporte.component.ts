@@ -39,7 +39,7 @@ export class ReporteComponent implements OnInit {
   dataSource!: MatTableDataSource<IncomeResponse>;
   @ViewChild(MatPaginator)  paginator!: MatPaginator;
   @ViewChild(MatSort)  sort!: MatSort;
-  displayedColumnsDaily: string[] = ['fecha','nombre', 'apellido', 'telefono', 'tipo de pago', 'sub total cliente','descuento','comision','total ingreso', 'Acciones'];
+  displayedColumnsDaily: string[] = ['fecha','nombre', 'apellido', 'telefono', 'tipo de pago','Total Transaccion','descuento', 'sub total cliente','comision','total ingreso', 'Acciones'];
 
 
   miFormulario: FormGroup = this.formBuilder.group({
@@ -90,6 +90,7 @@ export class ReporteComponent implements OnInit {
                 data.patient.phone.toLocaleLowerCase().includes(filter) ||
                 data.subTotalClient.toString().includes(filter) || 
                 data.txTotal.toString().includes(filter) || 
+                data.txSubTotal.toString().includes(filter) || 
                 data.paymentType.toLocaleLowerCase().includes(filter) ;
                 
       }

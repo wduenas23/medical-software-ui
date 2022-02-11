@@ -50,6 +50,7 @@ export class IngresosComponent implements OnInit {
     telefono: [, [Validators.required, Validators.minLength(3), Validators.maxLength(9)]],
     tipoPago: [, [Validators.required]],
     descuento: [ [Validators.min(0)]],
+    descuentoNumerico: [ [Validators.min(0)]],
     fechaServicio: [new Date(), [Validators.required]],
     efectivo: [,[Validators.min(0)]],
     tarjeta: [, [Validators.min(0)]],
@@ -99,7 +100,7 @@ export class IngresosComponent implements OnInit {
   ]
 
 
-  displayedColumnsDaily: string[] = ['dui','nombre', 'apellido', 'telefono','tipo de pago', 'sub total cliente','comision','descuento','total ingreso', 'Acciones'];
+  displayedColumnsDaily: string[] = ['dui','nombre', 'apellido', 'telefono','tipo de pago', 'Total Transaccion','descuento','sub total cliente','comision','total ingreso', 'Acciones'];
   editar: boolean=false;
   pagoCombinado: boolean=false;
 
@@ -211,7 +212,13 @@ export class IngresosComponent implements OnInit {
 
   calcularDescuento() {
     const porcentajeDescuento = typeof this.formularioIngresos.controls.descuento.value==='number'?this.formularioIngresos.controls.descuento.value:0;
-    return (this.getTotalServicios() * (porcentajeDescuento / 100)) * -1;
+    const cantidadDescuento = typeof this.formularioIngresos.controls.descuentoNumerico.value==='number'?this.formularioIngresos.controls.descuentoNumerico.value:0;
+    if(porcentajeDescuento>0){
+      return (this.getTotalServicios() * (porcentajeDescuento / 100)) * -1;
+    }else {
+      return cantidadDescuento * -1;
+    }
+    
   }
 
   calcularTotalCliente() {
@@ -263,6 +270,35 @@ export class IngresosComponent implements OnInit {
 
   }
 
+  buscarPacientePorTelefono(){
+    
+    let telefono=this.formularioIngresos.controls.telefono.value;    
+    if(telefono.length >= 8){
+      console.log('A buscar paciente por telefono');
+      this.medService.buscarPacientePorTelefono(telefono).subscribe(resp => { 
+        if(resp.ok){
+          this.paciente=resp.body;   
+          this.formularioIngresos.controls.nombres.setValue(this.paciente!.name);
+          this.formularioIngresos.controls.apellidos.setValue(this.paciente!.lastName);
+          this.formularioIngresos.controls.telefono.setValue(this.paciente!.phone);
+          this.formularioIngresos.controls.identificacion.setValue(this.paciente!.identification);   
+        }
+        
+      },
+      error => {
+        console.log('oops', error)
+        this.paciente=null;
+        this.formularioIngresos.controls.nombres.setValue('');
+          this.formularioIngresos.controls.apellidos.setValue('');
+          this.formularioIngresos.controls.telefono.setValue('');
+      }
+      );
+    }
+    
+
+
+  }
+
   guardar() {
 
     console.log('Ift: ',(this.formularioIngresos.invalid) );
@@ -280,6 +316,7 @@ export class IngresosComponent implements OnInit {
       identification=identification;
       identification=identification.includes('-')?identification:identification.replace(/^(\d{0,8})(\d{0,1})/, '$1-$2');
       console.log('identificacion despues del replace',identification);
+
       this.income = {
         services: this.summaryList,
         formOfPayment: this.formularioIngresos.controls.tipoPago.value,
@@ -365,6 +402,10 @@ export class IngresosComponent implements OnInit {
       this.formularioIngresos.controls.telefono.setValue(this.paciente.phone);
       this.formularioIngresos.controls.identificacion.setValue(this.paciente.identification);
       this.formularioIngresos.controls.descuento.setValue(resp.discount);
+      if(resp.discount<=0){
+        this.formularioIngresos.controls.descuentoNumerico.setValue(resp.discountTotal*-1);
+      }
+      
       
       let fp: FormOfPayment= {
         description:resp.paymentType,

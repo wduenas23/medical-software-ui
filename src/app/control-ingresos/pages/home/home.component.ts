@@ -14,6 +14,14 @@ import { AuthService } from 'src/app/auth/pages/login/auth.service';
       padding: 10px 10px 10px 10px;
     }
 
+    .mat-list-item {
+      font-size: 12px;
+    }
+
+    .mat-list-base .mat-list-item.mat-list-item-with-avatar, .mat-list-base .mat-list-option.mat-list-item-with-avatar {
+    height: 30px;
+    }
+
     `
   ]
 })

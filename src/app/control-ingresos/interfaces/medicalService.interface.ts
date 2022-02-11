@@ -58,10 +58,12 @@ export interface IncomeResponse {
     message: string;
     subTotalClient: number;
     txTotal:        number;
+    txSubTotal:     number;
     paymentType:    string;
     paymentId:      number;
     txId:           number;
     discount:       number;
+    discountTotal:  number;
     comission:      number;
     services:       MedicalServices[];
     paymentDetails: PaymentDetails[];

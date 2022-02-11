@@ -1,4 +1,21 @@
 <h1>Administración de Productos</h1>
+<br>
+<h2>Codigos de Colores</h2>
+<table class="codigoColores">
+  <tr>
+    <td class="yellow"></td>
+    <td>Inventario menor o igual a 10</td>
+  </tr>
+  <tr>
+    <td class="orange"></td>
+    <td>Producto a vencer en menos de 3 meses</td>
+  </tr>
+  <tr>
+    <td class="red"></td>
+    <td>Producto a vencer en menos de 2 meses</td>
+  </tr>
+</table>
+<br>
 <button mat-raised-button
           [routerLink]="['/control-ingresos/agregar-productos']"
           color="accent">
@@ -10,7 +27,7 @@
     <mat-label>Filtro</mat-label>
     <input matInput (keyup)="applyFilter($event)" placeholder="Ej. Shampo para cara" #input>
   </mat-form-field>
-<table mat-table [dataSource]="dataSource" matSort>
+<table mat-table [dataSource]="dataSource" matSort class="listadoProductos">
 
     <ng-container matColumnDef="prdCode">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Código </th>
@@ -47,7 +64,7 @@
            <!-- Name Column -->
     <ng-container matColumnDef="inventory">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Inventario </th>
-        <td mat-cell *matCellDef="let row" class="{{row.inventory<=10?'red':''}}"> {{row.inventory}} </td>
+        <td mat-cell *matCellDef="let row" class="{{row.inventory<=10?'yellow':''}}"> {{row.inventory}} </td>
       </ng-container>
 
             <!-- Name Column -->
@@ -89,7 +106,7 @@
 
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="{'red': row.inventory<=10 }" ></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="validateExpirationDate(row)" ></tr>
 
 </table>
 <mat-paginator color="primary" [pageSizeOptions]="[10, 25, 100]" aria-label="Select page of users"></mat-paginator>

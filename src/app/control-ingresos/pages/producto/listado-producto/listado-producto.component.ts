@@ -11,8 +11,26 @@ import { MedsoftService } from 'src/app/control-ingresos/service/medsoft.service
   templateUrl: './listado-producto.component.html',
   styles: [
     `
-    table {
-      width: 100%
+    .listadoProductos {
+      width: 100%;
+      text-align: center;
+    }
+
+    .codigoColores {
+      width: 30%;
+      text-align: center;
+    }
+
+    .codigoColores td{
+      width: 10px;
+      text-align: center;
+    }
+
+
+
+    .listadoProductos .mat-header-cell {
+      text-align: center;
+      font-weight: bold;
     }
 
     .mat-form-field {
@@ -20,6 +38,14 @@ import { MedsoftService } from 'src/app/control-ingresos/service/medsoft.service
       width: 100%;
     }
     .red {
+      color:black;
+      background-color: red;
+    }
+    .orange {
+      color:black;
+      background-color: orange;
+    }
+    .yellow {
       color:black;
       background-color: yellow;
     }
@@ -46,6 +72,21 @@ export class ListadoProductoComponent implements OnInit {
     }
   }
   
+  validateExpirationDate(producto: Producto): String{
+    var currentDate=new Date();
+    var expiDate = new Date(JSON.stringify(producto.expiDate));
+    var time =expiDate.getTime() - currentDate.getTime(); 
+    var days = time / (1000 * 3600 * 24);
+    console.log('días de vencimiento',days)
+    if(days < 60){
+      return "red";
+    }else if (days >= 60 && days <=90) {
+      return "orange";
+    }else {
+      return "";
+    }
+
+  }
   
   constructor(private medService: MedsoftService) { 
     this.medService.obtenerProductos().subscribe(prds=>{

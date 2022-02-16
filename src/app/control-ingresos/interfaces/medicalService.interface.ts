@@ -34,6 +34,17 @@ export interface Income {
     patient: Patient;
   }
 
+  export interface IncomeSale {
+    products:       Producto[];
+    totals:         Totales[];
+    formOfPayment:  FormOfPayment;
+    txDate:         Date ;
+    discount:       number; 
+    id:             number | undefined;
+    paymentDetails: PaymentDetails[];
+    patient: Patient;
+  }
+
 export interface Patient{
   name:           string;
 	lastName:       string;
@@ -69,6 +80,24 @@ export interface IncomeResponse {
     paymentDetails: PaymentDetails[];
     patient: Patient;
     date:           Date;
+}  
+
+export interface IncomeResponseSale {
+  code: string;
+  message: string;
+  subTotalClient: number;
+  txTotal:        number;
+  txSubTotal:     number;
+  paymentType:    string;
+  paymentId:      number;
+  txId:           number;
+  discount:       number;
+  discountTotal:  number;
+  comission:      number;
+  services:       Producto[];
+  paymentDetails: PaymentDetails[];
+  patient: Patient;
+  date:           Date;
 }  
 
 

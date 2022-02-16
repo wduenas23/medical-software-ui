@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { FormOfPayment, Income, Patient, Producto, Totales } from 'src/app/control-ingresos/interfaces/medicalService.interface';
+import { FormOfPayment, Income, Patient, PaymentDetails, Producto, Totales } from 'src/app/control-ingresos/interfaces/medicalService.interface';
 import { MedsoftService } from 'src/app/control-ingresos/service/medsoft.service';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { IncomeSale, IncomeResponseSale } from '../../../interfaces/medicalService.interface';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-ventas',
@@ -33,11 +35,15 @@ export class VentasComponent implements OnInit {
   formularioVentas: FormGroup = this.formBuilder.group({
     cantidad: [0, [Validators.min(0)]],
     tipoPago: [, [Validators.required]],
-    descuento: [0, [Validators.min(0)]],
+    descuento: [ [Validators.min(0)]],
+    descuentoNumerico: [ [Validators.min(0)]],
     efectivo: [,[Validators.min(0)]],
     tarjeta: [, [Validators.min(0)]],
     identificacion: ['',],
-    nombres: [, [Validators.required, Validators.minLength(3)]]
+    telefono: ['',],
+    nombres: [, [Validators.required, Validators.minLength(3)]],
+    apellidos: [, [Validators.required, Validators.minLength(3)]],
+    fechaServicio: [new Date(), [Validators.required]],
   })
 
 
@@ -59,25 +65,32 @@ export class VentasComponent implements OnInit {
     { title: 'Total', value: 0 },
   ]
 
-  income: Income | null = null;
+  income: IncomeSale | null = null;
+  incomeResponse: IncomeResponseSale | null=null;
 
   pagoCombinado: boolean=false;
+  editar: boolean=false;
 
   paciente!: Patient | null;
 
-  aplicarComisionCombinado(){
-    let comi = this.totales.find(val => val.title == "Comisiones");
-    //comi!.value = this.calculatComisionPorTarjeta("Combinado");
-    this.totales = this.totales.slice();
-    this.calcularTotalFinal();
-  }
+
+
+
+  
+
 
   getTotalServicios() {
-    return this.summaryList.map(t => t.cost).reduce((acc, value) => acc + value, 0);
+    return this.summaryList.map(t => t.sellingPrice).reduce((acc, value) => acc + value, 0);
   }
 
   removeProducto(servicio: Producto) {
-
+    const index = this.summaryList.indexOf(servicio);
+    this.summaryList.splice(index, 1);
+    this.summaryList = this.summaryList.slice();
+    this.aplicarDescuento();
+    this.aplicarComision(this.formularioVentas.controls.tipoPago.value);
+    this.calcularTotalCliente();
+    this.calcularTotalFinal();
   }
 
   resetAll(){
@@ -107,8 +120,10 @@ export class VentasComponent implements OnInit {
       this.medService.buscarPaciente(identification).subscribe(resp => { 
         if(resp.ok){
           this.paciente=resp.body;   
-          this.formularioVentas.controls.nombres.setValue(this.paciente!.name + ' '+this.paciente!.lastName);
+          this.formularioVentas.controls.nombres.setValue(this.paciente!.name);
+          this.formularioVentas.controls.apellidos.setValue(this.paciente!.lastName);
           this.formularioVentas.controls.identificacion.setValue(this.paciente!.identification);   
+          this.formularioVentas.controls.telefono.setValue(this.paciente!.phone);
         }
         
       },
@@ -116,10 +131,42 @@ export class VentasComponent implements OnInit {
         console.log('oops', error)
         this.paciente=null;
         this.formularioVentas.controls.nombres.setValue('');
+        this.formularioVentas.controls.apellidos.setValue('');
       }
       );
     }
   }
+
+  buscarPacientePorTelefono(){
+    
+    let telefono=this.formularioVentas.controls.telefono.value;    
+    if(telefono.length >= 8){
+      console.log('A buscar paciente por telefono');
+      this.medService.buscarPacientePorTelefono(telefono).subscribe(resp => { 
+        if(resp.ok){
+          this.paciente=resp.body;   
+          this.formularioVentas.controls.nombres.setValue(this.paciente!.name);
+          this.formularioVentas.controls.apellidos.setValue(this.paciente!.lastName);
+          this.formularioVentas.controls.identificacion.setValue(this.paciente!.identification);    
+          this.formularioVentas.controls.telefono.setValue(this.paciente!.phone);
+        }
+        
+      },
+      error => {
+        console.log('oops', error)
+        this.paciente=null;
+        this.formularioVentas.controls.nombres.setValue('');
+        this.formularioVentas.controls.apellidos.setValue('');
+      }
+      );
+    }
+    
+
+
+  }
+
+
+
   guardar(){
     console.log('Touched: ', this.formularioVentas.touched);
     if (this.formularioVentas.invalid || !this.formularioVentas.touched) {
@@ -127,24 +174,104 @@ export class VentasComponent implements OnInit {
       return;
     }
 
+    let identification: string=this.formularioVentas.controls.identificacion.value==null?'':this.formularioVentas.controls.identificacion.value;
+    console.log('identificacion',identification);
+    identification=identification;
+    identification=identification.includes('-')?identification:identification.replace(/^(\d{0,8})(\d{0,1})/, '$1-$2');
+    console.log('identificacion despues del replace',identification);
 
-    /*this.income = {
-      services: this.summaryList,
-      formOfPayment: this.formularioIngresos.controls.tipoPago.value,
-      totals: this.totales,
-      txDate: this.formularioIngresos.controls.fechaServicio.value,
-      discount: this.formularioIngresos.controls.descuento.value
+    if(!this.income){
+      
+      let identification: string=this.formularioVentas.controls.identificacion.value==null?'':this.formularioVentas.controls.identificacion.value;
+      console.log('identificacion',identification);
+      identification=identification;
+      identification=identification.includes('-')?identification:identification.replace(/^(\d{0,8})(\d{0,1})/, '$1-$2');
+      console.log('identificacion despues del replace',identification);
+
+      this.income = {
+        products: this.summaryList,
+        formOfPayment: this.formularioVentas.controls.tipoPago.value,
+        totals: this.totales,
+        txDate: this.formularioVentas.controls.fechaServicio.value,
+        discount: typeof this.formularioVentas.controls.descuento.value ==='number'?this.formularioVentas.controls.descuento.value:0,
+        id: this.editar?this.incomeResponse?.txId:undefined,
+        paymentDetails: this.buildPaymentDetail(),
+        patient: {
+          name: this.formularioVentas.controls.nombres.value,
+          lastName: this.formularioVentas.controls.apellidos.value,
+          phone: this.formularioVentas.controls.telefono.value,
+          address: '',
+          birthday: '',
+          identification: identification,
+          id: this.paciente?this.paciente.id:0
+        }
+        
+      }
     }
 
-    this.medService.guardarIngreso(this.income).subscribe(resp => {
+    console.log('Income a guardar',this.income);
+    this.medService.guardarIngresoVentas(this.income).subscribe(resp => {
       console.log("Respuesta Obtenida: ", resp);
       if (resp.code === "200") {
-        this.resetAll();
-        this.getDailySummary()
         this.mostrarSnackBar('Ingreso guardado exitosamente')
+        this.reloadPage();
       }
+    },
+    error => {
+      this.mostrarSnackBar('ERROR AL GUARDAR INGRESO')
+    });
+  }
 
-    });*/
+
+  mostrarSnackBar(mensaje: string){
+
+    this.snackBar.open(mensaje,'Aceptar!', {
+      duration: 2000,
+      verticalPosition: 'top'
+    });
+  }
+
+  reloadPage() {
+    setTimeout(()=>{
+      window.location.reload();
+    }, 1000);
+  }
+
+  buildPaymentDetail() : PaymentDetails[] {
+    let tipoPago:FormOfPayment=this.formularioVentas.controls.tipoPago.value;
+    console.log('TIPO PAGO',tipoPago);
+    let paymentDetails: PaymentDetails[]=[];
+    if(tipoPago.description==='Combinado'){
+      this.tiposPago.forEach(element => {
+        if(element.description==='Efectivo'){
+          paymentDetails.push({
+            amount: this.formularioVentas.controls.efectivo.value,
+            ptId:element.id,
+            txId:0,
+            description: element.description,
+            pdId:0
+          });
+        }
+        if(element.description==='Tarjeta'){
+          paymentDetails.push({
+            amount: this.formularioVentas.controls.tarjeta.value,
+            ptId:element.id,
+            txId:0,
+            description: element.description,
+            pdId:0
+          });
+        }
+      });
+    }else {
+      paymentDetails.push({
+        amount: this.totales.find(val => val.title == "Total")?.value,
+        pdId: 0,
+        ptId: tipoPago.id,
+        description: tipoPago.description,
+        txId:0
+      })
+    }
+    return paymentDetails;
   }
 
   aplicarDescuento(){
@@ -158,15 +285,21 @@ export class VentasComponent implements OnInit {
 
 
   calcularDescuento() {
-    const porcentajeDescuento = this.formularioVentas.controls.descuento.value;
-    return (this.getTotalServicios() * (porcentajeDescuento / 100)) * -1;
+
+    const porcentajeDescuento = typeof this.formularioVentas.controls.descuento.value==='number'?this.formularioVentas.controls.descuento.value:0;
+    const cantidadDescuento = typeof this.formularioVentas.controls.descuentoNumerico.value==='number'?this.formularioVentas.controls.descuentoNumerico.value:0;
+    if(porcentajeDescuento>0){
+      return (this.getTotalServicios() * (porcentajeDescuento / 100)) * -1;
+    }else {
+      return cantidadDescuento * -1;
+    }
   }
 
   aplicarComision(value: FormOfPayment) {
     const tipoPago = value ? value.description : '';
     if (tipoPago === 'Tarjeta') {
       let comi = this.totales.find(val => val.title == "Comisiones");
-      comi!.value = this.calculatComisionPorTarjeta();
+      comi!.value = this.calculatComisionPorTarjeta(tipoPago);
       this.totales = this.totales.slice();
       this.pagoCombinado=false;
     } else if(tipoPago === 'Combinado'){
@@ -183,11 +316,28 @@ export class VentasComponent implements OnInit {
     this.calcularTotalFinal();
   }
 
-  calculatComisionPorTarjeta() {
-    const comision = (this.getTotalServicios() + this.calcularDescuento()) * 0.07 * -1;
-    return Math.round((comision + Number.EPSILON) * 100) / 100;
+  aplicarComisionCombinado(){
+    let comi = this.totales.find(val => val.title == "Comisiones");
+    comi!.value = this.calculatComisionPorTarjeta("Combinado");
+    this.totales = this.totales.slice();
+    this.calcularTotalFinal();
   }
 
+  calculatComisionPorTarjeta(tipoPago: string) {
+    let comision=0;
+    if(tipoPago==='Combinado'){
+      comision = this.formularioVentas.controls.tarjeta.value  * 0.07 * -1;
+      let subTotalCliente = this.totales.find(val => val.title == "Sub Total Cliente");
+      let totalEfectivo= subTotalCliente!.value - this.formularioVentas.controls.tarjeta.value;
+      console.log('Calulando remanente',totalEfectivo);
+      this.formularioVentas.controls.efectivo.setValue(totalEfectivo);
+    }else{
+      comision = (this.getTotalServicios() + this.calcularDescuento()) * 0.07 * -1;
+    }
+    
+    return Math.round((comision + Number.EPSILON) * 100) / 100;
+  }
+  
   calcularTotalCliente() {
     let subTotalCliente = this.totales.find(val => val.title == "Sub Total Cliente");
     const descuentos = this.totales.find(val => val.title == "Descuentos");
@@ -221,7 +371,7 @@ export class VentasComponent implements OnInit {
       });
   }
 
-  constructor(private formBuilder: FormBuilder,private medService: MedsoftService,) { }
+  constructor(private formBuilder: FormBuilder,private medService: MedsoftService,private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
     this.onChangeTipoPago();

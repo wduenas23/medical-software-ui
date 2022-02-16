@@ -3,7 +3,7 @@ import { StringMap } from '@angular/compiler/src/compiler_facade_interface';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { CatProductos, FormOfPayment, Income, IncomeResponse, MedicalServices, Patient, Producto, ServiceCategory, SummaryTransaction, ProductFactoryPojo, MedicalServiceCount } from '../interfaces/medicalService.interface';
+import { CatProductos, FormOfPayment, Income, IncomeResponse, MedicalServices, Patient, Producto, ServiceCategory, SummaryTransaction, ProductFactoryPojo, MedicalServiceCount, IncomeSale, IncomeResponseSale } from '../interfaces/medicalService.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -64,6 +64,10 @@ export class MedsoftService {
 
   guardarIngreso(ingreso: Income): Observable<IncomeResponse>{
     return this.http.post<IncomeResponse>(`${this.baseUrl}/income/save`,ingreso);
+  }
+
+  guardarIngresoVentas(ingreso: IncomeSale): Observable<IncomeResponseSale>{
+    return this.http.post<IncomeResponseSale>(`${this.baseUrl}/income/saveSale`,ingreso);
   }
 
   obtenerIngresosDiarios(): Observable<IncomeResponse[]>{

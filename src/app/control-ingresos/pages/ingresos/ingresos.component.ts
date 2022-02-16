@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, Inject, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -261,7 +261,6 @@ export class IngresosComponent implements OnInit {
         this.paciente=null;
         this.formularioIngresos.controls.nombres.setValue('');
           this.formularioIngresos.controls.apellidos.setValue('');
-          this.formularioIngresos.controls.telefono.setValue('');
       }
       );
     }
@@ -290,7 +289,6 @@ export class IngresosComponent implements OnInit {
         this.paciente=null;
         this.formularioIngresos.controls.nombres.setValue('');
           this.formularioIngresos.controls.apellidos.setValue('');
-          this.formularioIngresos.controls.telefono.setValue('');
       }
       );
     }

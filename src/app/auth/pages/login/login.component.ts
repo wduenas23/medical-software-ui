@@ -55,6 +55,7 @@ export class LoginComponent implements OnInit {
     this.loginService.authenticateUser(this.user).subscribe(user=> {
       console.log(user);
       if(user){
+        localStorage.setItem('loginUser',this.user.user);
         this._router.navigate(['control-ingresos'],{queryParams: {roleId: user.roleId}});  
       }else{
         this.loginValid= false;

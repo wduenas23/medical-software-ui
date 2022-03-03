@@ -100,7 +100,7 @@ export class ReporteComponent implements OnInit {
       this.resumenPorRango=resp.rangeSummary;
     });
 
-    this.child.showPieDiagram(this.miFormulario.controls.start.value,this.miFormulario.controls.end.value);
+    this.child.showPieDiagram(this.miFormulario.controls.start.value,this.miFormulario.controls.end.value,'servicios');
   }
 
   constructor( private medService: MedsoftService,

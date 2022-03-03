@@ -58,12 +58,14 @@ export class IngresosComponent implements OnInit {
   })
 
 
+  comisionTarjeta=0;
   paciente!: Patient | null;
 
   nuevoServicio: FormControl = this.formBuilder.control('', );
   nuevoServicioPromo: FormControl = this.formBuilder.control('', );
 
   servicios: MedicalServices[] = [];
+  servicioEliminar!: IncomeResponse;
   serviciosOnEdit: MedicalServices[] = [];
   serviciosPromo: MedicalServices[] = [];
   nuevoServicioSeleccionado!: MedicalServices;
@@ -95,7 +97,7 @@ export class IngresosComponent implements OnInit {
   totales: Totales[] = [
     { title: 'Descuentos', value: 0 },
     { title: 'Sub Total Cliente', value: 0 },
-    { title: 'Comisiones', value: 0 },
+    { title: 'Comision por Tarjeta', value: 0 },
     { title: 'Total', value: 0 },
   ]
 
@@ -170,7 +172,7 @@ export class IngresosComponent implements OnInit {
   aplicarComision(value: FormOfPayment) {
     const tipoPago = value ? value.description : '';
     if (tipoPago === 'Tarjeta') {
-      let comi = this.totales.find(val => val.title == "Comisiones");
+      let comi = this.totales.find(val => val.title == "Comision por Tarjeta");
       comi!.value = this.calculatComisionPorTarjeta(tipoPago);
       this.totales = this.totales.slice();
       this.pagoCombinado=false;
@@ -179,7 +181,7 @@ export class IngresosComponent implements OnInit {
       this.totales = this.totales.slice();
       this.aplicarComisionCombinado();
     }else {
-      let comi = this.totales.find(val => val.title == "Comisiones");
+      let comi = this.totales.find(val => val.title == "Comision por Tarjeta");
       comi!.value = 0;
       this.totales = this.totales.slice();
       this.pagoCombinado=false;
@@ -189,7 +191,7 @@ export class IngresosComponent implements OnInit {
 
 
   aplicarComisionCombinado(){
-    let comi = this.totales.find(val => val.title == "Comisiones");
+    let comi = this.totales.find(val => val.title == "Comision por Tarjeta");
     comi!.value = this.calculatComisionPorTarjeta("Combinado");
     this.totales = this.totales.slice();
     this.calcularTotalFinal();
@@ -198,13 +200,13 @@ export class IngresosComponent implements OnInit {
   calculatComisionPorTarjeta(tipoPago: string) {
     let comision=0;
     if(tipoPago==='Combinado'){
-      comision = this.formularioIngresos.controls.tarjeta.value  * 0.07 * -1;
+      comision = this.formularioIngresos.controls.tarjeta.value  * this.comisionTarjeta * -1;
       let subTotalCliente = this.totales.find(val => val.title == "Sub Total Cliente");
       let totalEfectivo= subTotalCliente!.value - this.formularioIngresos.controls.tarjeta.value;
       console.log('Calulando remanente',totalEfectivo);
       this.formularioIngresos.controls.efectivo.setValue(totalEfectivo);
     }else{
-      comision = (this.getTotalServicios() + this.calcularDescuento()) * 0.07 * -1;
+      comision = (this.getTotalServicios() + this.calcularDescuento()) * this.comisionTarjeta * -1;
     }
     
     return Math.round((comision + Number.EPSILON) * 100) / 100;
@@ -230,7 +232,7 @@ export class IngresosComponent implements OnInit {
 
   calcularTotalFinal() {
     let totalFinal = this.totales.find(val => val.title == "Total");
-    const comisiones = this.totales.find(val => val.title == "Comisiones");
+    const comisiones = this.totales.find(val => val.title == "Comision por Tarjeta");
     const descuentos = this.totales.find(val => val.title == "Descuentos");
     totalFinal!.value = this.getTotalServicios() + comisiones!.value + descuentos!.value;
     this.totales = this.totales.slice();
@@ -323,6 +325,8 @@ export class IngresosComponent implements OnInit {
         discount: typeof this.formularioIngresos.controls.descuento.value ==='number'?this.formularioIngresos.controls.descuento.value:0,
         id: this.editar?this.incomeResponse?.txId:undefined,
         paymentDetails: this.buildPaymentDetail(),
+        deleteFlag: 0,
+        user: localStorage.getItem('loginUser'),
         patient: {
           name: this.formularioIngresos.controls.nombres.value,
           lastName: this.formularioIngresos.controls.apellidos.value,
@@ -444,6 +448,19 @@ export class IngresosComponent implements OnInit {
 
   }
 
+  eliminarIngreso(id: number,templateRef: any){
+    this.medService.obtenerIngresoPorId(id).subscribe( resp=> {
+      this.servicioEliminar=resp;
+      const dialogRef = this.dialog.open(templateRef,
+        {
+          width: '450px'
+        });
+    });
+   
+
+
+  }
+
 
   compareFunction(o1: any, o2: any) {
     if(o1 && o2){
@@ -531,6 +548,19 @@ export class IngresosComponent implements OnInit {
     }
   }
 
+  confirmarEliminarIngreso(){
+    console.log(this.servicioEliminar);
+    this.medService.borrarIngreso(this.servicioEliminar.txId).subscribe(resp=>{
+      if(resp===true){
+        this.reloadPage();
+      }else{
+        this.mostrarSnackBar('Error al eliminar Registro')  
+      }
+    },
+    error=>{
+      this.mostrarSnackBar('Error al eliminar Registro')
+    });
+  }
 
   constructor(
         private formBuilder: FormBuilder, 
@@ -556,6 +586,10 @@ export class IngresosComponent implements OnInit {
       this.dataSource.sort = this.sort;
       console.log(resp);
     });
+    this.medService.obtenerParametroPorId('COMISION_TARJETA').subscribe(resp => {
+      this.comisionTarjeta=Number(resp.body?.pmtValue);
+      console.log(this.comisionTarjeta);
+    })
   }
 
  

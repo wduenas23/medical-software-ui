@@ -1,0 +1,186 @@
+<h1>Reporte de Ventas y Comisiones</h1>
+<hr>
+
+<div fxLayout="row wrap"
+fxLayout.xs="column"
+fxLayoutAlign="left"
+fxLayoutGap="50px">
+<form (ngSubmit)="consultarIngresos()" autocomplete="off" [formGroup]="miFormulario">
+
+    <mat-form-field class="form-input" appearance="fill">
+        <mat-label>Fecha Inicio</mat-label>
+        <input matInput [matDatepicker]="pickerIni" (click)="pickerIni" formControlName="start" >
+        <mat-datepicker-toggle matSuffix [for]="pickerIni">
+          <mat-icon matDatepickerToggleIcon>date_range</mat-icon>
+        </mat-datepicker-toggle>
+        <mat-datepicker #pickerIni></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field class="form-input" appearance="fill">
+        <mat-label>FechaFin</mat-label>
+        <input matInput [matDatepicker]="pickerFIn" formControlName="end"  >
+        <mat-datepicker-toggle matSuffix [for]="pickerFIn">
+          <mat-icon matDatepickerToggleIcon>date_range</mat-icon>
+        </mat-datepicker-toggle>
+        <mat-datepicker #pickerFIn></mat-datepicker>
+        
+      </mat-form-field>
+
+      <div>
+      <button type="submit" mat-raised-button color="accent">Consultar</button>
+    </div>
+  
+     
+  </form>
+  <div 
+  fxLayout="row wrap"
+    fxLayout.xs="column"
+    fxLayoutAlign="center"
+    fxLayoutGap="20px">
+    <app-ingreso-por-servicio [item]="reportDetail"></app-ingreso-por-servicio>
+  </div>
+
+</div>
+<br>
+
+
+
+
+
+<div fxLayout="row wrap"
+    fxLayout.xs="column"
+    fxLayoutAlign="center"
+    fxLayoutGap="20px"
+    >
+    <div fxFlex="100">
+
+     
+      
+        <br>
+       
+
+        <mat-card>
+            <mat-card-header >
+            <mat-card-title>
+              Ingresos por ventas<b> <mat-icon color="accent">trending_up</mat-icon> {{(resumenPorRango==null?0.0:resumenPorRango) | currency}}</b>
+              <br>
+              Comision a pagar<b> <mat-icon color="accent">trending_up</mat-icon> {{(resumenComisionPorRango==null?0.0:resumenComisionPorRango) | currency}}</b>
+            </mat-card-title>
+            </mat-card-header>
+                <mat-card-content>
+                  <mat-form-field appearance="fill" class="filter-form">
+                    <mat-label>Filtro</mat-label>
+                    <input  matInput (keyup)="applyFilter($event)" placeholder="Ej. Consulta" #input>
+                  </mat-form-field>
+                  <table class="dailyIncomeTable" mat-table [dataSource]="dataSource" matSort>
+                  
+                  <ng-container matColumnDef="fecha">
+                    <th mat-header-cell *matHeaderCellDef>Fecha Servicio</th>
+                    <td mat-cell *matCellDef="let row">{{row.date | date}}</td>
+                  </ng-container>
+
+
+                  <ng-container matColumnDef="nombre">
+                    <th mat-header-cell *matHeaderCellDef>Nombre</th>
+                    <td mat-cell *matCellDef="let row">{{row.patient.name}}</td>
+                  </ng-container>
+                  
+                  <ng-container matColumnDef="apellido">
+                    <th mat-header-cell *matHeaderCellDef>Apellido</th>
+                    <td mat-cell *matCellDef="let row">{{row.patient.lastName}}</td>
+                  </ng-container>
+                  
+                  <ng-container matColumnDef="telefono">
+                    <th mat-header-cell *matHeaderCellDef>Telefono</th>
+                    <td mat-cell *matCellDef="let row">{{row.patient.phone}}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="Total Transaccion">
+                    <th mat-header-cell *matHeaderCellDef>Sub Total</th>
+                    <td mat-cell *matCellDef="let row">{{row.txSubTotal | currency}}</td>
+                  </ng-container>
+                  
+                  <ng-container matColumnDef="sub total cliente">
+                    <th mat-header-cell *matHeaderCellDef>Total cancelado por Cliente</th>
+                    <td mat-cell *matCellDef="let row">{{row.subTotalClient| currency}}</td>
+                  </ng-container>
+                  
+                  <ng-container matColumnDef="tipo de pago">
+                    <th mat-header-cell *matHeaderCellDef>Tipo de Pago</th>
+                    <td mat-cell *matCellDef="let row">{{row.paymentType}}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="descuento">
+                    <th mat-header-cell *matHeaderCellDef>Descuento</th>
+                    <td mat-cell *matCellDef="let row">{{row.discount | currency}}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="comision">
+                    <th mat-header-cell *matHeaderCellDef>Comisión Tarjeta</th>
+                    <td mat-cell *matCellDef="let row">{{row.comission| currency}}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="comisionVenta">
+                    <th mat-header-cell *matHeaderCellDef>Comisión Venta</th>
+                    <td mat-cell *matCellDef="let row">{{row.saleComission| currency}}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="total ingreso">
+                    <th mat-header-cell *matHeaderCellDef>Total ingreso</th>
+                    <td mat-cell *matCellDef="let row"><b>{{row.txTotal |currency}}</b></td>
+                  </ng-container>
+                  
+                  
+                  
+                  <ng-container matColumnDef="Acciones">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Acciones </th>
+                    <td mat-cell *matCellDef="let row"> 
+                      <button mat-raised-button 
+                      (click)='mostrarProductos(row.txId,services)'
+                      color="accent">
+                         Productos
+                      </button>
+                      &nbsp;
+                      <button mat-raised-button 
+                      (click)='eliminarIngreso(row.txId,eliminarServicio)'
+                      color="accent">
+                        Anular Venta
+                      </button>
+                    </td>
+                  </ng-container>
+                  
+                  <tr mat-header-row *matHeaderRowDef="displayedColumnsDaily"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumnsDaily;"></tr>
+                  
+                  </table>
+                  <mat-paginator color="primary" [pageSizeOptions]="[10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+                  
+                  
+                  <ng-template #services>
+                    <h2 mat-dialog-title>productos vendidos</h2>
+                    <mat-dialog-content>
+                      <mat-list role="list">
+                        <mat-list-item role="listitem" *ngFor="let prd of productOnEdit">
+                          <mat-icon mat-list-icon>radio_button_checked</mat-icon>
+                          {{prd.name}}
+                        </mat-list-item>
+                        
+                      </mat-list>
+                    </mat-dialog-content>
+                  </ng-template>
+                  <ng-template #eliminarServicio>
+                    <h2 mat-dialog-title>Esta seguro desea eliminar Venta para paciente: {{incomeEliminar.patient.name}} {{incomeEliminar.patient.lastName }} </h2>
+                    <mat-dialog-content>
+                      
+                      <br>
+                      <button type="button" (click)="confirmarEliminarIngreso()" color="accent" mat-raised-button >Eliminar</button>
+                      <button mat-button mat-dialog-close>Cancel</button>
+                    </mat-dialog-content>
+                  </ng-template>
+                </mat-card-content>
+        </mat-card>
+    </div>
+  
+   
+</div>
+

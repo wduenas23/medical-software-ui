@@ -15,6 +15,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
       width: 90%;
     }
 
+    .summary-card .mat-card-content{
+      overflow-y: scroll;
+      height: 300px;
+    }
+
     .summary-card-totals {
       width: 20%;
     }
@@ -23,8 +28,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
       width: 90%;
     }
 
-    .mat-option-text {
-      font-size: 10px !important;
+
+    .dailyIncomeTable{
+      width: 100%;
     }
     `
   ]
@@ -48,11 +54,13 @@ export class VentasComponent implements OnInit {
 
 
   tiposPago: FormOfPayment[] = [];
+  comisionTarjeta=0;
 
   nuevoProducto: FormControl = this.formBuilder.control('', Validators.required);
   productos: Producto[] = [];
   nuevoProductoSeleccionado!: Producto;
   filteredOptions!: Producto[];
+  mapInventory = new Map();
 
   displayedColumns = ['Detalle', 'Costo', 'Action'];
   summaryList: Producto[] = [];
@@ -61,7 +69,7 @@ export class VentasComponent implements OnInit {
   totales: Totales[] = [
     { title: 'Descuentos', value: 0 },
     { title: 'Sub Total Cliente', value: 0 },
-    { title: 'Comisiones', value: 0 },
+    { title: 'Comision por Tarjeta', value: 0 },
     { title: 'Total', value: 0 },
   ]
 
@@ -196,6 +204,8 @@ export class VentasComponent implements OnInit {
         discount: typeof this.formularioVentas.controls.descuento.value ==='number'?this.formularioVentas.controls.descuento.value:0,
         id: this.editar?this.incomeResponse?.txId:undefined,
         paymentDetails: this.buildPaymentDetail(),
+        deleteFlag: 0,
+        user: localStorage.getItem('loginUser'),
         patient: {
           name: this.formularioVentas.controls.nombres.value,
           lastName: this.formularioVentas.controls.apellidos.value,
@@ -298,7 +308,7 @@ export class VentasComponent implements OnInit {
   aplicarComision(value: FormOfPayment) {
     const tipoPago = value ? value.description : '';
     if (tipoPago === 'Tarjeta') {
-      let comi = this.totales.find(val => val.title == "Comisiones");
+      let comi = this.totales.find(val => val.title == "Comision por Tarjeta");
       comi!.value = this.calculatComisionPorTarjeta(tipoPago);
       this.totales = this.totales.slice();
       this.pagoCombinado=false;
@@ -308,7 +318,7 @@ export class VentasComponent implements OnInit {
       this.aplicarComisionCombinado();
     }    
     else {
-      let comi = this.totales.find(val => val.title == "Comisiones");
+      let comi = this.totales.find(val => val.title == "Comision por Tarjeta");
       comi!.value = 0;
       this.totales = this.totales.slice();
       this.pagoCombinado=false;
@@ -317,7 +327,7 @@ export class VentasComponent implements OnInit {
   }
 
   aplicarComisionCombinado(){
-    let comi = this.totales.find(val => val.title == "Comisiones");
+    let comi = this.totales.find(val => val.title == "Comision por Tarjeta");
     comi!.value = this.calculatComisionPorTarjeta("Combinado");
     this.totales = this.totales.slice();
     this.calcularTotalFinal();
@@ -326,13 +336,13 @@ export class VentasComponent implements OnInit {
   calculatComisionPorTarjeta(tipoPago: string) {
     let comision=0;
     if(tipoPago==='Combinado'){
-      comision = this.formularioVentas.controls.tarjeta.value  * 0.07 * -1;
+      comision = this.formularioVentas.controls.tarjeta.value  * this.comisionTarjeta * -1;
       let subTotalCliente = this.totales.find(val => val.title == "Sub Total Cliente");
       let totalEfectivo= subTotalCliente!.value - this.formularioVentas.controls.tarjeta.value;
       console.log('Calulando remanente',totalEfectivo);
       this.formularioVentas.controls.efectivo.setValue(totalEfectivo);
     }else{
-      comision = (this.getTotalServicios() + this.calcularDescuento()) * 0.07 * -1;
+      comision = (this.getTotalServicios() + this.calcularDescuento()) * this.comisionTarjeta * -1;
     }
     
     return Math.round((comision + Number.EPSILON) * 100) / 100;
@@ -347,7 +357,7 @@ export class VentasComponent implements OnInit {
 
   calcularTotalFinal() {
     let totalFinal = this.totales.find(val => val.title == "Total");
-    const comisiones = this.totales.find(val => val.title == "Comisiones");
+    const comisiones = this.totales.find(val => val.title == "Comision por Tarjeta");
     const descuentos = this.totales.find(val => val.title == "Descuentos");
     totalFinal!.value = this.getTotalServicios() + comisiones!.value + descuentos!.value;
     this.totales = this.totales.slice();
@@ -357,7 +367,18 @@ export class VentasComponent implements OnInit {
     if (this.nuevoProducto.invalid) {
       return;
     }
-    console.log('Nuevo Producto: ', this.nuevoProductoSeleccionado)
+    console.log('mapa de inventario antes: ',this.mapInventory);
+    let inventory=this.mapInventory.get(this.nuevoProductoSeleccionado.id);
+    inventory=inventory-1;
+    if(inventory<0){
+      this.mostrarSnackBar('Producto Agotado');
+      return;
+    }
+    this.mapInventory.set(this.nuevoProductoSeleccionado.id,inventory);
+
+    
+
+    console.log('mapa de inventario despes: ',this.mapInventory);
     this.summaryList.push(this.nuevoProductoSeleccionado);
     this.summaryList = this.summaryList.slice();
     this.aplicarDescuento();
@@ -376,9 +397,17 @@ export class VentasComponent implements OnInit {
   ngOnInit(): void {
     this.onChangeTipoPago();
     this.medService.obtenerFormasDePago().subscribe(resp => this.tiposPago = resp);
-    this.medService.obtenerProductos().subscribe(prds=>{
+    this.medService.obtenerProductosDisponibles().subscribe(prds=>{
       this.productos = prds;
+      prds.forEach(element => {
+        this.mapInventory.set(element.id,element.inventory);
+      });
+      
     });
+    this.medService.obtenerParametroPorId('COMISION_TARJETA').subscribe(resp => {
+      this.comisionTarjeta=Number(resp.body?.pmtValue);
+      console.log(this.comisionTarjeta);
+    })
   }
 
 }

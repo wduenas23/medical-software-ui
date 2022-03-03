@@ -1,0 +1,38 @@
+<h1>
+    {{ (parametro!.pmtId? 'Editar':'Nuevo') }}
+    Droguería:
+    <b><small>{{ parametro!.pmContext }}</small></b>
+</h1>
+
+
+<form (ngSubmit)="edit()" autocomplete="off" [formGroup]="formularioParametro" >
+    <div 
+    fxFlex="60" 
+    fxLayout="column">
+        <div fxLayout="row" fxFlex="100" fxLayoutGap="30px">
+            <mat-form-field fxFlex="100">
+                <mat-label> Nombre</mat-label>
+                <input
+                    matInput
+                    formControlName="nombre"
+                    type="text"
+                    maxlength="200"
+                    readonly>
+            </mat-form-field>
+        </div>
+
+        <div fxLayout="row" fxFlex="100" fxLayoutGap="30px">
+            <mat-form-field fxFlex="100">
+                <mat-label> Valor</mat-label>
+                <input 
+                        matInput 
+                        formControlName="valor" 
+                        maxlength="200">
+            </mat-form-field>
+        </div>
+        <button type="submit" mat-raised-button color="warn" >
+            {{ (parametro!.pmtId != ''? 'Editar':'Guardar') }}
+        </button>
+    </div>
+    
+</form>

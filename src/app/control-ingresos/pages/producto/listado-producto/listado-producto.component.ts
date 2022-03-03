@@ -54,13 +54,14 @@ import { MedsoftService } from 'src/app/control-ingresos/service/medsoft.service
 })
 export class ListadoProductoComponent implements OnInit {
 
+  habilitarInventario: boolean=false;
   productos: Producto[]=[];
   dataSource!: MatTableDataSource<Producto>;
 
   @ViewChild(MatPaginator)  paginator!: MatPaginator;
   @ViewChild(MatSort)  sort!: MatSort;
 
-  displayedColumns: string[] = ['prdCode', 'factory','name', 'description','expiryDate','lot','inventory','cost','sellingPrice','promotionPrice','valid', 'Acciones'];
+  displayedColumns: string[] = ['prdCode', 'factory','name', 'description','expiryDate','lot','inventory','cost','sellingPrice','valid', 'Acciones'];
   disabled= true;
 
   applyFilter(event: Event) {
@@ -77,7 +78,6 @@ export class ListadoProductoComponent implements OnInit {
     var expiDate = new Date(JSON.stringify(producto.expiDate));
     var time =expiDate.getTime() - currentDate.getTime(); 
     var days = time / (1000 * 3600 * 24);
-    console.log('días de vencimiento',days)
     if(days < 60){
       return "red";
     }else if (days >= 60 && days <=90) {
@@ -99,6 +99,10 @@ export class ListadoProductoComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.medService.obtenerParametroPorId('HABILITAR_INVENTARIO').subscribe(resp => {
+      this.habilitarInventario=resp.body?.pmtValue.toUpperCase() ==='SI';
+      console.log(this.habilitarInventario);
+    })
   }
 
 }

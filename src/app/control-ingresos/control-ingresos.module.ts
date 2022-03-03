@@ -22,6 +22,9 @@ import { IngresoPorServicioComponent } from './pages/reporte/chart/ingreso-por-s
 import { GoogleChartsModule } from 'angular-google-charts';
 import { ListadoDrogueriaComponent } from './pages/drogueria/listado-drogueria/listado-drogueria.component';
 import { AgregarDrogueriaComponent } from './pages/drogueria/agregar-drogueria/agregar-drogueria.component';
+import { ReporteVentasComponent } from './pages/reporte/reporte-ventas/reporte-ventas.component';
+import { ParametrosGeneralesComponent } from './pages/parametros-generales/parametros-generales.component';
+import { EditarParametroComponent } from './pages/parametros-generales/editar-parametro/editar-parametro.component';
 
 
 
@@ -41,7 +44,10 @@ import { AgregarDrogueriaComponent } from './pages/drogueria/agregar-drogueria/a
     DocumentDirective,
     IngresoPorServicioComponent,
     ListadoDrogueriaComponent,
-    AgregarDrogueriaComponent
+    AgregarDrogueriaComponent,
+    ReporteVentasComponent,
+    ParametrosGeneralesComponent,
+    EditarParametroComponent
   ],
   imports: [
     CommonModule,

@@ -32,6 +32,8 @@ export interface Income {
     id:             number | undefined;
     paymentDetails: PaymentDetails[];
     patient: Patient;
+    deleteFlag: number;
+    user: string | null;
   }
 
   export interface IncomeSale {
@@ -43,6 +45,8 @@ export interface Income {
     id:             number | undefined;
     paymentDetails: PaymentDetails[];
     patient: Patient;
+    deleteFlag: number;
+    user: string | null;
   }
 
 export interface Patient{
@@ -94,10 +98,11 @@ export interface IncomeResponseSale {
   discount:       number;
   discountTotal:  number;
   comission:      number;
-  services:       Producto[];
+  products:       Producto[];
   paymentDetails: PaymentDetails[];
   patient: Patient;
   date:           Date;
+  saleComission:  number;
 }  
 
 
@@ -105,6 +110,7 @@ export interface SummaryTransaction{
   dailySummary: number;
   monthlySummary: number;
   rangeSummary: number;
+  rangeComission: number;
 }
 
 export interface Transaction {
@@ -128,6 +134,7 @@ export interface Producto{
   expiDate:     Date;
   promotionPrice: number;
   prdLot:       string;
+  user: string | null;
 }
 
 export interface CatProductos {
@@ -149,4 +156,15 @@ export interface ReportRanges {
 export interface MedicalServiceCount {
   serviceName:  string;
   count:        number;
+}
+
+export interface ProductCount {
+  prdName:  string;
+  count:        number;
+}
+
+export interface Parameter{
+  pmtId:        string;
+  pmContext:    string;
+  pmtValue:     string;
 }

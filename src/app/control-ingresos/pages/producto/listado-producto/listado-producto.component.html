@@ -73,10 +73,6 @@
         <td mat-cell *matCellDef="let row"> {{row.cost | currency}} </td>
       </ng-container> 
 
-      <ng-container matColumnDef="promotionPrice">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Precio de Promocion </th>
-        <td mat-cell *matCellDef="let row"> {{row.promotionPrice | currency}} </td>
-      </ng-container> 
 
              <!-- Name Column -->
     <ng-container matColumnDef="sellingPrice">
@@ -96,7 +92,7 @@
       <ng-container matColumnDef="Acciones">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Acciones </th>
         <td mat-cell *matCellDef="let row"> 
-          <button mat-raised-button 
+          <button mat-raised-button *ngIf="habilitarInventario"
           [routerLink]="['/control-ingresos/editar-productos',row.id]"
           color="accent">
             Editar

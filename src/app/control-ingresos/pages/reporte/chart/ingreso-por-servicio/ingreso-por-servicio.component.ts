@@ -30,16 +30,29 @@ export class IngresoPorServicioComponent implements OnInit {
     
   }
 
-  showPieDiagram(start: Date,end: Date) {
-    this.medService.obtenerConteoServicios(start,end).subscribe(resp =>{
+  showPieDiagram(start: Date,end: Date,type: string) {
+    if(type==='servicios'){
+      this.medService.obtenerConteoServicios(start,end).subscribe(resp =>{
+          this.data=[];
+          resp.forEach(element => {
+            this.data.push(
+              [element.serviceName,element.count]
+            )
+          });
+          
+        });
+    }else{
+      this.medService.obtenerConteoProductos(start,end).subscribe(resp =>{
+        console.log(resp);
         this.data=[];
         resp.forEach(element => {
           this.data.push(
-            [element.serviceName,element.count]
+            [element.prdName,element.count]
           )
         });
         
-      })
+      });
+    }
     
   }
   

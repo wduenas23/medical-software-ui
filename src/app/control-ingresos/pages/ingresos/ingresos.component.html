@@ -390,6 +390,12 @@
       color="accent">
         Servicios Brindados
       </button>
+      &nbsp;
+      <button mat-raised-button 
+      (click)='eliminarIngreso(row.txId,eliminarServicio)'
+      color="accent">
+        Eliminar Servicio
+      </button>
     </td>
   </ng-container>
 
@@ -410,5 +416,15 @@
       </mat-list-item>
       
     </mat-list>
+  </mat-dialog-content>
+</ng-template>
+
+<ng-template #eliminarServicio>
+  <h2 mat-dialog-title>Esta seguro desea eliminar Ingreso para paciente: {{servicioEliminar.patient.name}} {{servicioEliminar.patient.lastName }} </h2>
+  <mat-dialog-content>
+    
+    <br>
+    <button type="button" (click)="confirmarEliminarIngreso()" color="accent" mat-raised-button >Eliminar</button>
+    
   </mat-dialog-content>
 </ng-template>

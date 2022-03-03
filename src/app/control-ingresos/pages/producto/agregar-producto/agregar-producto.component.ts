@@ -73,7 +73,8 @@ export class AgregarProductoComponent implements OnInit {
     drogueriaId: 0,
     drogueriaName:'',
     expiDate: new Date(),
-    prdLot: ''
+    prdLot: '',
+    user: ''
   }
   nombreRepetido: boolean= false;
   codigoRepetido: boolean= false;
@@ -157,6 +158,7 @@ export class AgregarProductoComponent implements OnInit {
       this.producto.valid= this.formularioProducto.controls.valid.value;
       this.producto.drogueriaName=this.formularioProducto.controls.drogueria.value;
       this.producto.prdLot=this.formularioProducto.controls.lote.value;
+      this.producto.user=localStorage.getItem('loginUser');
       //console.log('Producto a aguardar o editar: ',this.producto);
      this.medSoftService.editarProducto(this.producto).subscribe(response => {
         if(response.ok){

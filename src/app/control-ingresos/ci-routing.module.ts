@@ -10,6 +10,9 @@ import { ListadoProductoComponent } from './pages/producto/listado-producto/list
 import { AgregarProductoComponent } from './pages/producto/agregar-producto/agregar-producto.component';
 import { AgregarDrogueriaComponent } from './pages/drogueria/agregar-drogueria/agregar-drogueria.component';
 import { ListadoDrogueriaComponent } from './pages/drogueria/listado-drogueria/listado-drogueria.component';
+import { ReporteVentasComponent } from './pages/reporte/reporte-ventas/reporte-ventas.component';
+import { ParametrosGeneralesComponent } from './pages/parametros-generales/parametros-generales.component';
+import { EditarParametroComponent } from './pages/parametros-generales/editar-parametro/editar-parametro.component';
 
 
 const routes: Routes = [
@@ -24,6 +27,10 @@ const routes: Routes = [
       {
         path: 'reporte-ingresos',
         component: ReporteComponent
+      },
+      {
+        path: 'reporte-ventas',
+        component: ReporteVentasComponent
       },
       {
         path: 'servicios-medicos',
@@ -67,6 +74,16 @@ const routes: Routes = [
       {
         path: 'editar-drogueria/:id',
         component: AgregarDrogueriaComponent
+      },
+      
+      {
+        path: 'parametros',
+        component: ParametrosGeneralesComponent
+      },
+      
+      {
+        path: 'editar-parametro/:id',
+        component: EditarParametroComponent
       },
       {
         path: '**',

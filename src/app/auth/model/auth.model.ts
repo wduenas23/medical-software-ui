@@ -10,6 +10,6 @@ export interface AuthorizationDetail {
 export interface User {
     userName:       string;
 	password:       string;
-	user:           String;
+	user:           string;
 	roleId:         number;
 }

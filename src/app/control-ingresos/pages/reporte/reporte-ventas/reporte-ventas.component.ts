@@ -42,7 +42,7 @@ export class ReporteVentasComponent implements OnInit {
   dataSource!: MatTableDataSource<IncomeResponseSale>;
   @ViewChild(MatPaginator)  paginator!: MatPaginator;
   @ViewChild(MatSort)  sort!: MatSort;
-  displayedColumnsDaily: string[] = ['fecha','nombre', 'apellido', 'telefono', 'tipo de pago','Total Transaccion','descuento', 'sub total cliente','comision','total ingreso','comisionVenta', 'Acciones'];
+  displayedColumnsDaily: string[] = ['id','fecha','nombre', 'apellido', 'telefono', 'tipo de pago','Total Transaccion','descuento', 'sub total cliente','comision','total ingreso','comisionVenta', 'Acciones'];
 
 
   miFormulario: FormGroup = this.formBuilder.group({

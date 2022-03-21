@@ -247,6 +247,70 @@
 
 <br>
 
-<!-- <pre>
-  {{this.income | json}}
-</pre> -->
+<br>
+<h1>Ventas diarias</h1>
+
+
+<mat-form-field appearance="fill">
+  <mat-label>Filtro</mat-label>
+  <input matInput (keyup)="applyFilter($event)" placeholder="Ej. Consulta" #input>
+</mat-form-field>
+<table class="dailyIncomeTable" mat-table [dataSource]="dataSource" matSort>
+
+  <ng-container matColumnDef="dui">
+    <th mat-header-cell *matHeaderCellDef>DUI</th>
+    <td mat-cell *matCellDef="let row">{{row.patient.identification}}</td>
+  </ng-container>  
+
+  <ng-container matColumnDef="nombre">
+    <th mat-header-cell *matHeaderCellDef>Nombre</th>
+    <td mat-cell *matCellDef="let row">{{row.patient.name}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="apellido">
+    <th mat-header-cell *matHeaderCellDef>Apellido</th>
+    <td mat-cell *matCellDef="let row">{{row.patient.lastName}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="telefono">
+    <th mat-header-cell *matHeaderCellDef>Telefono</th>
+    <td mat-cell *matCellDef="let row">{{row.patient.phone}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="sub total cliente">
+    <th mat-header-cell *matHeaderCellDef>Total cancelado por Cliente</th>
+    <td mat-cell *matCellDef="let row">{{row.subTotalClient| currency}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="total ingreso">
+    <th mat-header-cell *matHeaderCellDef>Total ingreso</th>
+    <td mat-cell *matCellDef="let row"><b>{{row.txTotal |currency}}</b></td>
+  </ng-container>
+
+  <ng-container matColumnDef="descuento">
+    <th mat-header-cell *matHeaderCellDef>Descuento</th>
+    <td mat-cell *matCellDef="let row">{{row.discount | currency}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="comision">
+    <th mat-header-cell *matHeaderCellDef>Comisión por pago con Tarjeta</th>
+    <td mat-cell *matCellDef="let row">{{row.comission| currency}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="Total Transaccion">
+    <th mat-header-cell *matHeaderCellDef>Sub Total</th>
+    <td mat-cell *matCellDef="let row">{{row.txSubTotal | currency}}</td>
+  </ng-container>
+
+
+  <ng-container matColumnDef="tipo de pago">
+    <th mat-header-cell *matHeaderCellDef>Tipo de Pago</th>
+    <td mat-cell *matCellDef="let row">{{row.paymentType}}</td>
+  </ng-container>
+
+
+<tr mat-header-row *matHeaderRowDef="displayedColumnsDaily"></tr>
+<tr mat-row *matRowDef="let row; columns: displayedColumnsDaily;"></tr>
+
+</table>
+<mat-paginator color="primary" [pageSizeOptions]="[10, 25, 100]" aria-label="Select page of users"></mat-paginator>

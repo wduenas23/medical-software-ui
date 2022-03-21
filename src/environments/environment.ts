@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  baseUrl: 'http://localhost:8080/medsoftbe'
+  baseUrl: 'http://192.168.1.4:8080/medsoftbe'
 };
 
 /*

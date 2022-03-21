@@ -74,6 +74,11 @@ fxLayoutGap="50px">
                   </mat-form-field>
                   <table class="dailyIncomeTable" mat-table [dataSource]="dataSource" matSort>
                   
+                    <ng-container matColumnDef="id">
+                      <th mat-header-cell *matHeaderCellDef>ID</th>
+                      <td mat-cell *matCellDef="let row">{{row.txId }}</td>
+                    </ng-container>  
+
                   <ng-container matColumnDef="fecha">
                     <th mat-header-cell *matHeaderCellDef>Fecha Servicio</th>
                     <td mat-cell *matCellDef="let row">{{row.date | date}}</td>
@@ -169,7 +174,7 @@ fxLayoutGap="50px">
                     </mat-dialog-content>
                   </ng-template>
                   <ng-template #eliminarServicio>
-                    <h2 mat-dialog-title>Esta seguro desea eliminar Venta para paciente: {{incomeEliminar.patient.name}} {{incomeEliminar.patient.lastName }} </h2>
+                    <h2 mat-dialog-title>Esta seguro desea eliminar Venta con ID: {{incomeEliminar.txId}} </h2>
                     <mat-dialog-content>
                       
                       <br>

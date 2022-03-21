@@ -60,6 +60,7 @@ export class IngresosComponent implements OnInit {
 
   comisionTarjeta=0;
   paciente!: Patient | null;
+  perfil: boolean= false;
 
   nuevoServicio: FormControl = this.formBuilder.control('', );
   nuevoServicioPromo: FormControl = this.formBuilder.control('', );
@@ -590,6 +591,12 @@ export class IngresosComponent implements OnInit {
       this.comisionTarjeta=Number(resp.body?.pmtValue);
       console.log(this.comisionTarjeta);
     })
+    let user= localStorage.getItem('loginUser');
+    if(user==='bmenjivar'){
+      this.perfil=true;
+    }else{
+      this.perfil=false;
+    }
   }
 
  

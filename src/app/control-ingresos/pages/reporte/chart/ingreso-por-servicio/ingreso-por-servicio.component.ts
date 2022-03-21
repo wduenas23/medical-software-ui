@@ -15,6 +15,7 @@ export class IngresoPorServicioComponent implements OnInit {
   @Input() item!: ReportRanges;
   resumenPorRango: number=0;
   panelOpenState = true;
+  tipoIngreso= '';
 
   title = 'Cantidad por Servicios brindados';
    type = ChartType.PieChart;
@@ -32,6 +33,7 @@ export class IngresoPorServicioComponent implements OnInit {
 
   showPieDiagram(start: Date,end: Date,type: string) {
     if(type==='servicios'){
+      this.tipoIngreso='Servicios';
       this.medService.obtenerConteoServicios(start,end).subscribe(resp =>{
           this.data=[];
           resp.forEach(element => {
@@ -43,7 +45,7 @@ export class IngresoPorServicioComponent implements OnInit {
         });
     }else{
       this.medService.obtenerConteoProductos(start,end).subscribe(resp =>{
-        console.log(resp);
+        this.tipoIngreso='Productos';
         this.data=[];
         resp.forEach(element => {
           this.data.push(

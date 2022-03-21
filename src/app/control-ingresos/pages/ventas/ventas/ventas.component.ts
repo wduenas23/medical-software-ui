@@ -1,10 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { FormOfPayment, Income, Patient, PaymentDetails, Producto, Totales } from 'src/app/control-ingresos/interfaces/medicalService.interface';
+import { FormOfPayment, Income, IncomeResponse, Patient, PaymentDetails, Producto, Totales } from 'src/app/control-ingresos/interfaces/medicalService.interface';
 import { MedsoftService } from 'src/app/control-ingresos/service/medsoft.service';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { IncomeSale, IncomeResponseSale } from '../../../interfaces/medicalService.interface';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import {MatTableDataSource} from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatDialog } from '@angular/material/dialog';
+
 
 @Component({
   selector: 'app-ventas',
@@ -17,7 +22,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
     .summary-card .mat-card-content{
       overflow-y: scroll;
-      height: 300px;
+      height: 350px;
     }
 
     .summary-card-totals {
@@ -82,9 +87,21 @@ export class VentasComponent implements OnInit {
   paciente!: Patient | null;
 
 
+  ingresosDiarios: IncomeResponse[] = [];
+  dataSource!: MatTableDataSource<IncomeResponse>;
+  @ViewChild(MatPaginator)  paginator!: MatPaginator;
+  @ViewChild(MatSort)  sort!: MatSort;
 
+  displayedColumnsDaily: string[] = ['dui','nombre', 'apellido', 'telefono','tipo de pago', 'Total Transaccion','descuento','sub total cliente','comision','total ingreso'];
+ 
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
 
-  
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
 
 
   getTotalServicios() {
@@ -102,7 +119,7 @@ export class VentasComponent implements OnInit {
   }
 
   resetAll(){
-
+    this.reloadPage();
   }
 
   buscando() {
@@ -407,7 +424,15 @@ export class VentasComponent implements OnInit {
     this.medService.obtenerParametroPorId('COMISION_TARJETA').subscribe(resp => {
       this.comisionTarjeta=Number(resp.body?.pmtValue);
       console.log(this.comisionTarjeta);
-    })
+    });
+    this.medService.obtenerIngresosDiariosVentas().subscribe(resp => {
+      console.log('Respuesta',resp);
+      this.ingresosDiarios=resp;
+      this.dataSource = new MatTableDataSource(resp);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      console.log(resp);
+    });
   }
 
 }

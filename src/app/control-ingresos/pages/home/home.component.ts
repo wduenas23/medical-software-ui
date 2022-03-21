@@ -22,6 +22,11 @@ import { AuthService } from 'src/app/auth/pages/login/auth.service';
     height: 30px;
     }
 
+
+    .homeLogo {
+      height: 100%;
+    }
+
     `
   ]
 })
@@ -67,6 +72,7 @@ export class HomeComponent implements OnInit {
   logout(){
     this.autorizaciones=[];
     localStorage.removeItem('menuOptions');
+    localStorage.removeItem('loginUser');
     this.router.navigate(['']);
   }
 

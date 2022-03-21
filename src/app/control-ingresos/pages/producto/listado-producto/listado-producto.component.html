@@ -16,7 +16,7 @@
   </tr>
 </table>
 <br>
-<button mat-raised-button
+<button mat-raised-button *ngIf="habilitarInventario"
           [routerLink]="['/control-ingresos/agregar-productos']"
           color="accent">
             Nuevo Producto

@@ -87,8 +87,8 @@ export class VentasComponent implements OnInit {
   paciente!: Patient | null;
 
 
-  ingresosDiarios: IncomeResponse[] = [];
-  dataSource!: MatTableDataSource<IncomeResponse>;
+  ingresosDiarios: IncomeResponseSale[] = [];
+  dataSource!: MatTableDataSource<IncomeResponseSale>;
   @ViewChild(MatPaginator)  paginator!: MatPaginator;
   @ViewChild(MatSort)  sort!: MatSort;
 
@@ -167,7 +167,7 @@ export class VentasComponent implements OnInit {
     let telefono=this.formularioVentas.controls.telefono.value;    
     if(telefono.length >= 8){
       console.log('A buscar paciente por telefono');
-      this.medService.buscarPacientePorTelefono(telefono).subscribe(resp => { 
+      this.medService.buscarPacientePorTelefono(encodeURIComponent(telefono)).subscribe(resp => { 
         if(resp.ok){
           this.paciente=resp.body;   
           this.formularioVentas.controls.nombres.setValue(this.paciente!.name);
@@ -431,6 +431,16 @@ export class VentasComponent implements OnInit {
       this.dataSource = new MatTableDataSource(resp);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.filterPredicate = (data: IncomeResponseSale, filter: string) => {
+        return  data.patient.name.toLocaleLowerCase().includes(filter) || 
+                data.patient.lastName.toLocaleLowerCase().includes(filter) ||
+                data.patient.phone.toLocaleLowerCase().includes(filter) ||
+                data.subTotalClient.toString().includes(filter) || 
+                data.txTotal.toString().includes(filter) || 
+                data.txSubTotal.toString().includes(filter) || 
+                data.paymentType.toLocaleLowerCase().includes(filter) ;
+                
+      }
       console.log(resp);
     });
   }

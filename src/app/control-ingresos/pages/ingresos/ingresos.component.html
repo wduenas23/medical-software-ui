@@ -55,13 +55,14 @@
             </mat-form-field>
             <mat-form-field appearance="fill">
               <mat-label>Ingrese Telefono sin guiones</mat-label>
-              <input 
+               <input 
                   matInput 
                   (keyup)="buscarPacientePorTelefono()"      
                   #input 
-                  maxlength="8"
+                  maxlength="20"
                   formControlName="telefono"
-                  placeholder="Telefono">
+                  placeholder="Telefono"> 
+                 
             </mat-form-field>
             </div>
               <mat-form-field appearance="fill" >

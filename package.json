@@ -23,6 +23,7 @@
     "@angular/platform-browser-dynamic": "~12.2.0",
     "@angular/router": "~12.2.0",
     "angular-google-charts": "^2.2.2",
+    "intl-input-phone": "^0.0.9",
     "moment": "^2.29.1",
     "ng2-charts": "^2.4.2",
     "rxjs": "~6.6.0",

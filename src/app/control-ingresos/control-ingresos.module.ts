@@ -25,6 +25,7 @@ import { AgregarDrogueriaComponent } from './pages/drogueria/agregar-drogueria/a
 import { ReporteVentasComponent } from './pages/reporte/reporte-ventas/reporte-ventas.component';
 import { ParametrosGeneralesComponent } from './pages/parametros-generales/parametros-generales.component';
 import { EditarParametroComponent } from './pages/parametros-generales/editar-parametro/editar-parametro.component';
+import { IntlInputPhoneModule } from 'intl-input-phone';
 
 
 
@@ -58,7 +59,8 @@ import { EditarParametroComponent } from './pages/parametros-generales/editar-pa
     ReactiveFormsModule,
     ChartsModule,
     FormsModule,
-    GoogleChartsModule
+    GoogleChartsModule,
+    IntlInputPhoneModule
   ],providers: [
     {provide:LOCALE_ID,useValue: 'es-SV' },
     {provide:MAT_DATE_LOCALE,useValue: 'es-SV' }]

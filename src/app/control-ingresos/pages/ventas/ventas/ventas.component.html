@@ -29,7 +29,7 @@
                   matInput 
                   (keyup)="buscarPacientePorTelefono()"      
                   #input 
-                  maxlength="8"
+                  maxlength="20"
                   formControlName="telefono"
                   placeholder="Telefono">
             </mat-form-field>
@@ -88,7 +88,7 @@
                     (optionSelected)="opcionSeleccionada($event)">
                     
                       <mat-option *ngFor="let option of filteredOptions" [value]="option">
-                      {{option.drogueriaName}} - {{option.name}} -  ${{option.sellingPrice}}
+                      {{option.drogueriaName}} {{option.brand?'- '+option.brand+' -':''}} {{option.name}} -  ${{option.sellingPrice}}
                       </mat-option>
                  
                   </mat-autocomplete>

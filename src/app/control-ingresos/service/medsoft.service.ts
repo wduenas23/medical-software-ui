@@ -82,8 +82,8 @@ export class MedsoftService {
     return this.http.get<IncomeResponse[]>(`${this.baseUrl}/income/dailyIncomes?type=1`);
   }
 
-  obtenerIngresosDiariosVentas(): Observable<IncomeResponse[]>{
-    return this.http.get<IncomeResponse[]>(`${this.baseUrl}/income/dailyIncomes?type=2`);
+  obtenerIngresosDiariosVentas(): Observable<IncomeResponseSale[]>{
+    return this.http.get<IncomeResponseSale[]>(`${this.baseUrl}/income/dailyIncomes?type=2`);
   }
 
   obtenerIngresosDiariosRange(start: Date, end: Date): Observable<IncomeResponse[]>{

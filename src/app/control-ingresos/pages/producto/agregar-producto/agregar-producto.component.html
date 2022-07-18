@@ -15,7 +15,7 @@
         fxLayout="row" 
         fxLayout.xs="column" 
         fxLayoutGap="20px">
-            <div fxLayout="row" fxFlex="100">
+            <div fxLayoutGap="20px" fxLayout="row" fxFlex="100">
                 <mat-form-field appearance="fill" fxFlex="100">
                     <mat-label>Seleccione Drogería</mat-label>
                     <input type="text"
@@ -39,6 +39,14 @@
                     
                     </mat-autocomplete>
                 </mat-form-field> 
+                <mat-form-field appearance="fill">
+                    <mat-label> Marca</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        formControlName="brand"
+                        >
+                </mat-form-field>
             </div>
 
         </div>
@@ -56,7 +64,7 @@
                         maxlength="50"
                         type="text"
                         (blur)="validarCodigoProducto()"
-                        required>
+                        >
                 </mat-form-field>
                 <mat-form-field fxFlex="100" appearance="fill">
                     <mat-label>  {{ (nombreRepetido? 'Nombre ya existe, favor validar':'Nombre') }}</mat-label>
@@ -87,6 +95,22 @@
                     <textarea 
                         matInput 
                         formControlName="descripcion" 
+                        maxlength="200" rows="4"></textarea>
+                    
+                </mat-form-field>
+
+            </div>
+        </div>
+        <div 
+        fxLayout="row" 
+        fxLayout.xs="column" 
+        fxLayoutGap="20px">
+            <div fxLayout="row" fxFlex="100">
+                <mat-form-field fxFlex="100" appearance="fill">
+                    <mat-label> Comentario</mat-label>
+                    <textarea 
+                        matInput 
+                        formControlName="comment" 
                         maxlength="200" rows="4"></textarea>
                     
                 </mat-form-field>
@@ -135,7 +159,7 @@
                             matInput
                             type="number"
                             formControlName="inventario"
-                            min="1"
+                            min="0"
                             required>
                     </mat-form-field>
                 </div>
@@ -150,7 +174,7 @@
                                     matInput
                                     type="number"
                                     formControlName="costo"
-                                    min="1"
+                                    min="0"
                                     required>
                             </mat-form-field>
                         </div>
@@ -178,7 +202,7 @@
                         formControlName="precioVenta"
                         
                         type="number"
-                        min="1" 
+                        min="0" 
                         required>
                 </mat-form-field>
             </div>

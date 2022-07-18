@@ -43,7 +43,7 @@ export class AgregarProductoComponent implements OnInit {
 
   formularioProducto: FormGroup = this.formBuilder.group({
     drogueria: ['',[Validators.required]],
-    codigoProducto: [,[Validators.required]],
+    codigoProducto: [''],
     nombre: [,[Validators.required]],
     descripcion: [,[Validators.required]],
     inventario: [[Validators.required]],
@@ -53,6 +53,8 @@ export class AgregarProductoComponent implements OnInit {
     precioPromocion: [],
     valid: [true,[Validators.required]],
     lote: [''],
+    brand: [''],
+    comment: ['']
   })
 
   categoriaProducto: FormControl = this.formBuilder.control('', Validators.required);
@@ -74,7 +76,9 @@ export class AgregarProductoComponent implements OnInit {
     drogueriaName:'',
     expiDate: new Date(),
     prdLot: '',
-    user: ''
+    user: '',
+    brand: '',
+    comment: ''
   }
   nombreRepetido: boolean= false;
   codigoRepetido: boolean= false;
@@ -159,6 +163,8 @@ export class AgregarProductoComponent implements OnInit {
       this.producto.drogueriaName=this.formularioProducto.controls.drogueria.value;
       this.producto.prdLot=this.formularioProducto.controls.lote.value;
       this.producto.user=localStorage.getItem('loginUser');
+      this.producto.brand=this.formularioProducto.controls.brand.value;
+      this.producto.comment=this.formularioProducto.controls.comment.value;
       //console.log('Producto a aguardar o editar: ',this.producto);
      this.medSoftService.editarProducto(this.producto).subscribe(response => {
         if(response.ok){
@@ -230,6 +236,8 @@ export class AgregarProductoComponent implements OnInit {
       this.formularioProducto.controls.costo.setValue(this.producto.cost);
       this.formularioProducto.controls.valid.setValue(this.producto.valid);
       this.formularioProducto.controls.lote.setValue(this.producto.prdLot);
+      this.formularioProducto.controls.brand.setValue(this.producto.brand);
+      this.formularioProducto.controls.comment.setValue(this.producto.comment);
       let drogueria: ProductFactoryPojo = {
         id: this.producto.drogueriaId,
         name: this.producto.drogueriaName,
@@ -255,6 +263,8 @@ listener(){
     this.producto.drogueriaName=form.drogueria;
     this.producto.expiDate= form.fechaExpiracion;
     this.producto.prdLot = form.lote;
+    this.producto.brand = form.brand;
+    this.producto.comment = form.comment;
   });
 }
 

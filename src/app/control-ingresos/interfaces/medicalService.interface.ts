@@ -134,7 +134,9 @@ export interface Producto{
   expiDate:     Date;
   promotionPrice: number;
   prdLot:       string;
-  user: string | null;
+  user:         string | null;
+  brand:        string | null;
+  comment:     string | null;
 }
 
 export interface CatProductos {

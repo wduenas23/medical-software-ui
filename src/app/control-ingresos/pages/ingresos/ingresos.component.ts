@@ -47,7 +47,7 @@ export class IngresosComponent implements OnInit {
     nombres: [, [Validators.required, Validators.minLength(3)]],
     apellidos: [, [Validators.required, Validators.minLength(3)]],
     identificacion: [],
-    telefono: [, [Validators.required, Validators.minLength(3), Validators.maxLength(9)]],
+    telefono: [, [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
     tipoPago: [, [Validators.required]],
     descuento: [ [Validators.min(0)]],
     descuentoNumerico: [ [Validators.min(0)]],
@@ -276,8 +276,7 @@ export class IngresosComponent implements OnInit {
     
     let telefono=this.formularioIngresos.controls.telefono.value;    
     if(telefono.length >= 8){
-      console.log('A buscar paciente por telefono');
-      this.medService.buscarPacientePorTelefono(telefono).subscribe(resp => { 
+      this.medService.buscarPacientePorTelefono(encodeURIComponent(telefono)).subscribe(resp => { 
         if(resp.ok){
           this.paciente=resp.body;   
           this.formularioIngresos.controls.nombres.setValue(this.paciente!.name);
@@ -585,6 +584,15 @@ export class IngresosComponent implements OnInit {
       this.dataSource = new MatTableDataSource(resp);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.filterPredicate = (data: IncomeResponse, filter: string) => {
+        return  data.patient.name.toLocaleLowerCase().includes(filter) || 
+                data.patient.lastName.toLocaleLowerCase().includes(filter) ||
+                data.patient.phone.toLocaleLowerCase().includes(filter) ||
+                data.subTotalClient.toString().includes(filter) || 
+                data.txTotal.toString().includes(filter) || 
+                data.txSubTotal.toString().includes(filter) || 
+                data.paymentType.toLocaleLowerCase().includes(filter) ;
+        }                
       console.log(resp);
     });
     this.medService.obtenerParametroPorId('COMISION_TARJETA').subscribe(resp => {
